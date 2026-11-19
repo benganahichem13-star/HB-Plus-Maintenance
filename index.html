@@ -3,12 +3,12 @@
 <style>
 body{margin:0;background:#0b1725;color:#f4f8fc;font:16px system-ui}header{padding:20px;background:#10243a}main{max-width:720px;margin:auto;padding:16px}.card{background:#14263a;border:1px solid #29435d;border-radius:14px;padding:16px;margin-bottom:14px}h1{margin:0;font-size:23px}h2{font-size:19px}label{display:block;color:#a9bbcd;margin:12px 0 5px}input{width:100%;box-sizing:border-box;padding:12px;border-radius:8px;border:1px solid #29435d;background:#0c1b2b;color:white;font-size:16px}button{padding:12px 16px;margin:12px 6px 0 0;border:0;border-radius:8px;background:#3b9cff;color:#061729;font-weight:bold}.secondary{background:#29435d;color:white}.small{font-size:13px;color:#a9bbcd}.status{white-space:pre-wrap;overflow-wrap:anywhere;background:#0c1b2b;padding:10px;border-radius:8px}.hidden{display:none}.item{padding:10px 0;border-bottom:1px solid #29435d}
 </style></head><body>
-<header><h1>HB+ — Maintenance industrielle</h1><p class="small">Diagnostic de connexion Firebase</p></header><main>
+<header><h1>HB+ — Maintenance industrielle</h1><p class="small">Profil administrateur — collection Firestore Users</p></header><main>
 <section id="login" class="card"><h2>Connexion</h2><label>Adresse e-mail</label><input id="email" type="email" autocomplete="username"><label>Mot de passe</label><input id="password" type="password" autocomplete="current-password"><button id="loginBtn">Se connecter</button><div id="loginMsg" class="status">En attente de connexion.</div></section>
-<section id="app" class="hidden"><div class="card"><h2>Session et diagnostic du profil</h2><div id="profile" class="status">Chargement…</div><button id="logoutBtn" class="secondary">Se déconnecter</button></div>
+<section id="app" class="hidden"><div class="card"><h2>Session et profil</h2><div id="profile" class="status">Chargement…</div><button id="logoutBtn" class="secondary">Se déconnecter</button></div>
 <div id="adminPanel" class="card hidden"><h2>Ajouter une machine</h2><label>Référence / nom</label><input id="machineName" placeholder="Ex. M01"><label>Description</label><input id="machineDesc" placeholder="Ligne de conditionnement"><button id="addMachineBtn">Enregistrer</button><p id="machineMsg" class="small"></p></div>
-<div class="card"><h2>Machines</h2><div id="machines" class="status">En attente du diagnostic…</div></div>
-<div class="card"><p class="small">Cette version sert uniquement à identifier précisément le blocage Firebase. Elle ne modifie ni les données ni les règles de sécurité.</p></div></section></main>
+<div class="card"><h2>Machines</h2><div id="machines" class="status">En attente…</div></div>
+<div class="card"><p class="small">Cette version lit le profil dans la collection Firestore « Users » (U majuscule). Les règles Firestore doivent également utiliser « Users ».</p></div></section></main>
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
 import {getAuth,signInWithEmailAndPassword,onAuthStateChanged,signOut} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
@@ -16,21 +16,23 @@ import {getFirestore,doc,getDoc,collection,addDoc,getDocs,serverTimestamp} from 
 const cfg={apiKey:"AIzaSyAxdLwy1A-p5_qdY7OeinTQ0-_0xpuy0PE",authDomain:"hb-plus-maintenance.firebaseapp.com",projectId:"hb-plus-maintenance",storageBucket:"hb-plus-maintenance.firebasestorage.app",messagingSenderId:"227031997957",appId:"1:227031997957:web:435f5beb84cf4a0921866c"};
 const app=initializeApp(cfg),auth=getAuth(app),db=getFirestore(app),$=id=>document.getElementById(id);
 let currentRole=null,profileReady=false;
-$("loginBtn").onclick=async()=>{ $("loginMsg").textContent="Connexion…";try{await signInWithEmailAndPassword(auth,$("email").value.trim(),$("password").value)}catch(e){$("loginMsg").textContent="Échec : "+e.code+" — "+e.message}};
+$("loginBtn").onclick=async()=>{$("loginMsg").textContent="Connexion…";try{await signInWithEmailAndPassword(auth,$("email").value.trim(),$("password").value)}catch(e){$("loginMsg").textContent="Échec : "+e.code+" — "+e.message}};
 $("logoutBtn").onclick=()=>signOut(auth);
 onAuthStateChanged(auth,async u=>{
  if(!u){profileReady=false;currentRole=null;$("login").classList.remove("hidden");$("app").classList.add("hidden");$("loginMsg").textContent="Déconnecté.";return;}
- $("login").classList.add("hidden");$("app").classList.remove("hidden");$("profile").textContent="Compte authentifié.\nUID : "+u.uid+"\nProjet attendu : hb-plus-maintenance\nLecture de users/"+u.uid+"…";$("adminPanel").classList.add("hidden");$("machines").textContent="En attente du profil…";
+ $("login").classList.add("hidden");$("app").classList.remove("hidden");
+ $("profile").textContent="Compte authentifié.\nUID : "+u.uid+"\nLecture de Users/"+u.uid+"…";
+ $("adminPanel").classList.add("hidden");$("machines").textContent="Lecture du profil…";
  try{
-  const s=await getDoc(doc(db,"users",u.uid));
-  if(!s.exists()){profileReady=false;currentRole=null;$("profile").textContent="DOCUMENT ABSENT.\nUID connecté : "+u.uid+"\nChemin lu : users/"+u.uid+"\nProjet : hb-plus-maintenance";$("machines").textContent="Lecture des machines non lancée : profil absent.";return;}
-  const d=s.data(),role=d.role,active=d.active;profileReady=(active===true);currentRole=role;
-  $("profile").textContent="E-mail : "+(u.email||"")+"\nUID connecté : "+u.uid+"\nDocument : users/"+s.id+"\nrole = "+JSON.stringify(role)+" (type : "+typeof role+")\nactive = "+JSON.stringify(active)+" (type : "+typeof active+")\nProjet : hb-plus-maintenance\nDiagnostic : "+(active===true?"active est bien le booléen true.":"active n'est pas exactement le booléen true.");
+  const s=await getDoc(doc(db,"Users",u.uid));
+  if(!s.exists()){profileReady=false;currentRole=null;$("profile").textContent="Document absent dans Users.\nUID : "+u.uid+"\nChemin lu : Users/"+u.uid;$("machines").textContent="Lecture des machines non lancée.";return;}
+  const d=s.data(),role=d.role,active=d.active;profileReady=active===true;currentRole=role;
+  $("profile").textContent="E-mail : "+(u.email||"")+"\nUID : "+u.uid+"\nDocument : Users/"+s.id+"\nrole = "+JSON.stringify(role)+" ("+typeof role+")\nactive = "+JSON.stringify(active)+" ("+typeof active+")";
   $("adminPanel").classList.toggle("hidden",!(profileReady&&role==="admin"));
-  if(!profileReady){$("machines").textContent="Lecture des machines bloquée : active n'est pas le booléen true.";return;}
+  if(!profileReady){$("machines").textContent="Accès bloqué : active n'est pas le booléen true.";return;}
   await loadMachines(u.uid,role);
- }catch(e){profileReady=false;currentRole=null;$("profile").textContent="ERREUR DE LECTURE DU PROFIL.\nUID : "+u.uid+"\nCode : "+(e.code||"inconnu")+"\nMessage : "+e.message;$("machines").textContent="Lecture non effectuée.";}
+ }catch(e){profileReady=false;currentRole=null;$("profile").textContent="Erreur lecture profil : "+(e.code||"inconnu")+" — "+e.message;$("machines").textContent="Lecture non effectuée.";}
 });
-async function loadMachines(uid,role){try{const s=await getDocs(collection(db,"machines"));$("machines").textContent="";if(s.empty){$("machines").textContent="Accès autorisé. Aucune machine enregistrée.";return;}s.forEach(d=>{const v=d.data(),el=document.createElement("div");el.className="item";el.textContent=(v.name||d.id)+" — "+(v.description||"");$("machines").append(el);});}catch(e){$("machines").textContent="PROFIL LU, MAIS ACCÈS MACHINES REFUSÉ.\nRôle lu : "+JSON.stringify(role)+"\nUID : "+uid+"\nCode : "+(e.code||"inconnu")+"\nMessage : "+e.message+"\nLes règles Firestore devront être vérifiées."}}
-$("addMachineBtn").onclick=async()=>{const name=$("machineName").value.trim();if(!name){$("machineMsg").textContent="Saisis une référence.";return;}if(!profileReady||currentRole!=="admin"){ $("machineMsg").textContent="Profil administrateur non confirmé.";return;}try{await addDoc(collection(db,"machines"),{name,description:$("machineDesc").value.trim(),createdAt:serverTimestamp(),createdBy:auth.currentUser.uid});$("machineName").value="";$("machineDesc").value="";$("machineMsg").textContent="Machine enregistrée.";await loadMachines(auth.currentUser.uid,currentRole);}catch(e){$("machineMsg").textContent="Erreur : "+(e.code||"inconnu")+" — "+e.message}};
+async function loadMachines(uid,role){try{const s=await getDocs(collection(db,"machines"));$("machines").textContent="";if(s.empty){$("machines").textContent="Accès autorisé. Aucune machine enregistrée.";return;}s.forEach(d=>{const v=d.data(),el=document.createElement("div");el.className="item";el.textContent=(v.name||d.id)+" — "+(v.description||"");$("machines").append(el);});}catch(e){$("machines").textContent="Accès machines refusé.\nCode : "+(e.code||"inconnu")+"\nMessage : "+e.message+"\nVérifie les règles Firestore : elles doivent lire Users et non users.";}}
+$("addMachineBtn").onclick=async()=>{const name=$("machineName").value.trim();if(!name){$("machineMsg").textContent="Saisis une référence.";return;}if(!profileReady||currentRole!=="admin"){ $("machineMsg").textContent="Profil administrateur non confirmé.";return;}try{await addDoc(collection(db,"machines"),{name,description:$("machineDesc").value.trim(),createdAt:serverTimestamp(),createdBy:auth.currentUser.uid});$("machineName").value="";$("machineDesc").value="";$("machineMsg").textContent="Machine enregistrée.";await loadMachines(auth.currentUser.uid,currentRole);}catch(e){$("machineMsg").textContent="Erreur : "+(e.code||"inconnu")+" — "+e.message;}};
 </script></body></html>
