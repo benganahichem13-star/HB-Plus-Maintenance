@@ -1,0 +1,7 @@
+HB+ — Prototype Firebase v1
+
+Fonctions présentes : connexion Firebase Authentication, lecture du profil users/{UID}, vérification du rôle/active, affichage et ajout de machines dans Firestore (admin seulement).
+
+Ce n'est pas encore l'application complète. Les plans de maintenance, interventions, demandes de clôture, validations, notifications et synchronisation hors ligne multi-téléphones restent à développer et tester.
+
+Pour l'essayer, le dossier doit être hébergé en HTTPS (par exemple Firebase Hosting). Ne pas ouvrir index.html directement depuis le gestionnaire de fichiers Android.
