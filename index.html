@@ -1,38 +1,268 @@
+
 <!doctype html>
-<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#10243a"><title>HB+ — Diagnostic Firebase</title>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#10243a">
+<title>HB+ Maintenance</title>
 <style>
-body{margin:0;background:#0b1725;color:#f4f8fc;font:16px system-ui}header{padding:20px;background:#10243a}main{max-width:720px;margin:auto;padding:16px}.card{background:#14263a;border:1px solid #29435d;border-radius:14px;padding:16px;margin-bottom:14px}h1{margin:0;font-size:23px}h2{font-size:19px}label{display:block;color:#a9bbcd;margin:12px 0 5px}input{width:100%;box-sizing:border-box;padding:12px;border-radius:8px;border:1px solid #29435d;background:#0c1b2b;color:white;font-size:16px}button{padding:12px 16px;margin:12px 6px 0 0;border:0;border-radius:8px;background:#3b9cff;color:#061729;font-weight:bold}.secondary{background:#29435d;color:white}.small{font-size:13px;color:#a9bbcd}.status{white-space:pre-wrap;overflow-wrap:anywhere;background:#0c1b2b;padding:10px;border-radius:8px}.hidden{display:none}.item{padding:10px 0;border-bottom:1px solid #29435d}
-</style></head><body>
-<header><h1>HB+ — Maintenance industrielle</h1><p class="small">Profil administrateur — collection Firestore Users</p></header><main>
-<section id="login" class="card"><h2>Connexion</h2><label>Adresse e-mail</label><input id="email" type="email" autocomplete="username"><label>Mot de passe</label><input id="password" type="password" autocomplete="current-password"><button id="loginBtn">Se connecter</button><div id="loginMsg" class="status">En attente de connexion.</div></section>
-<section id="app" class="hidden"><div class="card"><h2>Session et profil</h2><div id="profile" class="status">Chargement…</div><button id="logoutBtn" class="secondary">Se déconnecter</button></div>
-<div id="adminPanel" class="card hidden"><h2>Ajouter une machine</h2><label>Référence / nom</label><input id="machineName" placeholder="Ex. M01"><label>Description</label><input id="machineDesc" placeholder="Ligne de conditionnement"><button id="addMachineBtn">Enregistrer</button><p id="machineMsg" class="small"></p></div>
-<div class="card"><h2>Machines</h2><div id="machines" class="status">En attente…</div></div>
-<div class="card"><p class="small">Cette version lit le profil dans la collection Firestore « Users » (U majuscule). Les règles Firestore doivent également utiliser « Users ».</p></div></section></main>
+body{margin:0;background:#0b1725;color:#f4f8fc;font:16px system-ui}
+header{padding:20px;background:#10243a}
+main{max-width:720px;margin:auto;padding:16px}
+.card{background:#14263a;border:1px solid #29435d;border-radius:14px;padding:16px;margin-bottom:14px}
+h1{margin:0;font-size:23px}h2{font-size:19px}
+label{display:block;color:#a9bbcd;margin:12px 0 5px}
+input{width:100%;box-sizing:border-box;padding:12px;border-radius:8px;border:1px solid #29435d;background:#0c1b2b;color:white;font-size:16px}
+button{padding:12px 16px;margin:12px 6px 0 0;border:0;border-radius:8px;background:#3b9cff;color:#061729;font-weight:bold}
+.secondary{background:#29435d;color:white}
+.small{font-size:13px;color:#a9bbcd}
+.status{white-space:pre-wrap;overflow-wrap:anywhere;background:#0c1b2b;padding:10px;border-radius:8px}
+.hidden{display:none}
+.machine{display:block;width:100%;text-align:left;background:#0c1b2b;color:white;border:1px solid #29435d;margin:8px 0;padding:14px;border-radius:10px}
+.machine strong{display:block;color:#55b5ff;font-size:17px}
+.machine span{font-weight:normal;color:#a9bbcd}
+.info{padding:12px;background:#0c1b2b;border-radius:8px;margin:8px 0;overflow-wrap:anywhere}
+</style>
+</head>
+<body>
+<header>
+<h1>HB+ — Maintenance industrielle</h1>
+<p class="small">Gestion de la maintenance</p>
+</header>
+<main>
+<section id="login" class="card">
+<h2>Connexion</h2>
+<label>Adresse e-mail</label>
+<input id="email" type="email" autocomplete="username">
+<label>Mot de passe</label>
+<input id="password" type="password" autocomplete="current-password">
+<button id="loginBtn">Se connecter</button>
+<div id="loginMsg" class="status">En attente de connexion.</div>
+</section>
+
+<section id="app" class="hidden">
+<div class="card">
+<h2>Session et profil</h2>
+<div id="profile" class="status">Chargement…</div>
+<button id="logoutBtn" class="secondary">Se déconnecter</button>
+</div>
+
+<div id="adminPanel" class="card hidden">
+<h2>Ajouter une machine</h2>
+<label>Référence / nom</label>
+<input id="machineName" placeholder="Ex. M01">
+<label>Description</label>
+<input id="machineDesc" placeholder="Ligne de conditionnement">
+<button id="addMachineBtn">Enregistrer</button>
+<p id="machineMsg" class="small"></p>
+</div>
+
+<div id="machineListCard" class="card">
+<h2>Machines</h2>
+<div id="machines" class="status">En attente…</div>
+</div>
+
+<div id="machineDetail" class="card hidden">
+<button id="backBtn" class="secondary">← Retour aux machines</button>
+<h2 id="detailName">Fiche machine</h2>
+<div id="detailInfo"></div>
+<h2>Modules de maintenance</h2>
+<div class="info">🔧 Pièces et composants — À développer</div>
+<div class="info">🛠️ Maintenance préventive — À développer</div>
+<div class="info">📋 Historique des interventions — À développer</div>
+</div>
+</section>
+</main>
+
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
 import {getAuth,signInWithEmailAndPassword,onAuthStateChanged,signOut} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
 import {getFirestore,doc,getDoc,collection,addDoc,getDocs,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
-const cfg={apiKey:"AIzaSyAxdLwy1A-p5_qdY7OeinTQ0-_0xpuy0PE",authDomain:"hb-plus-maintenance.firebaseapp.com",projectId:"hb-plus-maintenance",storageBucket:"hb-plus-maintenance.firebasestorage.app",messagingSenderId:"227031997957",appId:"1:227031997957:web:435f5beb84cf4a0921866c"};
-const app=initializeApp(cfg),auth=getAuth(app),db=getFirestore(app),$=id=>document.getElementById(id);
-let currentRole=null,profileReady=false;
-$("loginBtn").onclick=async()=>{$("loginMsg").textContent="Connexion…";try{await signInWithEmailAndPassword(auth,$("email").value.trim(),$("password").value)}catch(e){$("loginMsg").textContent="Échec : "+e.code+" — "+e.message}};
+
+const cfg={
+apiKey:"AIzaSyAxdLwy1A-p5_qdY7OeinTQ0-_0xpuy0PE",
+authDomain:"hb-plus-maintenance.firebaseapp.com",
+projectId:"hb-plus-maintenance",
+storageBucket:"hb-plus-maintenance.firebasestorage.app",
+messagingSenderId:"227031997957",
+appId:"1:227031997957:web:435f5beb84cf4a0921866c"
+};
+
+const app=initializeApp(cfg);
+const auth=getAuth(app);
+const db=getFirestore(app);
+const $=id=>document.getElementById(id);
+
+let currentRole=null;
+let profileReady=false;
+
+$("loginBtn").onclick=async()=>{
+$("loginMsg").textContent="Connexion…";
+try{
+await signInWithEmailAndPassword(auth,$("email").value.trim(),$("password").value);
+}catch(e){
+$("loginMsg").textContent="Échec : "+e.code+" — "+e.message;
+}
+};
+
 $("logoutBtn").onclick=()=>signOut(auth);
+
+$("backBtn").onclick=()=>{
+$("machineDetail").classList.add("hidden");
+$("machineListCard").classList.remove("hidden");
+};
+
 onAuthStateChanged(auth,async u=>{
- if(!u){profileReady=false;currentRole=null;$("login").classList.remove("hidden");$("app").classList.add("hidden");$("loginMsg").textContent="Déconnecté.";return;}
- $("login").classList.add("hidden");$("app").classList.remove("hidden");
- $("profile").textContent="Compte authentifié.\nUID : "+u.uid+"\nLecture de Users/"+u.uid+"…";
- $("adminPanel").classList.add("hidden");$("machines").textContent="Lecture du profil…";
- try{
-  const s=await getDoc(doc(db,"Users",u.uid));
-  if(!s.exists()){profileReady=false;currentRole=null;$("profile").textContent="Document absent dans Users.\nUID : "+u.uid+"\nChemin lu : Users/"+u.uid;$("machines").textContent="Lecture des machines non lancée.";return;}
-  const d=s.data(),role=d.role,active=d.active;profileReady=active===true;currentRole=role;
-  $("profile").textContent="E-mail : "+(u.email||"")+"\nUID : "+u.uid+"\nDocument : Users/"+s.id+"\nrole = "+JSON.stringify(role)+" ("+typeof role+")\nactive = "+JSON.stringify(active)+" ("+typeof active+")";
-  $("adminPanel").classList.toggle("hidden",!(profileReady&&role==="admin"));
-  if(!profileReady){$("machines").textContent="Accès bloqué : active n'est pas le booléen true.";return;}
-  await loadMachines(u.uid,role);
- }catch(e){profileReady=false;currentRole=null;$("profile").textContent="Erreur lecture profil : "+(e.code||"inconnu")+" — "+e.message;$("machines").textContent="Lecture non effectuée.";}
+if(!u){
+profileReady=false;
+currentRole=null;
+$("login").classList.remove("hidden");
+$("app").classList.add("hidden");
+$("loginMsg").textContent="Déconnecté.";
+return;
+}
+
+$("login").classList.add("hidden");
+$("app").classList.remove("hidden");
+$("profile").textContent="Compte authentifié.\nUID : "+u.uid+"\nLecture du profil…";
+$("adminPanel").classList.add("hidden");
+$("machines").textContent="Lecture du profil…";
+
+try{
+const s=await getDoc(doc(db,"Users",u.uid));
+
+if(!s.exists()){
+profileReady=false;
+currentRole=null;
+$("profile").textContent="Document absent dans Users.\nUID : "+u.uid;
+$("machines").textContent="Profil introuvable.";
+return;
+}
+
+const d=s.data();
+const role=d.role;
+const active=d.active;
+
+profileReady=active===true;
+currentRole=role;
+
+$("profile").textContent=
+"E-mail : "+(u.email||"")+
+"\nUID : "+u.uid+
+"\nDocument : Users/"+s.id+
+"\nRôle : "+role+
+"\nActif : "+active;
+
+$("adminPanel").classList.toggle("hidden",!(profileReady&&role==="admin"));
+
+if(!profileReady){
+$("machines").textContent="Accès bloqué : compte inactif.";
+return;
+}
+
+await loadMachines();
+}catch(e){
+profileReady=false;
+currentRole=null;
+$("profile").textContent="Erreur : "+e.message;
+$("machines").textContent="Lecture non effectuée.";
+}
 });
-async function loadMachines(uid,role){try{const s=await getDocs(collection(db,"machines"));$("machines").textContent="";if(s.empty){$("machines").textContent="Accès autorisé. Aucune machine enregistrée.";return;}s.forEach(d=>{const v=d.data(),el=document.createElement("div");el.className="item";el.textContent=(v.name||d.id)+" — "+(v.description||"");$("machines").append(el);});}catch(e){$("machines").textContent="Accès machines refusé.\nCode : "+(e.code||"inconnu")+"\nMessage : "+e.message+"\nVérifie les règles Firestore : elles doivent lire Users et non users.";}}
-$("addMachineBtn").onclick=async()=>{const name=$("machineName").value.trim();if(!name){$("machineMsg").textContent="Saisis une référence.";return;}if(!profileReady||currentRole!=="admin"){ $("machineMsg").textContent="Profil administrateur non confirmé.";return;}try{await addDoc(collection(db,"machines"),{name,description:$("machineDesc").value.trim(),createdAt:serverTimestamp(),createdBy:auth.currentUser.uid});$("machineName").value="";$("machineDesc").value="";$("machineMsg").textContent="Machine enregistrée.";await loadMachines(auth.currentUser.uid,currentRole);}catch(e){$("machineMsg").textContent="Erreur : "+(e.code||"inconnu")+" — "+e.message;}};
-</script></body></html>
+
+async function loadMachines(){
+try{
+const s=await getDocs(collection(db,"machines"));
+$("machines").textContent="";
+
+if(s.empty){
+$("machines").textContent="Aucune machine enregistrée.";
+return;
+}
+
+s.forEach(d=>{
+const v=d.data();
+const btn=document.createElement("button");
+btn.className="machine";
+
+const name=document.createElement("strong");
+name.textContent=v.name||d.id;
+
+const description=document.createElement("span");
+description.textContent=v.description||"Aucune description";
+
+btn.append(name,description);
+btn.onclick=()=>openMachine(d.id,v);
+
+$("machines").append(btn);
+});
+
+}catch(e){
+$("machines").textContent="Erreur de lecture : "+e.message;
+}
+}
+
+function openMachine(id,v){
+$("machineListCard").classList.add("hidden");
+$("machineDetail").classList.remove("hidden");
+
+$("detailName").textContent=v.name||"Fiche machine";
+
+const info=$("detailInfo");
+info.textContent="";
+
+function addInfo(label,value){
+const div=document.createElement("div");
+div.className="info";
+div.textContent=label+" : "+value;
+info.append(div);
+}
+
+addInfo("Référence",v.name||id);
+addInfo("Description",v.description||"Non renseignée");
+addInfo("Identifiant Firestore",id);
+addInfo("Créée par",v.createdBy||"Non renseigné");
+
+let date="Non renseignée";
+if(v.createdAt&&v.createdAt.toDate){
+date=v.createdAt.toDate().toLocaleString("fr-FR");
+}
+addInfo("Date de création",date);
+
+window.scrollTo(0,0);
+}
+
+$("addMachineBtn").onclick=async()=>{
+const name=$("machineName").value.trim();
+
+if(!name){
+$("machineMsg").textContent="Saisis une référence.";
+return;
+}
+
+if(!profileReady||currentRole!=="admin"){
+$("machineMsg").textContent="Profil administrateur non confirmé.";
+return;
+}
+
+try{
+await addDoc(collection(db,"machines"),{
+name,
+description:$("machineDesc").value.trim(),
+createdAt:serverTimestamp(),
+createdBy:auth.currentUser.uid
+});
+
+$("machineName").value="";
+$("machineDesc").value="";
+$("machineMsg").textContent="Machine enregistrée.";
+
+await loadMachines();
+}catch(e){
+$("machineMsg").textContent="Erreur : "+e.message;
+}
+};
+</script>
+</body>
+</html>
+2
