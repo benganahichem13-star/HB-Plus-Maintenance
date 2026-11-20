@@ -1,41 +1,125 @@
-<!doctype html>
+
+<!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#10243a">
 <title>HB+ Maintenance</title>
 <style>
-:root{color-scheme:dark}*{box-sizing:border-box}body{margin:0;background:#0b1725;color:#f4f8fc;font:16px system-ui}header{padding:18px;background:#10243a}main{max-width:850px;margin:auto;padding:14px}h1{margin:0;font-size:22px}h2{font-size:19px;margin:4px 0 12px}.small{font-size:13px;color:#a9bbcd}.card{background:#14263a;border:1px solid #29435d;border-radius:14px;padding:15px;margin-bottom:13px}label{display:block;color:#a9bbcd;margin:12px 0 5px}input,textarea,select{width:100%;padding:11px;border-radius:8px;border:1px solid #29435d;background:#0c1b2b;color:white;font:inherit}textarea{min-height:75px}button{padding:11px 14px;margin:8px 5px 0 0;border:0;border-radius:8px;background:#3b9cff;color:#061729;font-weight:700;font-size:14px}.secondary{background:#29435d;color:white}.danger{background:#a94444;color:white}.good{background:#23845d;color:white}.hidden{display:none!important}.status,.info{white-space:pre-wrap;overflow-wrap:anywhere;background:#0c1b2b;padding:10px;border-radius:8px;margin:8px 0}.machine,.task{display:block;width:100%;text-align:left;background:#0c1b2b;color:white;border:1px solid #29435d;margin:8px 0;padding:13px;border-radius:10px}.machine strong,.task strong{display:block;color:#55b5ff;font-size:16px}.machine span,.task span{display:block;color:#a9bbcd;font-size:13px;margin-top:4px}.pill{display:inline-block;padding:3px 8px;border-radius:20px;background:#29435d;color:#dcecff;font-size:12px;margin:5px 4px 0 0}.task-actions{margin-top:7px}.muted{color:#a9bbcd}.section-title{margin-top:18px;padding-bottom:6px;border-bottom:1px solid #29435d}
+*{box-sizing:border-box}
+body{margin:0;background:#0b1725;color:#f4f8fc;font-family:Arial,sans-serif}
+header{background:#10243a;padding:18px}
+header h1{margin:0;font-size:23px}
+main{max-width:900px;margin:auto;padding:14px}
+.card{background:#14263a;border:1px solid #29435d;border-radius:13px;padding:15px;margin-bottom:14px}
+h2{font-size:19px;margin:5px 0 13px}
+h3{font-size:16px;color:#55b5ff;margin:18px 0 9px}
+label{display:block;margin:12px 0 5px;color:#b5c5d5}
+input,select,textarea{width:100%;padding:12px;background:#0c1b2b;color:white;border:1px solid #34516d;border-radius:8px;font-size:15px}
+textarea{min-height:70px}
+button{border:0;border-radius:8px;padding:11px 14px;margin:7px 5px 0 0;background:#3b9cff;color:#071727;font-weight:bold}
+button.green{background:#23845d;color:white}
+button.red{background:#a94444;color:white}
+button.gray{background:#29435d;color:white}
+.hidden{display:none!important}
+.small{font-size:13px;color:#a9bbcd}
+.status{background:#0c1b2b;padding:10px;border-radius:8px;margin:8px 0;white-space:pre-wrap;overflow-wrap:anywhere}
+.machine,.task{background:#0c1b2b;border:1px solid #29435d;border-radius:10px;padding:13px;margin:9px 0}
+.machine{width:100%;text-align:left;color:white}
+.machine strong,.task strong{display:block;color:#55b5ff;font-size:16px}
+.machine span,.task span{display:block;color:#b5c5d5;font-size:13px;margin-top:6px}
+.pill{display:inline-block;background:#29435d;padding:5px 9px;border-radius:20px;font-size:12px;margin:7px 5px 0 0}
+.task-actions{margin-top:10px}
+.category{border-bottom:1px solid #34516d;padding-bottom:7px;margin-top:20px}
 </style>
 </head>
 <body>
-<header><h1>HB+ — Maintenance industrielle</h1><div class="small">Gestion de la maintenance préventive</div></header>
+
+<header>
+<h1>HB+ — Maintenance industrielle</h1>
+<div class="small">Gestion de la maintenance préventive</div>
+</header>
+
 <main>
+
 <section id="login" class="card">
 <h2>Connexion</h2>
-<label>Adresse e-mail</label><input id="email" type="email" autocomplete="username">
-<label>Mot de passe</label><input id="password" type="password" autocomplete="current-password">
-<button id="loginBtn">Se connecter</button><div id="loginMsg" class="status">Saisis tes identifiants.</div>
+<label>E-mail</label>
+<input id="email" type="email" autocomplete="username">
+<label>Mot de passe</label>
+<input id="password" type="password" autocomplete="current-password">
+<button id="loginBtn">Se connecter</button>
+<div id="loginMsg" class="status">Veuillez vous connecter.</div>
 </section>
+
 <section id="app" class="hidden">
-<div class="card"><h2>Session et profil</h2><div id="profile" class="status">Chargement…</div><button id="logoutBtn" class="secondary">Se déconnecter</button></div>
-<div id="adminPanel" class="card hidden"><h2>Administration</h2><p class="small">Le programme préventif prédéfini est initialisé automatiquement pour M24 et M25 lorsque l’administrateur ouvre l’application. Les tâches sont générées sur deux ans à partir du 20/11/2026.</p><button id="initBtn">Générer / vérifier le planning</button><div id="initMsg" class="status">Initialisation en attente.</div></div>
-<div class="card" id="machineListCard"><h2>Machines</h2><div id="machines" class="status">Chargement…</div></div>
-<div class="card hidden" id="machineDetail">
-<button id="backBtn" class="secondary">← Retour aux machines</button><h2 id="detailName">Machine</h2><div id="detailInfo" class="small"></div>
-<div class="section-title"><h2>Maintenance préventive</h2></div>
-<label>Filtrer par périodicité</label><select id="frequencyFilter"><option value="all">Toutes les périodicités</option><option value="Hebdomadaire">Hebdomadaire</option><option value="Mensuelle">Mensuelle</option><option value="Semestrielle">Semestrielle</option><option value="Annuelle">Annuelle</option></select>
-<div id="tasks">Chargement des tâches…</div>
+
+<div class="card">
+<h2>Profil utilisateur</h2>
+<div id="profile" class="status">Chargement...</div>
+<button id="logoutBtn" class="gray">Déconnexion</button>
 </div>
+
+<div id="adminPanel" class="card hidden">
+<h2>Administration</h2>
+<p class="small">
+Initialiser les 24 opérations fixes pour chaque machine.
+Les tâches existantes ne seront pas dupliquées.
+</p>
+<button id="initBtn">Initialiser les tâches</button>
+<div id="initMsg" class="status">En attente.</div>
+</div>
+
+<div id="machineListCard" class="card">
+<h2>Machines</h2>
+<div id="machines">Chargement...</div>
+</div>
+
+<div id="machineDetail" class="card hidden">
+<button id="backBtn" class="gray">← Retour</button>
+<h2 id="detailName">Machine</h2>
+<div id="detailInfo" class="small"></div>
+
+<label>Filtrer les entretiens</label>
+<select id="frequencyFilter">
+<option value="all">Toutes les catégories</option>
+<option value="Hebdomadaire">Entretien hebdomadaire</option>
+<option value="Mensuelle">Entretien mensuel</option>
+<option value="Semestrielle">Entretien semestriel</option>
+<option value="Annuelle">Entretien annuel</option>
+</select>
+
+<div id="tasks">Chargement...</div>
+</div>
+
 </section>
 </main>
-<script type="module">
-import {initializeApp} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
-import {getAuth,signInWithEmailAndPassword,onAuthStateChanged,signOut} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
-import {getFirestore,doc,getDoc,collection,addDoc,getDocs,serverTimestamp,writeBatch,updateDoc} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
-const cfg={
+<script type="module">
+
+import {initializeApp} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+
+import {
+getAuth,
+signInWithEmailAndPassword,
+onAuthStateChanged,
+signOut
+} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+
+import {
+getFirestore,
+doc,
+getDoc,
+collection,
+getDocs,
+serverTimestamp,
+writeBatch,
+updateDoc
+} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+
+
+const firebaseConfig = {
 apiKey:"AIzaSyAxdLwy1A-p5_qdY7OeinTQ0-_0xpuy0PE",
 authDomain:"hb-plus-maintenance.firebaseapp.com",
 projectId:"hb-plus-maintenance",
@@ -43,21 +127,31 @@ storageBucket:"hb-plus-maintenance.firebasestorage.app",
 messagingSenderId:"227031997957",
 appId:"1:227031997957:web:435f5beb84cf4a0921866c"
 };
-const app=initializeApp(cfg),auth=getAuth(app),db=getFirestore(app);
-const $=id=>document.getElementById(id);
-let currentRole=null,profileReady=false,currentMachine=null,machineDocs=[];
-const START_DATE="2026-11-20";
-const HORIZON_YEARS=2;
 
-// Programme préventif repris de la fiche STAUBLI ALPHA 500 (24 opérations).
-const PROGRAM=[
-["Hebdomadaire",[
+const firebaseApp = initializeApp(firebaseConfig);
+const auth = getAuth(firebaseApp);
+const db = getFirestore(firebaseApp);
+
+const $ = id => document.getElementById(id);
+
+let currentRole = null;
+let profileReady = false;
+let currentMachine = null;
+let machineDocs = [];
+
+const PROGRAM = [
+{
+frequency:"Hebdomadaire",
+tasks:[
 "Nettoyer et contrôler le dispositif du chariot de coupe.",
 "Vérifier la lubrification des lances.",
 "Nettoyer et vérifier les tiges Rapière et les guides Rapière.",
 "Nettoyer et vérifier le jeu du mécanisme d'ouverture (Stäubli)."
-]],
-["Mensuelle",[
+]
+},
+{
+frequency:"Mensuelle",
+tasks:[
 "Nettoyer le support du peigne.",
 "Vérifier le niveau d'huile des carters de peigne (gauche, centre et droite).",
 "Vérifier le niveau d'huile des carters de lance (gauche et droite).",
@@ -70,170 +164,644 @@ const PROGRAM=[
 "Contrôler l'armoire électrique (contamination/condensation).",
 "Vérifier le refroidissement de l'armoire électrique.",
 "Vérifier les rouleaux de pression et les guides Rapière."
-]],
-["Semestrielle",[
+]
+},
+{
+frequency:"Semestrielle",
+tasks:[
 "Lubrifier la chaîne du palier de faisceau.",
 "Lubrifier le palier de la poulie de renvoi.",
 "Graisser les roulements à rouleaux de renvoi.",
 "Enlever les résidus de fil de l'essieu.",
 "Purger les condensats du réservoir d'air comprimé.",
 "Lubrifier l'arbre à cardan du Dobby 2688S."
-]],
-["Annuelle",[
+]
+},
+{
+frequency:"Annuelle",
+tasks:[
 "Remplacer la cartouche du filtre à huile.",
 "Vérifier le serrage des vis d'ancrage au sol."
-]]
+]
+}
 ];
 
-$("loginBtn").onclick=async()=>{
- $("loginMsg").textContent="Connexion…";
- try{await signInWithEmailAndPassword(auth,$("email").value.trim(),$("password").value);}
- catch(e){$("loginMsg").textContent="Échec : "+e.code+" — "+e.message;}
-};
-$("logoutBtn").onclick=()=>signOut(auth);
-$("backBtn").onclick=()=>{currentMachine=null;$("machineDetail").classList.add("hidden");$("machineListCard").classList.remove("hidden");};
-$("frequencyFilter").onchange=()=>renderTasks();
+function isAdmin(){
+return profileReady && currentRole === "admin";
+}
 
-onAuthStateChanged(auth,async u=>{
- if(!u){profileReady=false;currentRole=null;currentMachine=null;$("login").classList.remove("hidden");$("app").classList.add("hidden");$("loginMsg").textContent="Déconnecté.";return;}
- $("login").classList.add("hidden");$("app").classList.remove("hidden");
- $("profile").textContent="Compte authentifié.\nUID : "+u.uid+"\nLecture du profil…";
- $("adminPanel").classList.add("hidden");$("machines").textContent="Lecture du profil…";
- try{
-  const s=await getDoc(doc(db,"Users",u.uid));
-  if(!s.exists()){profileReady=false;currentRole=null;$("profile").textContent="Document absent dans Users.\nUID : "+u.uid;$("machines").textContent="Profil introuvable.";return;}
-  const d=s.data();currentRole=d.role;profileReady=d.active===true;
-  $("profile").textContent="E-mail : "+(u.email||"")+"\nUID : "+u.uid+"\nRôle : "+d.role+"\nActif : "+d.active;
-  $("adminPanel").classList.toggle("hidden",!(profileReady&&currentRole==="admin"));
-  if(!profileReady){$("machines").textContent="Accès bloqué : compte inactif.";return;}
-  await loadMachines();
-  if(currentRole==="admin") await initializeSchedule(false);
- }catch(e){profileReady=false;$("profile").textContent="Erreur : "+e.message;$("machines").textContent="Lecture non effectuée.";}
+function isTech(){
+return profileReady &&
+["technicien","technician","admin"].includes(currentRole);
+}
+
+$("loginBtn").onclick = async () => {
+$("loginMsg").textContent = "Connexion en cours...";
+try {
+await signInWithEmailAndPassword(
+auth,
+$("email").value.trim(),
+$("password").value
+);
+} catch(e) {
+$("loginMsg").textContent = "Erreur : " + e.message;
+}
+};
+
+$("logoutBtn").onclick = () => signOut(auth);
+
+$("backBtn").onclick = () => {
+currentMachine = null;
+$("machineDetail").classList.add("hidden");
+$("machineListCard").classList.remove("hidden");
+};
+
+$("frequencyFilter").onchange = renderTasks;
+
+onAuthStateChanged(auth, async user => {
+
+if(!user){
+profileReady = false;
+currentRole = null;
+$("login").classList.remove("hidden");
+$("app").classList.add("hidden");
+return;
+}
+
+$("login").classList.add("hidden");
+$("app").classList.remove("hidden");
+$("profile").textContent = "Lecture du profil...";
+
+try {
+
+const profileSnap = await getDoc(
+doc(db,"Users",user.uid)
+);
+
+if(!profileSnap.exists()){
+$("profile").textContent = "Profil introuvable.";
+return;
+}
+
+const profile = profileSnap.data();
+
+currentRole = profile.role;
+profileReady = profile.active === true;
+
+$("profile").textContent =
+"E-mail : " + (user.email || "") +
+"\nRôle : " + currentRole +
+"\nCompte actif : " + profile.active;
+
+$("adminPanel").classList.toggle(
+"hidden",
+!isAdmin()
+);
+
+if(!profileReady){
+$("machines").textContent = "Compte inactif.";
+return;
+}
+
+await loadMachines();
+
+if(isAdmin()){
+await initializeSchedule(false);
+}
+
+} catch(e) {
+$("profile").textContent = "Erreur : " + e.message;
+}
 });
 
+
 async function loadMachines(){
- try{
-  const snap=await getDocs(collection(db,"machines"));machineDocs=[];
-  snap.forEach(d=>machineDocs.push({id:d.id,...d.data()}));
-  $("machines").textContent="";
-  if(!machineDocs.length){$("machines").textContent="Aucune machine enregistrée dans Firestore (collection machines).";return;}
-  machineDocs.sort((a,b)=>(a.name||"").localeCompare(b.name||""));
-  machineDocs.forEach(m=>{
-   const b=document.createElement("button");b.className="machine";
-   const strong=document.createElement("strong");strong.textContent=m.name||m.id;
-   const span=document.createElement("span");span.textContent=m.description||"Ouvrir la fiche machine";
-   b.append(strong,span);b.onclick=()=>openMachine(m);$("machines").append(b);
-  });
- }catch(e){$("machines").textContent="Erreur de lecture : "+e.message;}
-}
-function openMachine(m){
- currentMachine=m;$("machineListCard").classList.add("hidden");$("machineDetail").classList.remove("hidden");
- $("detailName").textContent=m.name||"Machine";
- $("detailInfo").textContent="Référence Firestore : "+m.id+" • Type : "+(m.type||"STAUBLI ALPHA 500");
- $("frequencyFilter").value="all";renderTasks();window.scrollTo(0,0);
-}
-function dateLabel(iso){const [y,mo,d]=iso.split("-").map(Number);return new Date(y,mo-1,d).toLocaleDateString("fr-FR");}
-function renderTasks(){
- if(!currentMachine)return;
- $("tasks").textContent="Chargement des tâches…";
- loadOccurrences(currentMachine).then(items=>{
-  $("tasks").textContent="";
-  const filter=$("frequencyFilter").value;
-  const filtered=items.filter(x=>filter==="all"||x.frequency===filter);
-  if(!filtered.length){$("tasks").textContent="Aucune tâche générée pour cette machine. L’administrateur doit vérifier le planning.";return;}
-  const order=["Hebdomadaire","Mensuelle","Semestrielle","Annuelle"];
-  order.forEach(freq=>{
-   const group=filtered.filter(x=>x.frequency===freq);
-   if(!group.length)return;
-   const h=document.createElement("h3");h.className="section-title";h.textContent=freq+" ("+group.length+")";$("tasks").append(h);
-   group.forEach(t=>$("tasks").append(makeTaskCard(t)));
-  });
- }).catch(e=>$("tasks").textContent="Erreur : "+e.message);
-}
-async function loadOccurrences(machine){
- const snap=await getDocs(collection(db,"maintenance_occurrences"));
- const arr=[];snap.forEach(d=>{const v=d.data();if(v.machineId===machine.id)arr.push({id:d.id,...v});});
- arr.sort((a,b)=>(a.dueDate||"").localeCompare(b.dueDate||""));
- return arr;
-}
-function makeTaskCard(t){
- const card=document.createElement("div");card.className="task";
- const title=document.createElement("strong");title.textContent=t.task||"Tâche";
- const date=document.createElement("span");date.textContent="Échéance : "+dateLabel(t.dueDate);
- const status=document.createElement("div");status.innerHTML='<span class="pill">'+(t.status||"todo")+'</span><span class="pill">'+t.frequency+'</span>';
- card.append(title,date,status);
- if(t.status==="pending_validation"||t.status==="rejected"){
-  const note=document.createElement("div");note.className="small";note.textContent=(t.status==="pending_validation"?"En attente de validation. ":"Refus : ")+(t.adminComment||"");card.append(note);
- }
- const actions=document.createElement("div");actions.className="task-actions";
- if(isTech()&&(t.status==="todo"||t.status==="rejected")){
-  const start=document.createElement("button");start.textContent=t.status==="rejected"?"Reprendre la tâche":"Commencer";start.onclick=()=>changeTask(t.id,{status:"in_progress",startedAt:serverTimestamp()});actions.append(start);
- }
- if(isTech()&&t.status==="in_progress"){
-  const done=document.createElement("button");done.className="good";done.textContent="Demander validation";done.onclick=()=>changeTask(t.id,{status:"pending_validation",submittedAt:serverTimestamp(),adminComment:""});actions.append(done);
- }
- if(isAdmin()&&t.status==="pending_validation"){
-  const comment=document.createElement("textarea");comment.placeholder="Commentaire en cas de refus (obligatoire pour refuser)";
-  const approve=document.createElement("button");approve.className="good";approve.textContent="Valider et clôturer";approve.onclick=()=>changeTask(t.id,{status:"closed",approvedAt:serverTimestamp(),approvedBy:auth.currentUser.uid,adminComment:comment.value.trim()});
-  const reject=document.createElement("button");reject.className="danger";reject.textContent="Refuser";reject.onclick=()=>{if(!comment.value.trim()){alert("Ajoute un commentaire pour expliquer le refus.");return;}changeTask(t.id,{status:"rejected",rejectedAt:serverTimestamp(),rejectedBy:auth.currentUser.uid,adminComment:comment.value.trim()});};
-  actions.append(comment,approve,reject);
- }
- if(actions.childNodes.length)card.append(actions);
- return card;
-}
-function isAdmin(){return profileReady&&currentRole==="admin";}
-function isTech(){return profileReady&&(currentRole==="technicien"||currentRole==="technician"||currentRole==="admin");}
-async function changeTask(id,patch){
- if(!profileReady){alert("Profil non autorisé.");return;}
- try{await updateDoc(doc(db,"maintenance_occurrences",id),{...patch,updatedAt:serverTimestamp()});renderTasks();}
- catch(e){alert("Erreur d'enregistrement : "+e.message);}
+
+$("machines").textContent = "Chargement des machines...";
+
+const snap = await getDocs(collection(db,"machines"));
+machineDocs = [];
+
+snap.forEach(d => {
+machineDocs.push({id:d.id,...d.data()});
+});
+
+$("machines").textContent = "";
+
+if(!machineDocs.length){
+$("machines").textContent = "Aucune machine trouvée.";
+return;
 }
 
-$("initBtn").onclick=()=>initializeSchedule(true);
-async function initializeSchedule(showMessage){
- if(!isAdmin())return;
- const msg=$("initMsg");if(showMessage)msg.textContent="Vérification des machines et génération du planning…";
- try{
-  const targets=machineDocs.filter(m=>["M24","M25"].includes((m.name||"").trim().toUpperCase()));
-  if(!targets.length){if(showMessage)msg.textContent="M24 et M25 sont introuvables dans la collection machines. Ajoute-les d’abord.";return;}
-  const existing=await getDocs(collection(db,"maintenance_occurrences"));
-  const known=new Set();existing.forEach(d=>known.add(d.id));
-  const start=new Date(START_DATE+"T12:00:00"),end=new Date(start);end.setFullYear(end.getFullYear()+HORIZON_YEARS);
-  const pending=[];
-  for(const machine of targets){
-   let templateNo=0;
-   for(const [frequency,tasks] of PROGRAM){
-    for(const task of tasks){
-     templateNo++;
-     const dates=dueDates(frequency,start,end);
-     for(const due of dates){
-      const iso=due.toISOString().slice(0,10);
-      const id=machine.id+"_"+frequency.toLowerCase()+"_"+templateNo+"_"+iso.replaceAll("-","");
-      if(known.has(id))continue;
-      pending.push({id,data:{machineId:machine.id,machineName:machine.name,task,frequency,dueDate:iso,status:"todo",createdAt:serverTimestamp(),createdBy:auth.currentUser.uid}});
-     }
-    }
-   }
-  }
-  for(let i=0;i<pending.length;i+=450){
-   const batch=writeBatch(db);pending.slice(i,i+450).forEach(x=>batch.set(doc(db,"maintenance_occurrences",x.id),x.data));await batch.commit();
-  }
-  const total=await getDocs(collection(db,"maintenance_occurrences"));
-  let count=0;total.forEach(d=>{if(targets.some(m=>m.id===d.data().machineId))count++;});
-  msg.textContent="Planning vérifié.\nNouvelles tâches créées : "+pending.length+"\nTâches enregistrées pour M24/M25 : "+count+"\nPériode : "+dateLabel(START_DATE)+" au "+dateLabel(end.toISOString().slice(0,10))+".";
-  await loadMachines();
- }catch(e){msg.textContent="Erreur pendant la génération : "+e.message;}
+machineDocs.sort((a,b)=>
+(a.name || a.id).localeCompare(b.name || b.id)
+);
+
+machineDocs.forEach(machine => {
+
+const button = document.createElement("button");
+button.className = "machine";
+
+const title = document.createElement("strong");
+title.textContent = machine.name || machine.id;
+
+const description = document.createElement("span");
+description.textContent =
+machine.description || "Ouvrir la maintenance préventive";
+
+button.append(title,description);
+button.onclick = () => openMachine(machine);
+
+$("machines").append(button);
+
+});
 }
-function dueDates(freq,start,end){
- const out=[];
- if(freq==="Hebdomadaire"){
-  for(let d=new Date(start);d<=end;d.setDate(d.getDate()+7))out.push(new Date(d));
- }else{
-  const step=freq==="Mensuelle"?1:freq==="Semestrielle"?6:12;
-  for(let d=new Date(start);d<=end;d.setMonth(d.getMonth()+step))out.push(new Date(d));
- }
- return out;
+
+
+function openMachine(machine){
+
+currentMachine = machine;
+
+$("machineListCard").classList.add("hidden");
+$("machineDetail").classList.remove("hidden");
+
+$("detailName").textContent = machine.name || machine.id;
+$("detailInfo").textContent = "Référence : " + machine.id;
+
+$("frequencyFilter").value = "all";
+
+renderTasks();
+window.scrollTo(0,0);
 }
+
+
+function addMonthsISO(iso,months){
+
+const [year,month,day] = iso.split("-").map(Number);
+
+const targetMonth = month - 1 + months;
+const firstDay = new Date(year,targetMonth,1);
+const lastDay = new Date(
+firstDay.getFullYear(),
+firstDay.getMonth()+1,
+0
+).getDate();
+
+const resultDay = Math.min(day,lastDay);
+
+return firstDay.getFullYear() + "-" +
+String(firstDay.getMonth()+1).padStart(2,"0") + "-" +
+String(resultDay).padStart(2,"0");
+}
+
+
+function nextDueDate(frequency,fromDate){
+
+const date = fromDate || todayISO();
+
+if(frequency === "Hebdomadaire"){
+const d = new Date(date + "T12:00:00");
+d.setDate(d.getDate()+7);
+return d.getFullYear()+"-"+
+String(d.getMonth()+1).padStart(2,"0")+"-"+
+String(d.getDate()).padStart(2,"0");
+}
+
+if(frequency === "Mensuelle"){
+return addMonthsISO(date,1);
+}
+
+if(frequency === "Semestrielle"){
+return addMonthsISO(date,6);
+}
+
+return addMonthsISO(date,12);
+}
+
+
+function todayISO(){
+
+const d = new Date();
+
+return d.getFullYear()+"-"+
+String(d.getMonth()+1).padStart(2,"0")+"-"+
+String(d.getDate()).padStart(2,"0");
+}
+
+
+function dateLabel(iso){
+
+if(!iso)return "Non définie";
+
+const [y,m,d] = iso.split("-").map(Number);
+
+return new Date(y,m-1,d).toLocaleDateString("fr-FR");
+}
+
+
+async function initializeSchedule(showMessage=true){
+
+if(!isAdmin())return;
+
+if(showMessage){
+$("initMsg").textContent = "Initialisation en cours...";
+}
+
+try{
+
+const machinesSnap = await getDocs(collection(db,"machines"));
+
+let batch = writeBatch(db);
+let count = 0;
+let existing = 0;
+let created = 0;
+
+for(const machineDoc of machinesSnap.docs){
+
+const machine = {
+id:machineDoc.id,
+...machineDoc.data()
+};
+
+for(const group of PROGRAM){
+
+for(let i=0;i<group.tasks.length;i++){
+
+const taskNumber = count + 1;
+count++;
+
+const taskId = machine.id + "_task_" + taskNumber;
+const taskRef = doc(db,"maintenance_tasks",taskId);
+
+const oldTask = await getDoc(taskRef);
+
+if(oldTask.exists()){
+existing++;
+continue;
+}
+
+batch.set(taskRef,{
+machineId:machine.id,
+machineName:machine.name || machine.id,
+taskNumber:taskNumber,
+frequency:group.frequency,
+task:group.tasks[i],
+nextDueDate:todayISO(),
+status:"todo",
+completedCount:0,
+createdAt:serverTimestamp(),
+updatedAt:serverTimestamp()
+});
+
+created++;
+
+if(created % 400 === 0){
+await batch.commit();
+batch = writeBatch(db);
+}
+}
+}
+}
+
+if(created % 400 !== 0){
+await batch.commit();
+}
+
+if(showMessage || created > 0){
+$("initMsg").textContent =
+"Initialisation terminée.\n" +
+"Tâches créées : " + created +
+"\nTâches déjà présentes : " + existing;
+}
+
+} catch(e){
+
+$("initMsg").textContent =
+"Erreur d'initialisation : " + e.message;
+
+}
+}
+
+$("initBtn").onclick = () => initializeSchedule(true);
+
+
+async function loadMaintenanceTasks(machine){
+
+const snap = await getDocs(
+collection(db,"maintenance_tasks")
+);
+
+const tasks = [];
+
+snap.forEach(d => {
+
+const data = d.data();
+
+if(data.machineId === machine.id){
+tasks.push({id:d.id,...data});
+}
+
+});
+
+const order = {
+"Hebdomadaire":1,
+"Mensuelle":2,
+"Semestrielle":3,
+"Annuelle":4
+};
+
+tasks.sort((a,b)=>
+(order[a.frequency]||9)-(order[b.frequency]||9) ||
+(a.taskNumber||0)-(b.taskNumber||0)
+);
+
+return tasks;
+}
+
+
+async function renderTasks(){
+
+if(!currentMachine)return;
+
+$("tasks").textContent = "Chargement des tâches...";
+
+try{
+
+const tasks = await loadMaintenanceTasks(currentMachine);
+
+$("tasks").textContent = "";
+
+const filter = $("frequencyFilter").value;
+
+const filtered = tasks.filter(t =>
+filter === "all" || t.frequency === filter
+);
+
+if(!filtered.length){
+$("tasks").textContent =
+"Aucune tâche trouvée. Vérifie l'initialisation.";
+return;
+}
+
+for(const group of PROGRAM){
+
+const groupTasks = filtered.filter(t =>
+t.frequency === group.frequency
+);
+
+if(!groupTasks.length)continue;
+
+const heading = document.createElement("h3");
+heading.className = "category";
+heading.textContent =
+"Entretien " + group.frequency +
+" — " + groupTasks.length + " tâches";
+
+$("tasks").append(heading);
+
+groupTasks.forEach(task => {
+$("tasks").append(makeTaskCard(task));
+});
+
+}
+
+const total = document.createElement("div");
+total.className = "small";
+total.textContent =
+"Tâches affichées : " + filtered.length + " / 24";
+
+$("tasks").append(total);
+
+}catch(e){
+
+$("tasks").textContent = "Erreur : " + e.message;
+
+}
+}
+
+
+function statusLabel(status){
+
+const labels = {
+todo:"À faire",
+in_progress:"En cours",
+pending_validation:"En attente de validation",
+rejected:"Refusée"
+};
+
+return labels[status] || status;
+}
+
+
+function makeTaskCard(task){
+
+const card = document.createElement("div");
+card.className = "task";
+
+const title = document.createElement("strong");
+title.textContent = task.task;
+
+const due = document.createElement("span");
+due.textContent =
+"Prochaine échéance : " + dateLabel(task.nextDueDate);
+
+const status = document.createElement("span");
+status.innerHTML =
+'<span class="pill">' + statusLabel(task.status) +
+'</span><span class="pill">' + task.frequency + '</span>';
+
+card.append(title,due,status);
+
+if(task.completedCount > 0){
+
+const history = document.createElement("span");
+
+history.textContent =
+"Interventions validées : " + task.completedCount +
+" • Dernière intervention : " +
+dateLabel(task.lastCompletedDate);
+
+card.append(history);
+
+}
+
+if(task.adminComment){
+
+const comment = document.createElement("span");
+comment.textContent = "Commentaire : " + task.adminComment;
+card.append(comment);
+
+}
+
+const actions = document.createElement("div");
+actions.className = "task-actions";
+
+if(isTech() && ["todo","rejected"].includes(task.status)){
+
+const start = document.createElement("button");
+
+start.textContent = "Commencer";
+
+start.onclick = () => changeTask(task.id,{
+status:"in_progress",
+startedAt:serverTimestamp(),
+adminComment:""
+});
+
+actions.append(start);
+
+}
+
+if(isTech() && task.status === "in_progress"){
+
+const submit = document.createElement("button");
+submit.className = "green";
+submit.textContent = "Demander validation";
+
+submit.onclick = () => changeTask(task.id,{
+status:"pending_validation",
+submittedAt:serverTimestamp(),
+adminComment:""
+});
+
+actions.append(submit);
+
+}
+
+if(isAdmin() && task.status === "pending_validation"){
+
+const comment = document.createElement("textarea");
+comment.placeholder = "Commentaire en cas de refus";
+
+const approve = document.createElement("button");
+approve.className = "green";
+approve.textContent = "Valider l'entretien";
+
+approve.onclick = () => approveTask(task);
+
+const reject = document.createElement("button");
+reject.className = "red";
+reject.textContent = "Refuser";
+
+reject.onclick = () => {
+
+if(!comment.value.trim()){
+alert("Indique la raison du refus.");
+return;
+}
+
+changeTask(task.id,{
+status:"rejected",
+rejectedAt:serverTimestamp(),
+rejectedBy:auth.currentUser.uid,
+adminComment:comment.value.trim()
+});
+
+};
+
+actions.append(comment,approve,reject);
+
+}
+
+if(actions.childNodes.length){
+card.append(actions);
+}
+
+return card;
+
+}
+
+
+async function changeTask(taskId,changes){
+
+if(!profileReady)return;
+
+try{
+
+await updateDoc(
+doc(db,"maintenance_tasks",taskId),
+{
+...changes,
+updatedAt:serverTimestamp()
+}
+);
+
+await renderTasks();
+
+}catch(e){
+
+alert("Erreur : " + e.message);
+
+}
+
+}
+
+
+async function approveTask(task){
+
+if(!isAdmin())return;
+
+if(!confirm("Confirmer la validation de cette intervention ?"))return;
+
+try{
+
+const taskRef = doc(db,"maintenance_tasks",task.id);
+
+const historyRef = doc(
+collection(db,"maintenance_history")
+);
+
+const completedDate = todayISO();
+
+const nextDate = nextDueDate(
+task.frequency,
+completedDate
+);
+
+const batch = writeBatch(db);
+
+batch.set(historyRef,{
+taskId:task.id,
+machineId:task.machineId,
+machineName:task.machineName,
+task:task.task,
+frequency:task.frequency,
+completedDate:completedDate,
+nextDueDate:nextDate,
+approvedBy:auth.currentUser.uid,
+approvedAt:serverTimestamp()
+});
+
+batch.update(taskRef,{
+status:"todo",
+nextDueDate:nextDate,
+lastCompletedDate:completedDate,
+lastApprovedAt:serverTimestamp(),
+lastApprovedBy:auth.currentUser.uid,
+completedCount:(task.completedCount||0)+1,
+adminComment:"",
+updatedAt:serverTimestamp()
+});
+
+await batch.commit();
+
+alert(
+"Intervention validée.\n" +
+"Nouvelle échéance : " + dateLabel(nextDate)
+);
+
+await renderTasks();
+
+}catch(e){
+
+alert(
+"Erreur lors de la validation : " + e.message
+);
+
+}
+
+}
+
 </script>
 </body>
 </html>
