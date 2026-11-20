@@ -59,7 +59,7 @@ button:disabled{opacity:.4;cursor:not-allowed}
 .history-item strong{display:block;color:#55b5ff}
 .dashboard-panel{background:#0c1b2b;border:1px solid #29435d;border-radius:10px;padding:13px;min-width:0;margin-top:12px}
 
-/* PARC MACHINES INTEGRE DANS LA CASE MACHINES */
+/* PARC MACHINES */
 .stat-box.machine-stat{cursor:pointer}
 .stat-box.machine-stat.expanded{grid-column:1/-1;background:#142b42;border-color:#55b5ff}
 .machine-park-inline{margin-top:13px;padding-top:10px;border-top:1px solid #34516d;text-align:left;cursor:default}
@@ -77,6 +77,12 @@ button:disabled{opacity:.4;cursor:not-allowed}
 .recent-row:last-child{border-bottom:0}
 .recent-row strong{display:block;font-size:13px;color:#eaf4fc}
 .recent-row span{display:block;font-size:12px;color:#a9bbcd;margin-top:4px}
+
+/* SIGNATURE BY BENGANA */
+.app-footer{display:flex;justify-content:center;align-items:center;padding:18px 12px 22px;margin:12px auto 4px;text-align:center}
+.app-footer span{position:relative;display:inline-block;padding:0 18px 9px;color:#ff5aad;font-family:"Segoe Script","Brush Script MT",cursive;font-size:19px;font-style:italic;font-weight:600;letter-spacing:1.2px;text-shadow:0 0 12px #d0007055}
+.app-footer span::after{content:"";position:absolute;left:50%;bottom:0;width:100%;height:4px;border-radius:50%;background:#d00070;transform:translateX(-50%);box-shadow:0 0 9px #d0007066}
+
 @media(min-width:600px){.stats-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
 </style>
 </head>
@@ -134,14 +140,10 @@ button:disabled{opacity:.4;cursor:not-allowed}
 </section>
 
 <section id="app" class="hidden">
-
 <div id="dashboardCard" class="card">
 <h2>Tableau de bord général</h2>
-
 <div id="dashboardStats" class="stats-grid">Chargement...</div>
-
 <div id="dashboardDetails" class="dashboard-panel hidden"></div>
-
 <div class="small">Progression globale de la maintenance</div>
 <div class="progress"><div id="globalProgressBar" class="progress-bar"></div></div>
 <div id="globalProgressText" class="small">Calcul en cours...</div>
@@ -151,12 +153,10 @@ button:disabled{opacity:.4;cursor:not-allowed}
 <button id="backBtn" class="gray">← Retour au tableau de bord</button>
 <h2 id="detailName">Machine</h2>
 <div id="detailInfo" class="small"></div>
-
 <div class="card">
 <h2>Tableau de suivi</h2>
 <div id="machineStats" class="stats-grid"></div>
 </div>
-
 <label>Filtrer les entretiens</label>
 <select id="frequencyFilter">
 <option value="all">Toutes les catégories</option>
@@ -165,15 +165,15 @@ button:disabled{opacity:.4;cursor:not-allowed}
 <option value="Semestrielle">Entretien semestriel</option>
 <option value="Annuelle">Entretien annuel</option>
 </select>
-
 <div id="tasks">Chargement...</div>
-
 <div class="card">
 <h2>Historique des interventions</h2>
 <div id="history" class="small">Chargement de l'historique...</div>
 </div>
 </div>
 </section>
+
+<footer class="app-footer"><span>By Bengana</span></footer>
 </main>
 
 <script type="module">
@@ -202,7 +202,6 @@ const auth=getAuth(firebaseApp);
 const db=getFirestore(firebaseApp);
 const $=id=>document.getElementById(id);
 
-// MENU TIROIR
 function openDrawer(){
 $("appDrawer").classList.remove("hidden");
 $("drawerBackdrop").classList.remove("hidden");
@@ -312,7 +311,6 @@ if(frequency==="Annuelle")return addMonthsISO(date,12);
 throw new Error("Fréquence inconnue");
 }
 
-// STATUT DES TÂCHES
 function taskDisplayStatus(task){
 if(task.status==="pending_validation")return "En attente de validation";
 if(task.status==="in_progress")return "En cours";
@@ -331,7 +329,6 @@ return "En retard";
 return "À faire";
 }
 
-// CONNEXION
 $("loginBtn").onclick=async()=>{
 $("loginMsg").textContent="Connexion en cours...";
 try{
@@ -354,7 +351,6 @@ window.scrollTo(0,0);
 
 $("frequencyFilter").onchange=renderTasks;
 
-// PROFIL ET SESSION
 onAuthStateChanged(auth,async user=>{
 
 if(!user){
@@ -439,7 +435,6 @@ $("dashboardStats").textContent="Impossible de charger les indicateurs.";
 }
 }
 
-// PARC MACHINES : LISTE DANS LA CASE MACHINES
 function renderMachinePark(machines){
 
 const container=$("dashboardMachines");
@@ -507,8 +502,6 @@ $("dashboardStats").textContent="";
 
 stats.forEach(item=>{
 
-// La case Machines est un conteneur div pour permettre
-// d'avoir des boutons de machines à l'intérieur.
 const box=document.createElement(item.key==="machines"?"div":"button");
 
 if(item.key!=="machines")box.type="button";
@@ -538,7 +531,6 @@ box.append(number,label,hint);
 
 if(item.key==="machines"){
 
-// Création du parc directement dans la case Machines.
 const park=document.createElement("div");
 park.id="machineParkInline";
 park.className="machine-park-inline hidden";
@@ -575,7 +567,6 @@ box.append(park);
 
 box.onclick=event=>{
 
-// Ne pas refermer le parc lorsqu'on touche ses boutons.
 if(event.target.closest(".machine-park-inline"))return;
 
 const opening=park.classList.contains("hidden");
@@ -606,7 +597,6 @@ showDashboardDetails(item.key,item.label,machines,tasks);
 $("dashboardStats").append(box);
 });
 
-// Remplir la liste après la création de la case Machines.
 renderMachinePark(machines);
 
 $("globalProgressBar").style.width=percent+"%";
@@ -614,7 +604,6 @@ $("globalProgressText").textContent=
 completed+" opérations réalisées et à jour sur "+total+
 " opérations programmées ("+percent+"%).";
 
-// RÉPARTITION DES OPÉRATIONS DANS LE TIROIR
 const frequencies=["Hebdomadaire","Mensuelle","Semestrielle","Annuelle"];
 const frequencyBox=$("frequencyBreakdown");
 frequencyBox.textContent="";
@@ -649,7 +638,6 @@ row.append(head,track);
 frequencyBox.append(row);
 });
 
-// DERNIÈRES INTERVENTIONS DANS LE TIROIR
 const recentBox=$("recentActivity");
 recentBox.textContent="";
 
@@ -1323,4 +1311,3 @@ if(currentMachine)await renderTasks();
 </script>
 </body>
 </html>
-z
