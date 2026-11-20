@@ -37,6 +37,13 @@ button:disabled{opacity:.4;cursor:not-allowed}
 .group-panel{background:#14263a;border:1px solid #34516d;border-radius:10px;padding:13px;margin:12px 0 20px}
 .progress{height:8px;background:#29435d;border-radius:8px;overflow:hidden;margin:9px 0}
 .progress-bar{height:100%;background:#23845d;width:0}
+.stats-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:12px 0}
+.stat-box{background:#0c1b2b;border:1px solid #29435d;border-radius:10px;padding:12px}
+.stat-number{font-size:24px;font-weight:bold;color:#55b5ff}
+.stat-label{font-size:12px;color:#b5c5d5;margin-top:5px}
+.history-item{background:#0c1b2b;border:1px solid #29435d;border-radius:9px;padding:12px;margin:9px 0}
+.history-item strong{display:block;color:#55b5ff}
+@media(min-width:600px){.stats-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
 </style>
 </head>
 <body>
@@ -79,6 +86,14 @@ button:disabled{opacity:.4;cursor:not-allowed}
 <button id="backBtn" class="gray">← Retour</button>
 <h2 id="detailName">Machine</h2>
 <div id="detailInfo" class="small"></div>
+
+<div class="card">
+<h2>Tableau de suivi</h2>
+<div id="machineStats" class="stats-grid">
+<div class="stat-box"><div class="stat-number">—</div><div class="stat-label">Chargement...</div></div>
+</div>
+</div>
+
 <label>Filtrer les entretiens</label>
 <select id="frequencyFilter">
 <option value="all">Toutes les catégories</option>
@@ -88,6 +103,11 @@ button:disabled{opacity:.4;cursor:not-allowed}
 <option value="Annuelle">Entretien annuel</option>
 </select>
 <div id="tasks">Chargement...</div>
+
+<div class="card">
+<h2>Historique des interventions</h2>
+<div id="history" class="small">Chargement de l'historique...</div>
+</div>
 </div>
 </section>
 </main>
@@ -281,6 +301,7 @@ button.onclick=()=>openMachine(machine);
 $("machines").append(button);
 });
 }
+
 function openMachine(machine){
 currentMachine=machine;
 selectedTaskIds.clear();
@@ -290,6 +311,7 @@ $("detailName").textContent=machine.name||machine.id;
 $("detailInfo").textContent="Référence : "+machine.id;
 $("frequencyFilter").value="all";
 renderTasks();
+renderHistory();
 window.scrollTo(0,0);
 }
 
@@ -353,12 +375,98 @@ tasks.sort((a,b)=>(order[a.frequency]||9)-(order[b.frequency]||9)||(a.taskNumber
 return tasks;
 }
 
+// INDICATEURS DE SUIVI
+function updateMachineStats(tasks){
+const total=tasks.length;
+const todo=tasks.filter(t=>t.status==="todo").length;
+const progress=tasks.filter(t=>t.status==="in_progress").length;
+const pending=tasks.filter(t=>t.status==="pending_validation").length;
+const rejected=tasks.filter(t=>t.status==="rejected").length;
+
+const stats=[
+{number:total,label:"Total des tâches"},
+{number:todo,label:"À faire"},
+{number:progress,label:"En cours"},
+{number:pending,label:"En attente de validation"},
+{number:rejected,label:"Refusées"}
+];
+
+$("machineStats").textContent="";
+stats.forEach(item=>{
+const box=document.createElement("div");
+box.className="stat-box";
+const number=document.createElement("div");
+number.className="stat-number";
+number.textContent=item.number;
+const label=document.createElement("div");
+label.className="stat-label";
+label.textContent=item.label;
+box.append(number,label);
+$("machineStats").append(box);
+});
+}
+
+// HISTORIQUE DES INTERVENTIONS VALIDÉES
+async function renderHistory(){
+if(!currentMachine)return;
+$("history").textContent="Chargement de l'historique...";
+try{
+const snap=await getDocs(collection(db,"maintenance_history"));
+const entries=[];
+snap.forEach(d=>{
+const data=d.data();
+if(data.machineId===currentMachine.id){
+entries.push({id:d.id,...data});
+}
+});
+
+entries.sort((a,b)=>(b.completedDate||"").localeCompare(a.completedDate||""));
+
+$("history").textContent="";
+if(!entries.length){
+$("history").textContent="Aucune intervention validée pour cette machine.";
+return;
+}
+
+const summary=document.createElement("div");
+summary.className="small";
+summary.textContent="Nombre total d'interventions validées : "+entries.length;
+$("history").append(summary);
+
+entries.slice(0,100).forEach(item=>{
+const card=document.createElement("div");
+card.className="history-item";
+
+const task=document.createElement("strong");
+task.textContent=item.task||"Intervention";
+
+const frequency=document.createElement("div");
+frequency.className="small";
+frequency.textContent="Catégorie : "+(item.frequency||"Non définie");
+
+const completed=document.createElement("div");
+completed.className="small";
+completed.textContent="Date de validation : "+dateLabel(item.completedDate);
+
+const next=document.createElement("div");
+next.className="small";
+next.textContent="Prochaine échéance : "+dateLabel(item.nextDueDate);
+
+card.append(task,frequency,completed,next);
+$("history").append(card);
+});
+}catch(e){
+$("history").textContent="Erreur de chargement de l'historique : "+e.message;
+}
+}
+
 // AFFICHAGE DES CATÉGORIES ET CASES À COCHER
 async function renderTasks(){
 if(!currentMachine)return;
 $("tasks").textContent="Chargement des tâches...";
 try{
 const tasks=await loadMaintenanceTasks(currentMachine);
+updateMachineStats(tasks);
 $("tasks").textContent="";
 const filter=$("frequencyFilter").value;
 const filtered=tasks.filter(t=>filter==="all"||t.frequency===filter);
@@ -413,7 +521,6 @@ comment.textContent="Commentaire : "+task.adminComment;
 card.append(comment);
 }
 
-// Une case à cocher par tâche. Aucun bouton individuel.
 if(isTech()&&["todo","rejected","in_progress"].includes(task.status)){
 const label=document.createElement("label");
 label.className="task-check";
@@ -498,7 +605,6 @@ return;
 if(!confirm("Envoyer les "+groupTasks.length+" tâches de l'entretien "+frequency+" à l'administrateur pour validation ?"))return;
 
 try{
-// Étape 1 : démarrer les tâches qui ne le sont pas encore.
 let batch=writeBatch(db);
 let changes=0;
 for(const task of groupTasks){
@@ -513,7 +619,6 @@ changes++;
 }
 if(changes>0)await batch.commit();
 
-// Étape 2 : envoyer toutes les tâches du groupe à la validation.
 batch=writeBatch(db);
 for(const task of groupTasks){
 batch.update(doc(db,"maintenance_tasks",task.id),{
@@ -577,6 +682,7 @@ await batch.commit();
 selectedTaskIds.clear();
 alert("Entretien "+frequency+" validé. Toutes les tâches du groupe sont clôturées et leurs prochaines échéances sont calculées.");
 await renderTasks();
+await renderHistory();
 }catch(e){
 alert("Erreur lors de la validation du groupe : "+e.message);
 }
