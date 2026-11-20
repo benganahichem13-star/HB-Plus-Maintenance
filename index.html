@@ -1,4 +1,3 @@
-
 <!doctype html>
 <html lang="fr">
 <head>
@@ -7,78 +6,34 @@
 <meta name="theme-color" content="#10243a">
 <title>HB+ Maintenance</title>
 <style>
-body{margin:0;background:#0b1725;color:#f4f8fc;font:16px system-ui}
-header{padding:20px;background:#10243a}
-main{max-width:720px;margin:auto;padding:16px}
-.card{background:#14263a;border:1px solid #29435d;border-radius:14px;padding:16px;margin-bottom:14px}
-h1{margin:0;font-size:23px}h2{font-size:19px}
-label{display:block;color:#a9bbcd;margin:12px 0 5px}
-input{width:100%;box-sizing:border-box;padding:12px;border-radius:8px;border:1px solid #29435d;background:#0c1b2b;color:white;font-size:16px}
-button{padding:12px 16px;margin:12px 6px 0 0;border:0;border-radius:8px;background:#3b9cff;color:#061729;font-weight:bold}
-.secondary{background:#29435d;color:white}
-.small{font-size:13px;color:#a9bbcd}
-.status{white-space:pre-wrap;overflow-wrap:anywhere;background:#0c1b2b;padding:10px;border-radius:8px}
-.hidden{display:none}
-.machine{display:block;width:100%;text-align:left;background:#0c1b2b;color:white;border:1px solid #29435d;margin:8px 0;padding:14px;border-radius:10px}
-.machine strong{display:block;color:#55b5ff;font-size:17px}
-.machine span{font-weight:normal;color:#a9bbcd}
-.info{padding:12px;background:#0c1b2b;border-radius:8px;margin:8px 0;overflow-wrap:anywhere}
+:root{color-scheme:dark}*{box-sizing:border-box}body{margin:0;background:#0b1725;color:#f4f8fc;font:16px system-ui}header{padding:18px;background:#10243a}main{max-width:850px;margin:auto;padding:14px}h1{margin:0;font-size:22px}h2{font-size:19px;margin:4px 0 12px}.small{font-size:13px;color:#a9bbcd}.card{background:#14263a;border:1px solid #29435d;border-radius:14px;padding:15px;margin-bottom:13px}label{display:block;color:#a9bbcd;margin:12px 0 5px}input,textarea,select{width:100%;padding:11px;border-radius:8px;border:1px solid #29435d;background:#0c1b2b;color:white;font:inherit}textarea{min-height:75px}button{padding:11px 14px;margin:8px 5px 0 0;border:0;border-radius:8px;background:#3b9cff;color:#061729;font-weight:700;font-size:14px}.secondary{background:#29435d;color:white}.danger{background:#a94444;color:white}.good{background:#23845d;color:white}.hidden{display:none!important}.status,.info{white-space:pre-wrap;overflow-wrap:anywhere;background:#0c1b2b;padding:10px;border-radius:8px;margin:8px 0}.machine,.task{display:block;width:100%;text-align:left;background:#0c1b2b;color:white;border:1px solid #29435d;margin:8px 0;padding:13px;border-radius:10px}.machine strong,.task strong{display:block;color:#55b5ff;font-size:16px}.machine span,.task span{display:block;color:#a9bbcd;font-size:13px;margin-top:4px}.pill{display:inline-block;padding:3px 8px;border-radius:20px;background:#29435d;color:#dcecff;font-size:12px;margin:5px 4px 0 0}.task-actions{margin-top:7px}.muted{color:#a9bbcd}.section-title{margin-top:18px;padding-bottom:6px;border-bottom:1px solid #29435d}
 </style>
 </head>
 <body>
-<header>
-<h1>HB+ — Maintenance industrielle</h1>
-<p class="small">Gestion de la maintenance</p>
-</header>
+<header><h1>HB+ — Maintenance industrielle</h1><div class="small">Gestion de la maintenance préventive</div></header>
 <main>
 <section id="login" class="card">
 <h2>Connexion</h2>
-<label>Adresse e-mail</label>
-<input id="email" type="email" autocomplete="username">
-<label>Mot de passe</label>
-<input id="password" type="password" autocomplete="current-password">
-<button id="loginBtn">Se connecter</button>
-<div id="loginMsg" class="status">En attente de connexion.</div>
+<label>Adresse e-mail</label><input id="email" type="email" autocomplete="username">
+<label>Mot de passe</label><input id="password" type="password" autocomplete="current-password">
+<button id="loginBtn">Se connecter</button><div id="loginMsg" class="status">Saisis tes identifiants.</div>
 </section>
-
 <section id="app" class="hidden">
-<div class="card">
-<h2>Session et profil</h2>
-<div id="profile" class="status">Chargement…</div>
-<button id="logoutBtn" class="secondary">Se déconnecter</button>
-</div>
-
-<div id="adminPanel" class="card hidden">
-<h2>Ajouter une machine</h2>
-<label>Référence / nom</label>
-<input id="machineName" placeholder="Ex. M01">
-<label>Description</label>
-<input id="machineDesc" placeholder="Ligne de conditionnement">
-<button id="addMachineBtn">Enregistrer</button>
-<p id="machineMsg" class="small"></p>
-</div>
-
-<div id="machineListCard" class="card">
-<h2>Machines</h2>
-<div id="machines" class="status">En attente…</div>
-</div>
-
-<div id="machineDetail" class="card hidden">
-<button id="backBtn" class="secondary">← Retour aux machines</button>
-<h2 id="detailName">Fiche machine</h2>
-<div id="detailInfo"></div>
-<h2>Modules de maintenance</h2>
-<div class="info">🔧 Pièces et composants — À développer</div>
-<div class="info">🛠️ Maintenance préventive — À développer</div>
-<div class="info">📋 Historique des interventions — À développer</div>
+<div class="card"><h2>Session et profil</h2><div id="profile" class="status">Chargement…</div><button id="logoutBtn" class="secondary">Se déconnecter</button></div>
+<div id="adminPanel" class="card hidden"><h2>Administration</h2><p class="small">Le programme préventif prédéfini est initialisé automatiquement pour M24 et M25 lorsque l’administrateur ouvre l’application. Les tâches sont générées sur deux ans à partir du 20/11/2026.</p><button id="initBtn">Générer / vérifier le planning</button><div id="initMsg" class="status">Initialisation en attente.</div></div>
+<div class="card" id="machineListCard"><h2>Machines</h2><div id="machines" class="status">Chargement…</div></div>
+<div class="card hidden" id="machineDetail">
+<button id="backBtn" class="secondary">← Retour aux machines</button><h2 id="detailName">Machine</h2><div id="detailInfo" class="small"></div>
+<div class="section-title"><h2>Maintenance préventive</h2></div>
+<label>Filtrer par périodicité</label><select id="frequencyFilter"><option value="all">Toutes les périodicités</option><option value="Hebdomadaire">Hebdomadaire</option><option value="Mensuelle">Mensuelle</option><option value="Semestrielle">Semestrielle</option><option value="Annuelle">Annuelle</option></select>
+<div id="tasks">Chargement des tâches…</div>
 </div>
 </section>
 </main>
-
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
 import {getAuth,signInWithEmailAndPassword,onAuthStateChanged,signOut} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
-import {getFirestore,doc,getDoc,collection,addDoc,getDocs,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+import {getFirestore,doc,getDoc,collection,addDoc,getDocs,serverTimestamp,writeBatch,updateDoc} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
 const cfg={
 apiKey:"AIzaSyAxdLwy1A-p5_qdY7OeinTQ0-_0xpuy0PE",
@@ -88,181 +43,197 @@ storageBucket:"hb-plus-maintenance.firebasestorage.app",
 messagingSenderId:"227031997957",
 appId:"1:227031997957:web:435f5beb84cf4a0921866c"
 };
-
-const app=initializeApp(cfg);
-const auth=getAuth(app);
-const db=getFirestore(app);
+const app=initializeApp(cfg),auth=getAuth(app),db=getFirestore(app);
 const $=id=>document.getElementById(id);
+let currentRole=null,profileReady=false,currentMachine=null,machineDocs=[];
+const START_DATE="2026-11-20";
+const HORIZON_YEARS=2;
 
-let currentRole=null;
-let profileReady=false;
+// Programme préventif repris de la fiche STAUBLI ALPHA 500 (24 opérations).
+const PROGRAM=[
+["Hebdomadaire",[
+"Nettoyer et contrôler le dispositif du chariot de coupe.",
+"Vérifier la lubrification des lances.",
+"Nettoyer et vérifier les tiges Rapière et les guides Rapière.",
+"Nettoyer et vérifier le jeu du mécanisme d'ouverture (Stäubli)."
+]],
+["Mensuelle",[
+"Nettoyer le support du peigne.",
+"Vérifier le niveau d'huile des carters de peigne (gauche, centre et droite).",
+"Vérifier le niveau d'huile des carters de lance (gauche et droite).",
+"Vérifier le niveau et le fonctionnement du graisseur centralisé.",
+"Vérifier la lubrification de la tige de lance.",
+"Vérifier la pression pneumatique.",
+"Vérifier le système de lubrification sous pression (Dobby).",
+"Vérifier l'unité pneumatique (Dobby).",
+"Vérifier le niveau d'huile (Jacquard).",
+"Contrôler l'armoire électrique (contamination/condensation).",
+"Vérifier le refroidissement de l'armoire électrique.",
+"Vérifier les rouleaux de pression et les guides Rapière."
+]],
+["Semestrielle",[
+"Lubrifier la chaîne du palier de faisceau.",
+"Lubrifier le palier de la poulie de renvoi.",
+"Graisser les roulements à rouleaux de renvoi.",
+"Enlever les résidus de fil de l'essieu.",
+"Purger les condensats du réservoir d'air comprimé.",
+"Lubrifier l'arbre à cardan du Dobby 2688S."
+]],
+["Annuelle",[
+"Remplacer la cartouche du filtre à huile.",
+"Vérifier le serrage des vis d'ancrage au sol."
+]]
+];
 
 $("loginBtn").onclick=async()=>{
-$("loginMsg").textContent="Connexion…";
-try{
-await signInWithEmailAndPassword(auth,$("email").value.trim(),$("password").value);
-}catch(e){
-$("loginMsg").textContent="Échec : "+e.code+" — "+e.message;
-}
+ $("loginMsg").textContent="Connexion…";
+ try{await signInWithEmailAndPassword(auth,$("email").value.trim(),$("password").value);}
+ catch(e){$("loginMsg").textContent="Échec : "+e.code+" — "+e.message;}
 };
-
 $("logoutBtn").onclick=()=>signOut(auth);
-
-$("backBtn").onclick=()=>{
-$("machineDetail").classList.add("hidden");
-$("machineListCard").classList.remove("hidden");
-};
+$("backBtn").onclick=()=>{currentMachine=null;$("machineDetail").classList.add("hidden");$("machineListCard").classList.remove("hidden");};
+$("frequencyFilter").onchange=()=>renderTasks();
 
 onAuthStateChanged(auth,async u=>{
-if(!u){
-profileReady=false;
-currentRole=null;
-$("login").classList.remove("hidden");
-$("app").classList.add("hidden");
-$("loginMsg").textContent="Déconnecté.";
-return;
-}
-
-$("login").classList.add("hidden");
-$("app").classList.remove("hidden");
-$("profile").textContent="Compte authentifié.\nUID : "+u.uid+"\nLecture du profil…";
-$("adminPanel").classList.add("hidden");
-$("machines").textContent="Lecture du profil…";
-
-try{
-const s=await getDoc(doc(db,"Users",u.uid));
-
-if(!s.exists()){
-profileReady=false;
-currentRole=null;
-$("profile").textContent="Document absent dans Users.\nUID : "+u.uid;
-$("machines").textContent="Profil introuvable.";
-return;
-}
-
-const d=s.data();
-const role=d.role;
-const active=d.active;
-
-profileReady=active===true;
-currentRole=role;
-
-$("profile").textContent=
-"E-mail : "+(u.email||"")+
-"\nUID : "+u.uid+
-"\nDocument : Users/"+s.id+
-"\nRôle : "+role+
-"\nActif : "+active;
-
-$("adminPanel").classList.toggle("hidden",!(profileReady&&role==="admin"));
-
-if(!profileReady){
-$("machines").textContent="Accès bloqué : compte inactif.";
-return;
-}
-
-await loadMachines();
-}catch(e){
-profileReady=false;
-currentRole=null;
-$("profile").textContent="Erreur : "+e.message;
-$("machines").textContent="Lecture non effectuée.";
-}
+ if(!u){profileReady=false;currentRole=null;currentMachine=null;$("login").classList.remove("hidden");$("app").classList.add("hidden");$("loginMsg").textContent="Déconnecté.";return;}
+ $("login").classList.add("hidden");$("app").classList.remove("hidden");
+ $("profile").textContent="Compte authentifié.\nUID : "+u.uid+"\nLecture du profil…";
+ $("adminPanel").classList.add("hidden");$("machines").textContent="Lecture du profil…";
+ try{
+  const s=await getDoc(doc(db,"Users",u.uid));
+  if(!s.exists()){profileReady=false;currentRole=null;$("profile").textContent="Document absent dans Users.\nUID : "+u.uid;$("machines").textContent="Profil introuvable.";return;}
+  const d=s.data();currentRole=d.role;profileReady=d.active===true;
+  $("profile").textContent="E-mail : "+(u.email||"")+"\nUID : "+u.uid+"\nRôle : "+d.role+"\nActif : "+d.active;
+  $("adminPanel").classList.toggle("hidden",!(profileReady&&currentRole==="admin"));
+  if(!profileReady){$("machines").textContent="Accès bloqué : compte inactif.";return;}
+  await loadMachines();
+  if(currentRole==="admin") await initializeSchedule(false);
+ }catch(e){profileReady=false;$("profile").textContent="Erreur : "+e.message;$("machines").textContent="Lecture non effectuée.";}
 });
 
 async function loadMachines(){
-try{
-const s=await getDocs(collection(db,"machines"));
-$("machines").textContent="";
-
-if(s.empty){
-$("machines").textContent="Aucune machine enregistrée.";
-return;
+ try{
+  const snap=await getDocs(collection(db,"machines"));machineDocs=[];
+  snap.forEach(d=>machineDocs.push({id:d.id,...d.data()}));
+  $("machines").textContent="";
+  if(!machineDocs.length){$("machines").textContent="Aucune machine enregistrée dans Firestore (collection machines).";return;}
+  machineDocs.sort((a,b)=>(a.name||"").localeCompare(b.name||""));
+  machineDocs.forEach(m=>{
+   const b=document.createElement("button");b.className="machine";
+   const strong=document.createElement("strong");strong.textContent=m.name||m.id;
+   const span=document.createElement("span");span.textContent=m.description||"Ouvrir la fiche machine";
+   b.append(strong,span);b.onclick=()=>openMachine(m);$("machines").append(b);
+  });
+ }catch(e){$("machines").textContent="Erreur de lecture : "+e.message;}
+}
+function openMachine(m){
+ currentMachine=m;$("machineListCard").classList.add("hidden");$("machineDetail").classList.remove("hidden");
+ $("detailName").textContent=m.name||"Machine";
+ $("detailInfo").textContent="Référence Firestore : "+m.id+" • Type : "+(m.type||"STAUBLI ALPHA 500");
+ $("frequencyFilter").value="all";renderTasks();window.scrollTo(0,0);
+}
+function dateLabel(iso){const [y,mo,d]=iso.split("-").map(Number);return new Date(y,mo-1,d).toLocaleDateString("fr-FR");}
+function renderTasks(){
+ if(!currentMachine)return;
+ $("tasks").textContent="Chargement des tâches…";
+ loadOccurrences(currentMachine).then(items=>{
+  $("tasks").textContent="";
+  const filter=$("frequencyFilter").value;
+  const filtered=items.filter(x=>filter==="all"||x.frequency===filter);
+  if(!filtered.length){$("tasks").textContent="Aucune tâche générée pour cette machine. L’administrateur doit vérifier le planning.";return;}
+  const order=["Hebdomadaire","Mensuelle","Semestrielle","Annuelle"];
+  order.forEach(freq=>{
+   const group=filtered.filter(x=>x.frequency===freq);
+   if(!group.length)return;
+   const h=document.createElement("h3");h.className="section-title";h.textContent=freq+" ("+group.length+")";$("tasks").append(h);
+   group.forEach(t=>$("tasks").append(makeTaskCard(t)));
+  });
+ }).catch(e=>$("tasks").textContent="Erreur : "+e.message);
+}
+async function loadOccurrences(machine){
+ const snap=await getDocs(collection(db,"maintenance_occurrences"));
+ const arr=[];snap.forEach(d=>{const v=d.data();if(v.machineId===machine.id)arr.push({id:d.id,...v});});
+ arr.sort((a,b)=>(a.dueDate||"").localeCompare(b.dueDate||""));
+ return arr;
+}
+function makeTaskCard(t){
+ const card=document.createElement("div");card.className="task";
+ const title=document.createElement("strong");title.textContent=t.task||"Tâche";
+ const date=document.createElement("span");date.textContent="Échéance : "+dateLabel(t.dueDate);
+ const status=document.createElement("div");status.innerHTML='<span class="pill">'+(t.status||"todo")+'</span><span class="pill">'+t.frequency+'</span>';
+ card.append(title,date,status);
+ if(t.status==="pending_validation"||t.status==="rejected"){
+  const note=document.createElement("div");note.className="small";note.textContent=(t.status==="pending_validation"?"En attente de validation. ":"Refus : ")+(t.adminComment||"");card.append(note);
+ }
+ const actions=document.createElement("div");actions.className="task-actions";
+ if(isTech()&&(t.status==="todo"||t.status==="rejected")){
+  const start=document.createElement("button");start.textContent=t.status==="rejected"?"Reprendre la tâche":"Commencer";start.onclick=()=>changeTask(t.id,{status:"in_progress",startedAt:serverTimestamp()});actions.append(start);
+ }
+ if(isTech()&&t.status==="in_progress"){
+  const done=document.createElement("button");done.className="good";done.textContent="Demander validation";done.onclick=()=>changeTask(t.id,{status:"pending_validation",submittedAt:serverTimestamp(),adminComment:""});actions.append(done);
+ }
+ if(isAdmin()&&t.status==="pending_validation"){
+  const comment=document.createElement("textarea");comment.placeholder="Commentaire en cas de refus (obligatoire pour refuser)";
+  const approve=document.createElement("button");approve.className="good";approve.textContent="Valider et clôturer";approve.onclick=()=>changeTask(t.id,{status:"closed",approvedAt:serverTimestamp(),approvedBy:auth.currentUser.uid,adminComment:comment.value.trim()});
+  const reject=document.createElement("button");reject.className="danger";reject.textContent="Refuser";reject.onclick=()=>{if(!comment.value.trim()){alert("Ajoute un commentaire pour expliquer le refus.");return;}changeTask(t.id,{status:"rejected",rejectedAt:serverTimestamp(),rejectedBy:auth.currentUser.uid,adminComment:comment.value.trim()});};
+  actions.append(comment,approve,reject);
+ }
+ if(actions.childNodes.length)card.append(actions);
+ return card;
+}
+function isAdmin(){return profileReady&&currentRole==="admin";}
+function isTech(){return profileReady&&(currentRole==="technicien"||currentRole==="technician"||currentRole==="admin");}
+async function changeTask(id,patch){
+ if(!profileReady){alert("Profil non autorisé.");return;}
+ try{await updateDoc(doc(db,"maintenance_occurrences",id),{...patch,updatedAt:serverTimestamp()});renderTasks();}
+ catch(e){alert("Erreur d'enregistrement : "+e.message);}
 }
 
-s.forEach(d=>{
-const v=d.data();
-const btn=document.createElement("button");
-btn.className="machine";
-
-const name=document.createElement("strong");
-name.textContent=v.name||d.id;
-
-const description=document.createElement("span");
-description.textContent=v.description||"Aucune description";
-
-btn.append(name,description);
-btn.onclick=()=>openMachine(d.id,v);
-
-$("machines").append(btn);
-});
-
-}catch(e){
-$("machines").textContent="Erreur de lecture : "+e.message;
+$("initBtn").onclick=()=>initializeSchedule(true);
+async function initializeSchedule(showMessage){
+ if(!isAdmin())return;
+ const msg=$("initMsg");if(showMessage)msg.textContent="Vérification des machines et génération du planning…";
+ try{
+  const targets=machineDocs.filter(m=>["M24","M25"].includes((m.name||"").trim().toUpperCase()));
+  if(!targets.length){if(showMessage)msg.textContent="M24 et M25 sont introuvables dans la collection machines. Ajoute-les d’abord.";return;}
+  const existing=await getDocs(collection(db,"maintenance_occurrences"));
+  const known=new Set();existing.forEach(d=>known.add(d.id));
+  const start=new Date(START_DATE+"T12:00:00"),end=new Date(start);end.setFullYear(end.getFullYear()+HORIZON_YEARS);
+  const pending=[];
+  for(const machine of targets){
+   let templateNo=0;
+   for(const [frequency,tasks] of PROGRAM){
+    for(const task of tasks){
+     templateNo++;
+     const dates=dueDates(frequency,start,end);
+     for(const due of dates){
+      const iso=due.toISOString().slice(0,10);
+      const id=machine.id+"_"+frequency.toLowerCase()+"_"+templateNo+"_"+iso.replaceAll("-","");
+      if(known.has(id))continue;
+      pending.push({id,data:{machineId:machine.id,machineName:machine.name,task,frequency,dueDate:iso,status:"todo",createdAt:serverTimestamp(),createdBy:auth.currentUser.uid}});
+     }
+    }
+   }
+  }
+  for(let i=0;i<pending.length;i+=450){
+   const batch=writeBatch(db);pending.slice(i,i+450).forEach(x=>batch.set(doc(db,"maintenance_occurrences",x.id),x.data));await batch.commit();
+  }
+  const total=await getDocs(collection(db,"maintenance_occurrences"));
+  let count=0;total.forEach(d=>{if(targets.some(m=>m.id===d.data().machineId))count++;});
+  msg.textContent="Planning vérifié.\nNouvelles tâches créées : "+pending.length+"\nTâches enregistrées pour M24/M25 : "+count+"\nPériode : "+dateLabel(START_DATE)+" au "+dateLabel(end.toISOString().slice(0,10))+".";
+  await loadMachines();
+ }catch(e){msg.textContent="Erreur pendant la génération : "+e.message;}
 }
+function dueDates(freq,start,end){
+ const out=[];
+ if(freq==="Hebdomadaire"){
+  for(let d=new Date(start);d<=end;d.setDate(d.getDate()+7))out.push(new Date(d));
+ }else{
+  const step=freq==="Mensuelle"?1:freq==="Semestrielle"?6:12;
+  for(let d=new Date(start);d<=end;d.setMonth(d.getMonth()+step))out.push(new Date(d));
+ }
+ return out;
 }
-
-function openMachine(id,v){
-$("machineListCard").classList.add("hidden");
-$("machineDetail").classList.remove("hidden");
-
-$("detailName").textContent=v.name||"Fiche machine";
-
-const info=$("detailInfo");
-info.textContent="";
-
-function addInfo(label,value){
-const div=document.createElement("div");
-div.className="info";
-div.textContent=label+" : "+value;
-info.append(div);
-}
-
-addInfo("Référence",v.name||id);
-addInfo("Description",v.description||"Non renseignée");
-addInfo("Identifiant Firestore",id);
-addInfo("Créée par",v.createdBy||"Non renseigné");
-
-let date="Non renseignée";
-if(v.createdAt&&v.createdAt.toDate){
-date=v.createdAt.toDate().toLocaleString("fr-FR");
-}
-addInfo("Date de création",date);
-
-window.scrollTo(0,0);
-}
-
-$("addMachineBtn").onclick=async()=>{
-const name=$("machineName").value.trim();
-
-if(!name){
-$("machineMsg").textContent="Saisis une référence.";
-return;
-}
-
-if(!profileReady||currentRole!=="admin"){
-$("machineMsg").textContent="Profil administrateur non confirmé.";
-return;
-}
-
-try{
-await addDoc(collection(db,"machines"),{
-name,
-description:$("machineDesc").value.trim(),
-createdAt:serverTimestamp(),
-createdBy:auth.currentUser.uid
-});
-
-$("machineName").value="";
-$("machineDesc").value="";
-$("machineMsg").textContent="Machine enregistrée.";
-
-await loadMachines();
-}catch(e){
-$("machineMsg").textContent="Erreur : "+e.message;
-}
-};
 </script>
 </body>
 </html>
-2
