@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -76,6 +77,22 @@ button:disabled{opacity:.4;cursor:not-allowed}
 <div id="initMsg" class="status">En attente.</div>
 </div>
 
+<!-- TABLEAU DE BORD GÉNÉRAL -->
+<div id="dashboardCard" class="card">
+<h2>Tableau de bord général</h2>
+<div id="dashboardStats" class="stats-grid">
+<div class="stat-box">
+<div class="stat-number">—</div>
+<div class="stat-label">Chargement...</div>
+</div>
+</div>
+<div class="small">Progression globale de la maintenance</div>
+<div class="progress">
+<div id="globalProgressBar" class="progress-bar"></div>
+</div>
+<div id="globalProgressText" class="small">Calcul en cours...</div>
+</div>
+
 <div id="machineListCard" class="card">
 <h2>Machines</h2>
 <div id="machines">Chargement...</div>
@@ -89,7 +106,10 @@ button:disabled{opacity:.4;cursor:not-allowed}
 <div class="card">
 <h2>Tableau de suivi</h2>
 <div id="machineStats" class="stats-grid">
-<div class="stat-box"><div class="stat-number">—</div><div class="stat-label">Chargement...</div></div>
+<div class="stat-box">
+<div class="stat-number">—</div>
+<div class="stat-label">Chargement...</div>
+</div>
 </div>
 </div>
 
@@ -118,7 +138,7 @@ getAuth,signInWithEmailAndPassword,onAuthStateChanged,signOut
 } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
 import {
 getFirestore,doc,getDoc,collection,getDocs,serverTimestamp,
-writeBatch,updateDoc
+writeBatch
 } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -227,13 +247,17 @@ await signInWithEmailAndPassword(auth,$("email").value.trim(),$("password").valu
 $("loginMsg").textContent="Erreur : "+e.message;
 }
 };
+
 $("logoutBtn").onclick=()=>signOut(auth);
-$("backBtn").onclick=()=>{
+
+$("backBtn").onclick=async()=>{
 currentMachine=null;
 selectedTaskIds.clear();
 $("machineDetail").classList.add("hidden");
 $("machineListCard").classList.remove("hidden");
+await loadMachines();
 };
+
 $("frequencyFilter").onchange=renderTasks;
 
 // PROFIL FIREBASE
@@ -247,68 +271,164 @@ $("login").classList.remove("hidden");
 $("app").classList.add("hidden");
 return;
 }
+
 $("login").classList.add("hidden");
 $("app").classList.remove("hidden");
 $("profile").textContent="Lecture du profil...";
+
 try{
 const profileSnap=await getDoc(doc(db,"Users",user.uid));
+
 if(!profileSnap.exists()){
 profileReady=false;
 $("profile").textContent="Profil introuvable.";
 return;
 }
+
 const profile=profileSnap.data();
 currentRole=profile.role;
 profileReady=profile.active===true;
+
 $("profile").textContent=
 "E-mail : "+(user.email||"")+
 "\nRôle : "+currentRole+
 "\nCompte actif : "+profile.active;
+
 $("adminPanel").classList.toggle("hidden",!isAdmin());
+
 if(!profileReady){
 $("machines").textContent="Compte inactif.";
 return;
 }
+
 await loadMachines();
+
 if(isAdmin())await initializeSchedule(false);
+
 }catch(e){
 $("profile").textContent="Erreur : "+e.message;
 }
 });
 
-// MACHINES
+// MACHINES ET TABLEAU DE BORD
 async function loadMachines(){
 $("machines").textContent="Chargement des machines...";
-const snap=await getDocs(collection(db,"machines"));
+$("dashboardStats").textContent="Chargement des indicateurs...";
+
+try{
+const machinesSnap=await getDocs(collection(db,"machines"));
 const machines=[];
-snap.forEach(d=>machines.push({id:d.id,...d.data()}));
+
+machinesSnap.forEach(d=>{
+machines.push({id:d.id,...d.data()});
+});
+
+machines.sort((a,b)=>(a.name||a.id).localeCompare(b.name||b.id));
+
+const tasksSnap=await getDocs(collection(db,"maintenance_tasks"));
+const tasks=[];
+
+tasksSnap.forEach(d=>{
+tasks.push({id:d.id,...d.data()});
+});
+
+renderDashboard(machines,tasks);
+
 $("machines").textContent="";
+
 if(!machines.length){
 $("machines").textContent="Aucune machine trouvée.";
 return;
 }
-machines.sort((a,b)=>(a.name||a.id).localeCompare(b.name||b.id));
+
 machines.forEach(machine=>{
 const button=document.createElement("button");
 button.className="machine";
+
 const title=document.createElement("strong");
 title.textContent=machine.name||machine.id;
+
 const description=document.createElement("span");
 description.textContent=machine.description||"Ouvrir la maintenance";
+
 button.append(title,description);
 button.onclick=()=>openMachine(machine);
 $("machines").append(button);
 });
+
+}catch(e){
+$("machines").textContent="Erreur de chargement : "+e.message;
+$("dashboardStats").textContent="Impossible de charger les indicateurs.";
+}
 }
 
+// CALCUL DES INDICATEURS GÉNÉRAUX
+function renderDashboard(machines,tasks){
+const today=todayISO();
+const total=tasks.length;
+
+const todo=tasks.filter(t=>t.status==="todo").length;
+
+const overdue=tasks.filter(t=>
+t.nextDueDate&&t.nextDueDate<today&&t.status!=="pending_validation"
+).length;
+
+const pending=tasks.filter(t=>
+t.status==="pending_validation"
+).length;
+
+const completed=tasks.filter(t=>
+t.status==="pending_validation"||
+(t.lastCompletedDate&&(!t.nextDueDate||t.nextDueDate>=today))
+).length;
+
+const percent=total?Math.round(completed/total*100):0;
+
+const stats=[
+{number:machines.length,label:"Machines"},
+{number:todo,label:"Tâches à faire"},
+{number:overdue,label:"Tâches en retard"},
+{number:pending,label:"En attente de validation"},
+{number:percent+"%",label:"Maintenance réalisée"}
+];
+
+$("dashboardStats").textContent="";
+
+stats.forEach(item=>{
+const box=document.createElement("div");
+box.className="stat-box";
+
+const number=document.createElement("div");
+number.className="stat-number";
+number.textContent=item.number;
+
+const label=document.createElement("div");
+label.className="stat-label";
+label.textContent=item.label;
+
+box.append(number,label);
+$("dashboardStats").append(box);
+});
+
+$("globalProgressBar").style.width=percent+"%";
+
+$("globalProgressText").textContent=
+completed+" tâches réalisées ou en attente de validation sur "+
+total+" tâches ("+percent+"%).";
+}
+
+// OUVERTURE D'UNE MACHINE
 function openMachine(machine){
 currentMachine=machine;
 selectedTaskIds.clear();
+
 $("machineListCard").classList.add("hidden");
 $("machineDetail").classList.remove("hidden");
+
 $("detailName").textContent=machine.name||machine.id;
 $("detailInfo").textContent="Référence : "+machine.id;
 $("frequencyFilter").value="all";
+
 renderTasks();
 renderHistory();
 window.scrollTo(0,0);
@@ -317,64 +437,97 @@ window.scrollTo(0,0);
 // INITIALISATION DES 24 TÂCHES PAR MACHINE
 async function initializeSchedule(showMessage=true){
 if(!isAdmin())return;
+
 if(showMessage)$("initMsg").textContent="Initialisation en cours...";
+
 try{
 const machinesSnap=await getDocs(collection(db,"machines"));
 let created=0,existing=0;
 let batch=writeBatch(db),batchCount=0;
+
 for(const machineDoc of machinesSnap.docs){
 const machineId=machineDoc.id;
 const machineName=machineDoc.data().name||machineId;
 let taskNumber=0;
+
 for(const group of PROGRAM){
 for(const taskName of group.tasks){
 taskNumber++;
+
 const taskId=machineId+"_task_"+taskNumber;
 const taskRef=doc(db,"maintenance_tasks",taskId);
 const oldTask=await getDoc(taskRef);
+
 if(oldTask.exists()){
 existing++;
 continue;
 }
+
 batch.set(taskRef,{
 machineId,machineName,taskNumber,
-frequency:group.frequency,task:taskName,
-nextDueDate:todayISO(),status:"todo",completedCount:0,
-createdAt:serverTimestamp(),updatedAt:serverTimestamp()
+frequency:group.frequency,
+task:taskName,
+nextDueDate:todayISO(),
+status:"todo",
+completedCount:0,
+createdAt:serverTimestamp(),
+updatedAt:serverTimestamp()
 });
-created++;batchCount++;
+
+created++;
+batchCount++;
+
 if(batchCount>=400){
 await batch.commit();
-batch=writeBatch(db);batchCount=0;
+batch=writeBatch(db);
+batchCount=0;
 }
 }
 }
 }
+
 if(batchCount>0)await batch.commit();
+
 $("initMsg").textContent=
 "Initialisation terminée.\nTâches créées : "+created+
 "\nTâches déjà présentes : "+existing+
 "\n24 tâches prévues par machine.";
+
 }catch(e){
 $("initMsg").textContent="Erreur : "+e.message;
 }
 }
+
 $("initBtn").onclick=()=>initializeSchedule(true);
 
 // CHARGEMENT DES TÂCHES
 async function loadMaintenanceTasks(machine){
 const snap=await getDocs(collection(db,"maintenance_tasks"));
 const tasks=[];
+
 snap.forEach(d=>{
 const data=d.data();
-if(data.machineId===machine.id)tasks.push({id:d.id,...data});
+if(data.machineId===machine.id){
+tasks.push({id:d.id,...data});
+}
 });
-const order={"Hebdomadaire":1,"Mensuelle":2,"Semestrielle":3,"Annuelle":4};
-tasks.sort((a,b)=>(order[a.frequency]||9)-(order[b.frequency]||9)||(a.taskNumber||0)-(b.taskNumber||0));
+
+const order={
+"Hebdomadaire":1,
+"Mensuelle":2,
+"Semestrielle":3,
+"Annuelle":4
+};
+
+tasks.sort((a,b)=>
+(order[a.frequency]||9)-(order[b.frequency]||9)||
+(a.taskNumber||0)-(b.taskNumber||0)
+);
+
 return tasks;
 }
 
-// INDICATEURS DE SUIVI
+// INDICATEURS D'UNE MACHINE
 function updateMachineStats(tasks){
 const total=tasks.length;
 const todo=tasks.filter(t=>t.status==="todo").length;
@@ -391,15 +544,19 @@ const stats=[
 ];
 
 $("machineStats").textContent="";
+
 stats.forEach(item=>{
 const box=document.createElement("div");
 box.className="stat-box";
+
 const number=document.createElement("div");
 number.className="stat-number";
 number.textContent=item.number;
+
 const label=document.createElement("div");
 label.className="stat-label";
 label.textContent=item.label;
+
 box.append(number,label);
 $("machineStats").append(box);
 });
@@ -408,20 +565,27 @@ $("machineStats").append(box);
 // HISTORIQUE DES INTERVENTIONS VALIDÉES
 async function renderHistory(){
 if(!currentMachine)return;
+
 $("history").textContent="Chargement de l'historique...";
+
 try{
 const snap=await getDocs(collection(db,"maintenance_history"));
 const entries=[];
+
 snap.forEach(d=>{
 const data=d.data();
+
 if(data.machineId===currentMachine.id){
 entries.push({id:d.id,...data});
 }
 });
 
-entries.sort((a,b)=>(b.completedDate||"").localeCompare(a.completedDate||""));
+entries.sort((a,b)=>
+(b.completedDate||"").localeCompare(a.completedDate||"")
+);
 
 $("history").textContent="";
+
 if(!entries.length){
 $("history").textContent="Aucune intervention validée pour cette machine.";
 return;
@@ -454,41 +618,60 @@ next.textContent="Prochaine échéance : "+dateLabel(item.nextDueDate);
 card.append(task,frequency,completed,next);
 $("history").append(card);
 });
+
 }catch(e){
 $("history").textContent="Erreur de chargement de l'historique : "+e.message;
 }
 }
 
-// AFFICHAGE DES CATÉGORIES ET CASES À COCHER
+// AFFICHAGE DES CATÉGORIES ET DES TÂCHES
 async function renderTasks(){
 if(!currentMachine)return;
+
 $("tasks").textContent="Chargement des tâches...";
+
 try{
 const tasks=await loadMaintenanceTasks(currentMachine);
 updateMachineStats(tasks);
+
 $("tasks").textContent="";
+
 const filter=$("frequencyFilter").value;
-const filtered=tasks.filter(t=>filter==="all"||t.frequency===filter);
+const filtered=tasks.filter(t=>
+filter==="all"||t.frequency===filter
+);
+
 if(!filtered.length){
 $("tasks").textContent="Aucune tâche trouvée. Vérifie l'initialisation.";
 return;
 }
+
 for(const group of PROGRAM){
-const groupTasks=filtered.filter(t=>t.frequency===group.frequency);
+const groupTasks=filtered.filter(t=>
+t.frequency===group.frequency
+);
+
 if(!groupTasks.length)continue;
 
 const heading=document.createElement("h3");
 heading.className="category";
-heading.textContent="Entretien "+group.frequency+" — "+groupTasks.length+" tâches";
+heading.textContent=
+"Entretien "+group.frequency+" — "+groupTasks.length+" tâches";
+
 $("tasks").append(heading);
 
-groupTasks.forEach(task=>$("tasks").append(makeTaskCard(task)));
+groupTasks.forEach(task=>
+$("tasks").append(makeTaskCard(task))
+);
+
 $("tasks").append(makeGroupActions(groupTasks,group.frequency));
 }
+
 const total=document.createElement("div");
 total.className="small";
 total.textContent="Tâches affichées : "+filtered.length+" / 24";
 $("tasks").append(total);
+
 }catch(e){
 $("tasks").textContent="Erreur : "+e.message;
 }
@@ -505,15 +688,20 @@ const due=document.createElement("span");
 due.textContent="Prochaine échéance : "+dateLabel(task.nextDueDate);
 
 const status=document.createElement("span");
-status.innerHTML='<span class="pill">'+statusLabel(task.status)+'</span><span class="pill">'+task.frequency+'</span>';
+status.innerHTML=
+'<span class="pill">'+statusLabel(task.status)+'</span>'+
+'<span class="pill">'+task.frequency+'</span>';
+
 card.append(title,due,status);
 
 if(task.completedCount>0){
 const history=document.createElement("span");
-history.textContent="Interventions validées : "+task.completedCount+
+history.textContent=
+"Interventions validées : "+task.completedCount+
 " • Dernière intervention : "+dateLabel(task.lastCompletedDate);
 card.append(history);
 }
+
 if(task.adminComment){
 const comment=document.createElement("span");
 comment.textContent="Commentaire : "+task.adminComment;
@@ -523,28 +711,36 @@ card.append(comment);
 if(isTech()&&["todo","rejected","in_progress"].includes(task.status)){
 const label=document.createElement("label");
 label.className="task-check";
+
 const checkbox=document.createElement("input");
 checkbox.type="checkbox";
 checkbox.checked=selectedTaskIds.has(task.id);
+
 checkbox.onchange=()=>{
 if(checkbox.checked)selectedTaskIds.add(task.id);
 else selectedTaskIds.delete(task.id);
 renderTasks();
 };
+
 const text=document.createElement("span");
 text.textContent="Tâche réalisée";
+
 label.append(checkbox,text);
 card.append(label);
 }
+
 return card;
 }
 
-// BOUTON UNIQUE DE CLÔTURE POUR CHAQUE GROUPE
+// ACTIONS DE GROUPE
 function makeGroupActions(groupTasks,frequency){
 const panel=document.createElement("div");
 panel.className="group-panel";
 
-const allPending=groupTasks.every(t=>t.status==="pending_validation");
+const allPending=groupTasks.every(t=>
+t.status==="pending_validation"
+);
+
 const canSubmit=groupTasks.every(t=>
 t.status==="pending_validation"||
 ["todo","rejected","in_progress"].includes(t.status)
@@ -553,8 +749,11 @@ t.status==="pending_validation"||
 if(allPending){
 const info=document.createElement("div");
 info.className="small";
-info.textContent="Toutes les tâches sont terminées. Le groupe attend la validation de l'administrateur.";
+info.textContent=
+"Toutes les tâches sont terminées. Le groupe attend la validation de l'administrateur.";
+
 panel.append(info);
+
 if(isAdmin()){
 const approve=document.createElement("button");
 approve.className="green";
@@ -562,49 +761,75 @@ approve.textContent="Valider tout l'entretien";
 approve.onclick=()=>approveGroup(groupTasks,frequency);
 panel.append(approve);
 }
+
 return panel;
 }
 
 if(isTech()&&canSubmit){
-const remaining=groupTasks.filter(t=>t.status!=="pending_validation");
-const count=remaining.filter(t=>selectedTaskIds.has(t.id)).length;
+const remaining=groupTasks.filter(t=>
+t.status!=="pending_validation"
+);
+
+const count=remaining.filter(t=>
+selectedTaskIds.has(t.id)
+).length;
+
 const alreadyPending=groupTasks.length-remaining.length;
 
 const progressText=document.createElement("div");
 progressText.className="small";
-progressText.textContent="Progression : "+(alreadyPending+count)+" / "+groupTasks.length+" tâches envoyées ou réalisées";
+progressText.textContent=
+"Progression : "+(alreadyPending+count)+
+" / "+groupTasks.length+
+" tâches envoyées ou réalisées";
+
 panel.append(progressText);
 
 const progress=document.createElement("div");
 progress.className="progress";
+
 const bar=document.createElement("div");
 bar.className="progress-bar";
-bar.style.width=((alreadyPending+count)/groupTasks.length*100)+"%";
+bar.style.width=
+((alreadyPending+count)/groupTasks.length*100)+"%";
+
 progress.append(bar);
 panel.append(progress);
 
 const close=document.createElement("button");
 close.className="green";
-close.textContent=alreadyPending>0?"Envoyer les tâches restantes":"Clôturer l'entretien";
+close.textContent=
+alreadyPending>0?
+"Envoyer les tâches restantes":
+"Clôturer l'entretien";
+
 close.disabled=count!==remaining.length||remaining.length===0;
 close.onclick=()=>submitGroup(groupTasks,frequency);
+
 panel.append(close);
 return panel;
 }
 
 const info=document.createElement("div");
 info.className="small";
-info.textContent="Ce groupe contient des tâches dans des états différents. Vérifie leur état avant de poursuivre.";
+info.textContent=
+"Ce groupe contient des tâches dans des états différents. Vérifie leur état avant de poursuivre.";
+
 panel.append(info);
 return panel;
 }
 
-// ENVOI GLOBAL À L'ADMINISTRATEUR
+// ENVOI DES TÂCHES À L'ADMINISTRATEUR
 async function submitGroup(groupTasks,frequency){
 if(!isTech())return;
 
-const remaining=groupTasks.filter(t=>t.status!=="pending_validation");
-const allChecked=remaining.every(t=>selectedTaskIds.has(t.id));
+const remaining=groupTasks.filter(t=>
+t.status!=="pending_validation"
+);
+
+const allChecked=remaining.every(t=>
+selectedTaskIds.has(t.id)
+);
 
 if(!allChecked){
 alert("Coche toutes les tâches restantes réalisées avant de clôturer.");
@@ -616,7 +841,11 @@ alert("Toutes les tâches de ce groupe sont déjà en attente de validation.");
 return;
 }
 
-if(!confirm("Envoyer les "+remaining.length+" tâches restantes de l'entretien "+frequency+" à l'administrateur pour validation ?"))return;
+if(!confirm(
+"Envoyer les "+remaining.length+
+" tâches restantes de l'entretien "+frequency+
+" à l'administrateur pour validation ?"
+))return;
 
 try{
 const batch=writeBatch(db);
@@ -633,7 +862,12 @@ updatedAt:serverTimestamp()
 await batch.commit();
 
 selectedTaskIds.clear();
-alert("Les tâches restantes de l'entretien "+frequency+" ont été envoyées à l'administrateur.");
+
+alert(
+"Les tâches restantes de l'entretien "+frequency+
+" ont été envoyées à l'administrateur."
+);
+
 await renderTasks();
 
 }catch(e){
@@ -645,11 +879,18 @@ await renderTasks();
 // VALIDATION GLOBALE PAR L'ADMINISTRATEUR
 async function approveGroup(groupTasks,frequency){
 if(!isAdmin())return;
-if(!groupTasks.every(t=>t.status==="pending_validation")){
+
+if(!groupTasks.every(t=>
+t.status==="pending_validation"
+)){
 alert("Toutes les tâches du groupe doivent être en attente de validation.");
 return;
 }
-if(!confirm("Confirmer la validation des "+groupTasks.length+" tâches de l'entretien "+frequency+" ?"))return;
+
+if(!confirm(
+"Confirmer la validation des "+groupTasks.length+
+" tâches de l'entretien "+frequency+" ?"
+))return;
 
 try{
 const completedDate=todayISO();
@@ -658,6 +899,7 @@ const batch=writeBatch(db);
 for(const task of groupTasks){
 const nextDate=nextDueDate(task.frequency,completedDate);
 const historyRef=doc(collection(db,"maintenance_history"));
+
 batch.set(historyRef,{
 taskId:task.id,
 machineId:task.machineId,
@@ -669,6 +911,7 @@ nextDueDate:nextDate,
 approvedBy:auth.currentUser.uid,
 approvedAt:serverTimestamp()
 });
+
 batch.update(doc(db,"maintenance_tasks",task.id),{
 status:"todo",
 nextDueDate:nextDate,
@@ -682,10 +925,17 @@ updatedAt:serverTimestamp()
 }
 
 await batch.commit();
+
 selectedTaskIds.clear();
-alert("Entretien "+frequency+" validé. Toutes les tâches du groupe sont clôturées et leurs prochaines échéances sont calculées.");
+
+alert(
+"Entretien "+frequency+
+" validé. Toutes les tâches du groupe sont clôturées et leurs prochaines échéances sont calculées."
+);
+
 await renderTasks();
 await renderHistory();
+
 }catch(e){
 alert("Erreur lors de la validation du groupe : "+e.message);
 }
