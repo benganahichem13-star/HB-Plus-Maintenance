@@ -1,0 +1,8 @@
+{
+  "appId": "com.hbplus.maintenance",
+  "appName": "HB+ Maintenance",
+  "webDir": ".",
+  "server": {
+    "androidScheme": "https"
+  }
+}
