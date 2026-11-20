@@ -10,8 +10,18 @@
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#0b1725;color:#f4f8fc;font-family:Arial,sans-serif}
-header{background:#10243a;padding:18px}
+header{background:#10243a;padding:18px;display:flex;align-items:center;justify-content:space-between;gap:12px}
 header h1{margin:0;font-size:23px}
+.header-title{min-width:0}
+.menu-dot{flex:0 0 46px;width:46px;height:46px;border-radius:50%;padding:0;margin:0;background:#d00070;color:white;font-size:25px;line-height:1;box-shadow:0 0 0 4px #d0007022}
+.menu-dot:focus-visible{outline:3px solid white;outline-offset:3px}
+.drawer-backdrop{position:fixed;inset:0;background:#0009;z-index:1000}
+.drawer{position:fixed;top:0;right:0;height:100vh;height:100dvh;width:min(88vw,430px);overflow-y:auto;background:#10243a;border-left:1px solid #34516d;padding:18px;z-index:1001;box-shadow:-12px 0 35px #0008}
+.drawer-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}
+.drawer-head h2{margin:0}
+.drawer-section{background:#0c1b2b;border:1px solid #29435d;border-radius:10px;padding:13px;margin:12px 0}
+.drawer-section h3{margin:0 0 12px;color:#55b5ff;font-size:16px}
+.drawer .status{overflow-wrap:anywhere}
 main{max-width:900px;margin:auto;padding:14px}
 .card{background:#14263a;border:1px solid #29435d;border-radius:13px;padding:15px;margin-bottom:14px}
 h2{font-size:19px;margin:5px 0 13px}
@@ -39,7 +49,7 @@ button:disabled{opacity:.4;cursor:not-allowed}
 .progress{height:8px;background:#29435d;border-radius:8px;overflow:hidden;margin:9px 0}
 .progress-bar{height:100%;background:#23845d;width:0}
 .stats-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:12px 0}
-.stat-box{background:#0c1b2b;border:1px solid #29435d;border-radius:10px;padding:12px}
+.stat-box{background:#0c1b2b;border:1px solid #29435d;border-radius:10px;padding:12px;min-width:0}
 .stat-box.interactive{cursor:pointer;text-align:left;color:inherit;font:inherit;width:100%;margin:0}
 .stat-box.interactive:hover,.stat-box.interactive:focus-visible{background:#142b42;border-color:#55b5ff;outline:2px solid #55b5ff}
 .stat-hint{font-size:10px;color:#8fa9c0;margin-top:7px}
@@ -47,34 +57,70 @@ button:disabled{opacity:.4;cursor:not-allowed}
 .stat-label{font-size:12px;color:#b5c5d5;margin-top:5px}
 .history-item{background:#0c1b2b;border:1px solid #29435d;border-radius:9px;padding:12px;margin:9px 0}
 .history-item strong{display:block;color:#55b5ff}
-.dashboard-grid{display:grid;grid-template-columns:1fr;gap:12px;margin-top:14px}
-.dashboard-panel{background:#0c1b2b;border:1px solid #29435d;border-radius:10px;padding:13px;min-width:0}
-.dashboard-panel h3{margin:0 0 12px;font-size:15px}
+.dashboard-panel{background:#0c1b2b;border:1px solid #29435d;border-radius:10px;padding:13px;min-width:0;margin-top:12px}
+
+/* PARC MACHINES INTEGRE DANS LA CASE MACHINES */
+.stat-box.machine-stat{cursor:pointer}
+.stat-box.machine-stat.expanded{grid-column:1/-1;background:#142b42;border-color:#55b5ff}
+.machine-park-inline{margin-top:13px;padding-top:10px;border-top:1px solid #34516d;text-align:left;cursor:default}
+.machine-park-head{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.machine-park-head h3{margin:4px 0}
+.machine-park-count{font-size:12px;color:#a9bbcd;margin:7px 0}
+.park-machine{display:block;width:100%;text-align:left;color:white;background:#14263a;border:1px solid #29435d;border-radius:9px;padding:13px;margin:7px 0}
+.park-machine strong{display:block;color:#55b5ff;font-size:16px}
+.park-machine span{display:block;color:#b5c5d5;font-size:12px;margin-top:5px}
 .frequency-row{margin:11px 0}
 .frequency-head{display:flex;justify-content:space-between;gap:8px;font-size:12px;color:#c6d5e3}
 .frequency-track{height:7px;background:#29435d;border-radius:8px;overflow:hidden;margin-top:6px}
 .frequency-fill{height:100%;background:#55b5ff;border-radius:8px}
-.machine-status-row{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid #29435d;font-size:13px}
-.machine-status-row:last-child{border-bottom:0}
-.status-tag{font-size:11px;padding:5px 8px;border-radius:20px;background:#29435d;white-space:nowrap}
-.status-tag.late{background:#743d3d;color:#ffe0e0}
-.status-tag.pending{background:#735b2e;color:#fff0c2}
-.status-tag.progressing{background:#245779;color:#d8efff}
-.status-tag.done{background:#176345;color:#d7ffeb}
 .recent-row{padding:9px 0;border-bottom:1px solid #29435d}
 .recent-row:last-child{border-bottom:0}
 .recent-row strong{display:block;font-size:13px;color:#eaf4fc}
 .recent-row span{display:block;font-size:12px;color:#a9bbcd;margin-top:4px}
-@media(min-width:700px){.dashboard-grid{grid-template-columns:1fr 1fr}}
 @media(min-width:600px){.stats-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
 </style>
 </head>
 
 <body>
 <header>
+<div class="header-title">
 <h1>HB+ — Maintenance industrielle</h1>
 <div class="small">Gestion de la maintenance préventive</div>
+</div>
+<button id="menuButton" class="menu-dot hidden" type="button" aria-label="Ouvrir le menu" aria-expanded="false">●</button>
 </header>
+
+<div id="drawerBackdrop" class="drawer-backdrop hidden"></div>
+
+<aside id="appDrawer" class="drawer hidden" aria-label="Menu et informations">
+<div class="drawer-head">
+<h2>Menu</h2>
+<button id="closeDrawerBtn" class="gray" type="button">Fermer ✕</button>
+</div>
+
+<section class="drawer-section">
+<h3>Profil utilisateur</h3>
+<div id="profile" class="status">Chargement...</div>
+<button id="logoutBtn" class="gray">Déconnexion</button>
+</section>
+
+<section id="drawerAdminSection" class="drawer-section hidden">
+<h3>Administration</h3>
+<p class="small">24 opérations fixes par machine, réparties en quatre catégories. Les tâches existantes ne sont pas dupliquées.</p>
+<button id="initBtn">Initialiser les tâches</button>
+<div id="initMsg" class="status">En attente.</div>
+</section>
+
+<section class="drawer-section">
+<h3>Répartition des opérations</h3>
+<div id="frequencyBreakdown" class="small">Chargement...</div>
+</section>
+
+<section class="drawer-section">
+<h3>Dernières interventions validées</h3>
+<div id="recentActivity" class="small">Chargement...</div>
+</section>
+</aside>
 
 <main>
 <section id="login" class="card">
@@ -89,51 +135,20 @@ button:disabled{opacity:.4;cursor:not-allowed}
 
 <section id="app" class="hidden">
 
-<div class="card">
-<h2>Profil utilisateur</h2>
-<div id="profile" class="status">Chargement...</div>
-<button id="logoutBtn" class="gray">Déconnexion</button>
-</div>
-
-<div id="adminPanel" class="card hidden">
-<h2>Administration</h2>
-<p class="small">24 opérations fixes par machine, réparties en quatre catégories. Les tâches existantes ne sont pas dupliquées.</p>
-<button id="initBtn">Initialiser les tâches</button>
-<div id="initMsg" class="status">En attente.</div>
-</div>
-
 <div id="dashboardCard" class="card">
 <h2>Tableau de bord général</h2>
+
 <div id="dashboardStats" class="stats-grid">Chargement...</div>
+
 <div id="dashboardDetails" class="dashboard-panel hidden"></div>
 
 <div class="small">Progression globale de la maintenance</div>
 <div class="progress"><div id="globalProgressBar" class="progress-bar"></div></div>
 <div id="globalProgressText" class="small">Calcul en cours...</div>
-
-<div class="dashboard-grid">
-<div class="dashboard-panel">
-<h3>Répartition des opérations</h3>
-<div id="frequencyBreakdown" class="small">Chargement...</div>
-</div>
-<div class="dashboard-panel">
-<h3>Dernières interventions validées</h3>
-<div id="recentActivity" class="small">Chargement...</div>
-</div>
-<div class="dashboard-panel" style="grid-column:1/-1">
-<h3>État des machines</h3>
-<div id="machineStatusList" class="small">Chargement...</div>
-</div>
-</div>
-</div>
-
-<div id="machineListCard" class="card">
-<h2>Machines</h2>
-<div id="machines">Chargement...</div>
 </div>
 
 <div id="machineDetail" class="card hidden">
-<button id="backBtn" class="gray">← Retour</button>
+<button id="backBtn" class="gray">← Retour au tableau de bord</button>
 <h2 id="detailName">Machine</h2>
 <div id="detailInfo" class="small"></div>
 
@@ -187,11 +202,35 @@ const auth=getAuth(firebaseApp);
 const db=getFirestore(firebaseApp);
 const $=id=>document.getElementById(id);
 
+// MENU TIROIR
+function openDrawer(){
+$("appDrawer").classList.remove("hidden");
+$("drawerBackdrop").classList.remove("hidden");
+$("menuButton").setAttribute("aria-expanded","true");
+}
+
+function closeDrawer(){
+$("appDrawer").classList.add("hidden");
+$("drawerBackdrop").classList.add("hidden");
+$("menuButton").setAttribute("aria-expanded","false");
+}
+
+$("menuButton").onclick=openDrawer;
+$("closeDrawerBtn").onclick=closeDrawer;
+$("drawerBackdrop").onclick=closeDrawer;
+
+document.addEventListener("keydown",event=>{
+if(event.key==="Escape")closeDrawer();
+});
+
 let currentRole=null;
 let profileReady=false;
 let currentMachine=null;
 let selectedTaskIds=new Set();
 let approvalInProgress=false;
+let cachedMachines=[];
+let cachedTasks=[];
+let cachedHistory=[];
 
 const PROGRAM=[
 {frequency:"Hebdomadaire",tasks:[
@@ -273,9 +312,8 @@ if(frequency==="Annuelle")return addMonthsISO(date,12);
 throw new Error("Fréquence inconnue");
 }
 
-// STATUT RÉEL AFFICHÉ
+// STATUT DES TÂCHES
 function taskDisplayStatus(task){
-
 if(task.status==="pending_validation")return "En attente de validation";
 if(task.status==="in_progress")return "En cours";
 if(task.status==="rejected")return "Refusée";
@@ -309,16 +347,19 @@ $("backBtn").onclick=async()=>{
 currentMachine=null;
 selectedTaskIds.clear();
 $("machineDetail").classList.add("hidden");
-$("machineListCard").classList.remove("hidden");
+$("dashboardCard").classList.remove("hidden");
 await loadMachines();
+window.scrollTo(0,0);
 };
 
 $("frequencyFilter").onchange=renderTasks;
 
-// PROFIL
+// PROFIL ET SESSION
 onAuthStateChanged(auth,async user=>{
 
 if(!user){
+closeDrawer();
+$("menuButton").classList.add("hidden");
 profileReady=false;
 currentRole=null;
 currentMachine=null;
@@ -330,6 +371,7 @@ return;
 
 $("login").classList.add("hidden");
 $("app").classList.remove("hidden");
+$("menuButton").classList.remove("hidden");
 $("profile").textContent="Lecture du profil...";
 
 try{
@@ -350,10 +392,10 @@ $("profile").textContent=
 "\nRôle : "+currentRole+
 "\nCompte actif : "+profile.active;
 
-$("adminPanel").classList.toggle("hidden",!isAdmin());
+$("drawerAdminSection").classList.toggle("hidden",!isAdmin());
 
 if(!profileReady){
-$("machines").textContent="Compte inactif.";
+$("dashboardStats").textContent="Compte inactif.";
 return;
 }
 
@@ -368,7 +410,6 @@ $("profile").textContent="Erreur : "+e.message;
 // MACHINES
 async function loadMachines(){
 
-$("machines").textContent="Chargement des machines...";
 $("dashboardStats").textContent="Chargement des indicateurs...";
 
 try{
@@ -387,34 +428,54 @@ historySnap.forEach(d=>history.push({id:d.id,...d.data()}));
 
 machines.sort((a,b)=>(a.name||a.id).localeCompare(b.name||b.id));
 
+cachedMachines=machines;
+cachedTasks=tasks;
+cachedHistory=history;
+
 renderDashboard(machines,tasks,history);
 
-$("machines").textContent="";
+}catch(e){
+$("dashboardStats").textContent="Impossible de charger les indicateurs.";
+}
+}
+
+// PARC MACHINES : LISTE DANS LA CASE MACHINES
+function renderMachinePark(machines){
+
+const container=$("dashboardMachines");
+if(!container)return;
+
+container.textContent="";
+
+const count=$("machineParkCount");
+if(count)count.textContent=machines.length+" machine(s) disponible(s)";
 
 if(!machines.length){
-$("machines").textContent="Aucune machine trouvée.";
+container.textContent="Aucune machine trouvée.";
 return;
 }
 
 machines.forEach(machine=>{
+
 const button=document.createElement("button");
-button.className="machine";
+button.type="button";
+button.className="park-machine";
 
 const title=document.createElement("strong");
 title.textContent=machine.name||machine.id;
 
 const description=document.createElement("span");
-description.textContent=machine.description||"Ouvrir la maintenance";
+description.textContent=machine.description||"Toucher pour ouvrir la maintenance";
 
 button.append(title,description);
-button.onclick=()=>openMachine(machine);
-$("machines").append(button);
-});
 
-}catch(e){
-$("machines").textContent="Erreur de chargement : "+e.message;
-$("dashboardStats").textContent="Impossible de charger les indicateurs.";
-}
+button.onclick=event=>{
+event.stopPropagation();
+openMachine(machine);
+};
+
+container.append(button);
+});
 }
 
 // TABLEAU DE BORD
@@ -443,12 +504,23 @@ const stats=[
 ];
 
 $("dashboardStats").textContent="";
-$("dashboardDetails").classList.add("hidden");
 
 stats.forEach(item=>{
-const box=document.createElement("button");
-box.type="button";
+
+// La case Machines est un conteneur div pour permettre
+// d'avoir des boutons de machines à l'intérieur.
+const box=document.createElement(item.key==="machines"?"div":"button");
+
+if(item.key!=="machines")box.type="button";
+
 box.className="stat-box interactive";
+
+if(item.key==="machines"){
+box.classList.add("machine-stat");
+box.setAttribute("role","button");
+box.setAttribute("tabindex","0");
+box.setAttribute("aria-expanded","false");
+}
 
 const number=document.createElement("div");
 number.className="stat-number";
@@ -460,24 +532,95 @@ label.textContent=item.label;
 
 const hint=document.createElement("div");
 hint.className="stat-hint";
-hint.textContent="Toucher pour afficher";
+hint.textContent=item.key==="machines"?"Toucher pour afficher les machines":"Toucher pour afficher";
 
 box.append(number,label,hint);
-box.onclick=()=>showDashboardDetails(item.key,item.label,machines,tasks);
+
+if(item.key==="machines"){
+
+// Création du parc directement dans la case Machines.
+const park=document.createElement("div");
+park.id="machineParkInline";
+park.className="machine-park-inline hidden";
+
+const parkHead=document.createElement("div");
+parkHead.className="machine-park-head";
+
+const parkTitle=document.createElement("h3");
+parkTitle.textContent="Parc machines";
+
+const close=document.createElement("button");
+close.type="button";
+close.className="gray";
+close.textContent="Fermer ✕";
+close.onclick=event=>{
+event.stopPropagation();
+park.classList.add("hidden");
+box.classList.remove("expanded");
+box.setAttribute("aria-expanded","false");
+};
+
+parkHead.append(parkTitle,close);
+
+const count=document.createElement("div");
+count.id="machineParkCount";
+count.className="machine-park-count";
+
+const list=document.createElement("div");
+list.id="dashboardMachines";
+list.textContent="Chargement des machines...";
+
+park.append(parkHead,count,list);
+box.append(park);
+
+box.onclick=event=>{
+
+// Ne pas refermer le parc lorsqu'on touche ses boutons.
+if(event.target.closest(".machine-park-inline"))return;
+
+const opening=park.classList.contains("hidden");
+
+$("dashboardDetails").classList.add("hidden");
+
+park.classList.toggle("hidden",!opening);
+box.classList.toggle("expanded",opening);
+box.setAttribute("aria-expanded",String(opening));
+
+};
+
+box.onkeydown=event=>{
+if(event.key==="Enter"||event.key===" "){
+event.preventDefault();
+box.click();
+}
+};
+
+}else{
+
+box.onclick=()=>{
+showDashboardDetails(item.key,item.label,machines,tasks);
+};
+
+}
+
 $("dashboardStats").append(box);
 });
+
+// Remplir la liste après la création de la case Machines.
+renderMachinePark(machines);
 
 $("globalProgressBar").style.width=percent+"%";
 $("globalProgressText").textContent=
 completed+" opérations réalisées et à jour sur "+total+
 " opérations programmées ("+percent+"%).";
 
-// FRÉQUENCES
+// RÉPARTITION DES OPÉRATIONS DANS LE TIROIR
 const frequencies=["Hebdomadaire","Mensuelle","Semestrielle","Annuelle"];
 const frequencyBox=$("frequencyBreakdown");
 frequencyBox.textContent="";
 
 frequencies.forEach(freq=>{
+
 const count=tasks.filter(t=>t.frequency===freq).length;
 
 const row=document.createElement("div");
@@ -506,7 +649,7 @@ row.append(head,track);
 frequencyBox.append(row);
 });
 
-// HISTORIQUE RÉCENT
+// DERNIÈRES INTERVENTIONS DANS LE TIROIR
 const recentBox=$("recentActivity");
 recentBox.textContent="";
 
@@ -516,6 +659,7 @@ if(!history.length){
 recentBox.textContent="Aucune intervention validée pour le moment.";
 }else{
 history.slice(0,5).forEach(item=>{
+
 const row=document.createElement("div");
 row.className="recent-row";
 
@@ -532,42 +676,6 @@ row.append(task,detail);
 recentBox.append(row);
 });
 }
-
-// ÉTAT DES MACHINES
-const statusBox=$("machineStatusList");
-statusBox.textContent="";
-
-machines.forEach(machine=>{
-
-const machineTasks=tasks.filter(t=>t.machineId===machine.id);
-const states=machineTasks.map(taskDisplayStatus);
-
-let label="À jour",tag="";
-
-if(states.includes("En retard")){
-label="En retard";tag="late";
-}else if(states.includes("En attente de validation")){
-label="À valider";tag="pending";
-}else if(states.includes("En cours")){
-label="En cours";tag="progressing";
-}else if(states.length&&states.every(s=>s==="Réalisée")){
-label="Réalisée";tag="done";
-}
-
-const row=document.createElement("div");
-row.className="machine-status-row";
-
-const name=document.createElement("strong");
-name.textContent=machine.name||machine.id;
-
-const status=document.createElement("span");
-status.className="status-tag "+tag;
-status.textContent=label+" • "+machineTasks.length+"/24";
-
-row.append(name,status);
-statusBox.append(row);
-});
-
 }
 
 // DÉTAILS DES INDICATEURS
@@ -587,15 +695,6 @@ close.textContent="Fermer";
 close.onclick=()=>panel.classList.add("hidden");
 
 panel.append(heading,close);
-
-if(key==="machines"){
-const info=document.createElement("p");
-info.className="small";
-info.textContent="Sélectionne une machine dans la liste ci-dessous.";
-panel.append(info);
-$("machineListCard").scrollIntoView({behavior:"smooth"});
-return;
-}
 
 const filtered=tasks.filter(t=>{
 const state=taskDisplayStatus(t);
@@ -649,8 +748,6 @@ if(machine)openMachine(machine);
 row.append(title,detail,open);
 panel.append(row);
 });
-
-panel.scrollIntoView({behavior:"smooth",block:"nearest"});
 }
 
 // OUVERTURE MACHINE
@@ -659,8 +756,19 @@ function openMachine(machine){
 currentMachine=machine;
 selectedTaskIds.clear();
 
-$("machineListCard").classList.add("hidden");
+$("dashboardCard").classList.add("hidden");
 $("machineDetail").classList.remove("hidden");
+
+$("dashboardDetails").classList.add("hidden");
+
+const inlinePark=$("machineParkInline");
+if(inlinePark)inlinePark.classList.add("hidden");
+
+const machineBox=document.querySelector(".machine-stat");
+if(machineBox){
+machineBox.classList.remove("expanded");
+machineBox.setAttribute("aria-expanded","false");
+}
 
 $("detailName").textContent=machine.name||machine.id;
 $("detailInfo").textContent="Référence : "+machine.id;
@@ -796,6 +904,7 @@ const stats=[
 $("machineStats").textContent="";
 
 stats.forEach(item=>{
+
 const box=document.createElement("div");
 box.className="stat-box";
 
@@ -1099,7 +1208,7 @@ await renderTasks();
 }
 }
 
-// VALIDATION ADMINISTRATEUR SÉCURISÉE
+// VALIDATION ADMINISTRATEUR
 async function approveGroup(groupTasks,frequency){
 
 if(!isAdmin()||approvalInProgress)return;
@@ -1124,7 +1233,6 @@ await runTransaction(db,async transaction=>{
 
 const records=[];
 
-// Lecture et vérification des tâches
 for(const task of groupTasks){
 
 const taskRef=doc(db,"maintenance_tasks",task.id);
@@ -1155,7 +1263,6 @@ historyRef
 });
 }
 
-// Écriture de l'historique et mise à jour
 for(const record of records){
 
 const {task,taskRef,taskData,historyRef}=record;
@@ -1216,3 +1323,4 @@ if(currentMachine)await renderTasks();
 </script>
 </body>
 </html>
+z
