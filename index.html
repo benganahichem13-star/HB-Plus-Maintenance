@@ -6,7 +6,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#10243a">
 <title>HB+ Maintenance</title>
-
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#0b1725;color:#f4f8fc;font-family:Arial,sans-serif}
@@ -19,10 +18,11 @@ h3{font-size:16px;color:#55b5ff;margin:18px 0 9px}
 label{display:block;margin:12px 0 5px;color:#b5c5d5}
 input,select,textarea{width:100%;padding:12px;background:#0c1b2b;color:white;border:1px solid #34516d;border-radius:8px;font-size:15px}
 textarea{min-height:70px}
-button{border:0;border-radius:8px;padding:11px 14px;margin:7px 5px 0 0;background:#3b9cff;color:#071727;font-weight:bold}
+button{border:0;border-radius:8px;padding:11px 14px;margin:7px 5px 0 0;background:#3b9cff;color:#071727;font-weight:bold;cursor:pointer}
 button.green{background:#23845d;color:white}
 button.red{background:#a94444;color:white}
 button.gray{background:#29435d;color:white}
+button:disabled{opacity:.4;cursor:not-allowed}
 .hidden{display:none!important}
 .small{font-size:13px;color:#a9bbcd}
 .status{background:#0c1b2b;padding:10px;border-radius:8px;margin:8px 0;white-space:pre-wrap;overflow-wrap:anywhere}
@@ -31,20 +31,21 @@ button.gray{background:#29435d;color:white}
 .machine strong,.task strong{display:block;color:#55b5ff;font-size:16px}
 .machine span,.task span{display:block;color:#b5c5d5;font-size:13px;margin-top:6px}
 .pill{display:inline-block;background:#29435d;padding:5px 9px;border-radius:20px;font-size:12px;margin:7px 5px 0 0}
-.task-actions{margin-top:10px}
 .category{border-bottom:1px solid #34516d;padding-bottom:7px;margin-top:20px}
+.task-check{display:flex;align-items:center;gap:10px;margin-top:13px;color:white}
+.task-check input{width:21px;height:21px;accent-color:#23845d}
+.group-panel{background:#14263a;border:1px solid #34516d;border-radius:10px;padding:13px;margin:12px 0 20px}
+.progress{height:8px;background:#29435d;border-radius:8px;overflow:hidden;margin:9px 0}
+.progress-bar{height:100%;background:#23845d;width:0}
 </style>
 </head>
-
 <body>
-
 <header>
 <h1>HB+ — Maintenance industrielle</h1>
 <div class="small">Gestion de la maintenance préventive</div>
 </header>
 
 <main>
-
 <section id="login" class="card">
 <h2>Connexion</h2>
 <label>E-mail</label>
@@ -56,7 +57,6 @@ button.gray{background:#29435d;color:white}
 </section>
 
 <section id="app" class="hidden">
-
 <div class="card">
 <h2>Profil utilisateur</h2>
 <div id="profile" class="status">Chargement...</div>
@@ -65,10 +65,7 @@ button.gray{background:#29435d;color:white}
 
 <div id="adminPanel" class="card hidden">
 <h2>Administration</h2>
-<p class="small">
-24 opérations fixes par machine, réparties en quatre catégories.
-Les tâches existantes ne sont pas dupliquées.
-</p>
+<p class="small">24 opérations fixes par machine, réparties en quatre catégories. Les tâches existantes ne sont pas dupliquées.</p>
 <button id="initBtn">Initialiser les tâches</button>
 <div id="initMsg" class="status">En attente.</div>
 </div>
@@ -82,7 +79,6 @@ Les tâches existantes ne sont pas dupliquées.
 <button id="backBtn" class="gray">← Retour</button>
 <h2 id="detailName">Machine</h2>
 <div id="detailInfo" class="small"></div>
-
 <label>Filtrer les entretiens</label>
 <select id="frequencyFilter">
 <option value="all">Toutes les catégories</option>
@@ -91,36 +87,20 @@ Les tâches existantes ne sont pas dupliquées.
 <option value="Semestrielle">Entretien semestriel</option>
 <option value="Annuelle">Entretien annuel</option>
 </select>
-
 <div id="tasks">Chargement...</div>
 </div>
-
 </section>
 </main>
 
 <script type="module">
-
 import {initializeApp} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
-
 import {
-getAuth,
-signInWithEmailAndPassword,
-onAuthStateChanged,
-signOut
+getAuth,signInWithEmailAndPassword,onAuthStateChanged,signOut
 } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
-
 import {
-getFirestore,
-doc,
-getDoc,
-collection,
-getDocs,
-serverTimestamp,
-writeBatch,
-updateDoc,
-setDoc
+getFirestore,doc,getDoc,collection,getDocs,serverTimestamp,
+writeBatch,updateDoc
 } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
-
 
 const firebaseConfig = {
 apiKey:"AIzaSyAxdLwy1A-p5_qdY7OeinTQ0-_0xpuy0PE",
@@ -131,29 +111,24 @@ messagingSenderId:"227031997957",
 appId:"1:227031997957:web:435f5beb84cf4a0921866c"
 };
 
-const firebaseApp = initializeApp(firebaseConfig);
-const auth = getAuth(firebaseApp);
-const db = getFirestore(firebaseApp);
+const firebaseApp=initializeApp(firebaseConfig);
+const auth=getAuth(firebaseApp);
+const db=getFirestore(firebaseApp);
+const $=id=>document.getElementById(id);
 
-const $ = id => document.getElementById(id);
+let currentRole=null;
+let profileReady=false;
+let currentMachine=null;
+let selectedTaskIds=new Set();
 
-let currentRole = null;
-let profileReady = false;
-let currentMachine = null;
-
-const PROGRAM = [
-{
-frequency:"Hebdomadaire",
-tasks:[
+const PROGRAM=[
+{frequency:"Hebdomadaire",tasks:[
 "Nettoyer et contrôler le dispositif du chariot de coupe.",
 "Vérifier la lubrification des lances.",
 "Nettoyer et vérifier les tiges Rapière et les guides Rapière.",
 "Nettoyer et vérifier le jeu du mécanisme d'ouverture (Stäubli)."
-]
-},
-{
-frequency:"Mensuelle",
-tasks:[
+]},
+{frequency:"Mensuelle",tasks:[
 "Nettoyer le support du peigne.",
 "Vérifier le niveau d'huile des carters de peigne (gauche, centre et droite).",
 "Vérifier le niveau d'huile des carters de lance (gauche et droite).",
@@ -166,408 +141,54 @@ tasks:[
 "Contrôler l'armoire électrique (contamination/condensation).",
 "Vérifier le refroidissement de l'armoire électrique.",
 "Vérifier les rouleaux de pression et les guides Rapière."
-]
-},
-{
-frequency:"Semestrielle",
-tasks:[
+]},
+{frequency:"Semestrielle",tasks:[
 "Lubrifier la chaîne du palier de faisceau.",
 "Lubrifier le palier de la poulie de renvoi.",
 "Graisser les roulements à rouleaux de renvoi.",
 "Enlever les résidus de fil de l'essieu.",
 "Purger les condensats du réservoir d'air comprimé.",
 "Lubrifier l'arbre à cardan du Dobby 2688S."
-]
-},
-{
-frequency:"Annuelle",
-tasks:[
+]},
+{frequency:"Annuelle",tasks:[
 "Remplacer la cartouche du filtre à huile.",
 "Vérifier le serrage des vis d'ancrage au sol."
-]
-}
+]}
 ];
 
 function isAdmin(){
-return profileReady && currentRole === "admin";
+return profileReady&&currentRole==="admin";
 }
-
 function isTech(){
-return profileReady &&
-["technicien","technician","admin"].includes(currentRole);
+return profileReady&&["technicien","technician","admin"].includes(currentRole);
 }
-
 function todayISO(){
-const d = new Date();
-return d.getFullYear()+"-"+
-String(d.getMonth()+1).padStart(2,"0")+"-"+
-String(d.getDate()).padStart(2,"0");
+const d=new Date();
+return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
 }
-
 function dateLabel(iso){
 if(!iso)return "Non définie";
-const [y,m,d] = iso.split("-").map(Number);
+const [y,m,d]=iso.split("-").map(Number);
 return new Date(y,m-1,d).toLocaleDateString("fr-FR");
 }
-
 function addMonthsISO(iso,months){
-const [year,month,day] = iso.split("-").map(Number);
-const firstDay = new Date(year,month-1+months,1);
-const lastDay = new Date(
-firstDay.getFullYear(),
-firstDay.getMonth()+1,
-0
-).getDate();
-
-return firstDay.getFullYear()+"-"+
-String(firstDay.getMonth()+1).padStart(2,"0")+"-"+
-String(Math.min(day,lastDay)).padStart(2,"0");
+const [year,month,day]=iso.split("-").map(Number);
+const firstDay=new Date(year,month-1+months,1);
+const lastDay=new Date(firstDay.getFullYear(),firstDay.getMonth()+1,0).getDate();
+return firstDay.getFullYear()+"-"+String(firstDay.getMonth()+1).padStart(2,"0")+"-"+String(Math.min(day,lastDay)).padStart(2,"0");
 }
-
 function nextDueDate(frequency,fromDate){
-const date = fromDate || todayISO();
-
-if(frequency === "Hebdomadaire"){
-const d = new Date(date+"T12:00:00");
+const date=fromDate||todayISO();
+if(frequency==="Hebdomadaire"){
+const d=new Date(date+"T12:00:00");
 d.setDate(d.getDate()+7);
-return d.getFullYear()+"-"+
-String(d.getMonth()+1).padStart(2,"0")+"-"+
-String(d.getDate()).padStart(2,"0");
+return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
 }
-
-if(frequency === "Mensuelle")return addMonthsISO(date,1);
-if(frequency === "Semestrielle")return addMonthsISO(date,6);
-if(frequency === "Annuelle")return addMonthsISO(date,12);
-
+if(frequency==="Mensuelle")return addMonthsISO(date,1);
+if(frequency==="Semestrielle")return addMonthsISO(date,6);
+if(frequency==="Annuelle")return addMonthsISO(date,12);
 throw new Error("Fréquence inconnue");
 }
-
-
-// CONNEXION
-
-$("loginBtn").onclick = async()=>{
-$("loginMsg").textContent="Connexion en cours...";
-
-try{
-await signInWithEmailAndPassword(
-auth,
-$("email").value.trim(),
-$("password").value
-);
-}catch(e){
-$("loginMsg").textContent="Erreur : "+e.message;
-}
-};
-
-$("logoutBtn").onclick=()=>signOut(auth);
-
-$("backBtn").onclick=()=>{
-currentMachine=null;
-$("machineDetail").classList.add("hidden");
-$("machineListCard").classList.remove("hidden");
-};
-
-$("frequencyFilter").onchange=renderTasks;
-
-
-// PROFIL FIREBASE
-
-onAuthStateChanged(auth,async user=>{
-
-if(!user){
-profileReady=false;
-currentRole=null;
-currentMachine=null;
-$("login").classList.remove("hidden");
-$("app").classList.add("hidden");
-return;
-}
-
-$("login").classList.add("hidden");
-$("app").classList.remove("hidden");
-$("profile").textContent="Lecture du profil...";
-
-try{
-
-const profileSnap=await getDoc(doc(db,"Users",user.uid));
-
-if(!profileSnap.exists()){
-profileReady=false;
-$("profile").textContent="Profil introuvable.";
-return;
-}
-
-const profile=profileSnap.data();
-
-currentRole=profile.role;
-profileReady=profile.active===true;
-
-$("profile").textContent=
-"E-mail : "+(user.email||"")+
-"\nRôle : "+currentRole+
-"\nCompte actif : "+profile.active;
-
-$("adminPanel").classList.toggle("hidden",!isAdmin());
-
-if(!profileReady){
-$("machines").textContent="Compte inactif.";
-return;
-}
-
-await loadMachines();
-
-if(isAdmin()){
-await initializeSchedule(false);
-}
-
-}catch(e){
-$("profile").textContent="Erreur : "+e.message;
-}
-
-});
-
-
-// MACHINES
-
-async function loadMachines(){
-
-$("machines").textContent="Chargement des machines...";
-
-const snap=await getDocs(collection(db,"machines"));
-const machines=[];
-
-snap.forEach(d=>{
-machines.push({id:d.id,...d.data()});
-});
-
-$("machines").textContent="";
-
-if(!machines.length){
-$("machines").textContent="Aucune machine trouvée.";
-return;
-}
-
-machines.sort((a,b)=>
-(a.name||a.id).localeCompare(b.name||b.id)
-);
-
-machines.forEach(machine=>{
-
-const button=document.createElement("button");
-button.className="machine";
-
-const title=document.createElement("strong");
-title.textContent=machine.name||machine.id;
-
-const description=document.createElement("span");
-description.textContent=machine.description||"Ouvrir la maintenance";
-
-button.append(title,description);
-button.onclick=()=>openMachine(machine);
-
-$("machines").append(button);
-
-});
-}
-
-function openMachine(machine){
-
-currentMachine=machine;
-
-$("machineListCard").classList.add("hidden");
-$("machineDetail").classList.remove("hidden");
-
-$("detailName").textContent=machine.name||machine.id;
-$("detailInfo").textContent="Référence : "+machine.id;
-
-$("frequencyFilter").value="all";
-renderTasks();
-window.scrollTo(0,0);
-}
-
-
-// INITIALISATION DES 24 TÂCHES PAR MACHINE
-
-async function initializeSchedule(showMessage=true){
-
-if(!isAdmin())return;
-
-if(showMessage){
-$("initMsg").textContent="Initialisation en cours...";
-}
-
-try{
-
-const machinesSnap=await getDocs(collection(db,"machines"));
-
-let created=0;
-let existing=0;
-
-let batch=writeBatch(db);
-let batchCount=0;
-
-for(const machineDoc of machinesSnap.docs){
-
-const machineId=machineDoc.id;
-const machineName=machineDoc.data().name||machineId;
-
-// IMPORTANT : recommencer à 1 pour chaque machine
-let taskNumber=0;
-
-for(const group of PROGRAM){
-
-for(const taskName of group.tasks){
-
-taskNumber++;
-
-const taskId=machineId+"_task_"+taskNumber;
-const taskRef=doc(db,"maintenance_tasks",taskId);
-
-const oldTask=await getDoc(taskRef);
-
-if(oldTask.exists()){
-existing++;
-continue;
-}
-
-batch.set(taskRef,{
-machineId:machineId,
-machineName:machineName,
-taskNumber:taskNumber,
-frequency:group.frequency,
-task:taskName,
-nextDueDate:todayISO(),
-status:"todo",
-completedCount:0,
-createdAt:serverTimestamp(),
-updatedAt:serverTimestamp()
-});
-
-created++;
-batchCount++;
-
-if(batchCount>=400){
-await batch.commit();
-batch=writeBatch(db);
-batchCount=0;
-}
-
-}
-}
-}
-
-if(batchCount>0){
-await batch.commit();
-}
-
-$("initMsg").textContent=
-"Initialisation terminée.\n"+
-"Tâches créées : "+created+
-"\nTâches déjà présentes : "+existing+
-"\n24 tâches prévues par machine.";
-
-}catch(e){
-
-$("initMsg").textContent="Erreur : "+e.message;
-
-}
-}
-
-$("initBtn").onclick=()=>initializeSchedule(true);
-
-
-// CHARGEMENT DES TÂCHES
-
-async function loadMaintenanceTasks(machine){
-
-const snap=await getDocs(collection(db,"maintenance_tasks"));
-const tasks=[];
-
-snap.forEach(d=>{
-const data=d.data();
-
-if(data.machineId===machine.id){
-tasks.push({id:d.id,...data});
-}
-});
-
-const order={
-"Hebdomadaire":1,
-"Mensuelle":2,
-"Semestrielle":3,
-"Annuelle":4
-};
-
-tasks.sort((a,b)=>
-(order[a.frequency]||9)-(order[b.frequency]||9)||
-(a.taskNumber||0)-(b.taskNumber||0)
-);
-
-return tasks;
-}
-
-
-// AFFICHAGE PAR CATÉGORIE
-
-async function renderTasks(){
-
-if(!currentMachine)return;
-
-$("tasks").textContent="Chargement des tâches...";
-
-try{
-
-const tasks=await loadMaintenanceTasks(currentMachine);
-
-$("tasks").textContent="";
-
-const filter=$("frequencyFilter").value;
-
-const filtered=tasks.filter(t=>
-filter==="all"||t.frequency===filter
-);
-
-if(!filtered.length){
-$("tasks").textContent=
-"Aucune tâche trouvée. Vérifie l'initialisation.";
-return;
-}
-
-for(const group of PROGRAM){
-
-const groupTasks=filtered.filter(t=>
-t.frequency===group.frequency
-);
-
-if(!groupTasks.length)continue;
-
-const heading=document.createElement("h3");
-heading.className="category";
-heading.textContent=
-"Entretien "+group.frequency+
-" — "+groupTasks.length+" tâches";
-
-$("tasks").append(heading);
-
-groupTasks.forEach(task=>{
-$("tasks").append(makeTaskCard(task));
-});
-
-}
-
-const total=document.createElement("div");
-total.className="small";
-total.textContent="Tâches affichées : "+filtered.length+" / 24";
-$("tasks").append(total);
-
-}catch(e){
-$("tasks").textContent="Erreur : "+e.message;
-}
-}
-
-
-// ÉTATS ET CARTES
-
 function statusLabel(status){
 const labels={
 todo:"À faire",
@@ -578,8 +199,195 @@ rejected:"Refusée"
 return labels[status]||status;
 }
 
-function makeTaskCard(task){
+// CONNEXION
+$("loginBtn").onclick=async()=>{
+$("loginMsg").textContent="Connexion en cours...";
+try{
+await signInWithEmailAndPassword(auth,$("email").value.trim(),$("password").value);
+}catch(e){
+$("loginMsg").textContent="Erreur : "+e.message;
+}
+};
+$("logoutBtn").onclick=()=>signOut(auth);
+$("backBtn").onclick=()=>{
+currentMachine=null;
+selectedTaskIds.clear();
+$("machineDetail").classList.add("hidden");
+$("machineListCard").classList.remove("hidden");
+};
+$("frequencyFilter").onchange=renderTasks;
 
+// PROFIL FIREBASE
+onAuthStateChanged(auth,async user=>{
+if(!user){
+profileReady=false;
+currentRole=null;
+currentMachine=null;
+selectedTaskIds.clear();
+$("login").classList.remove("hidden");
+$("app").classList.add("hidden");
+return;
+}
+$("login").classList.add("hidden");
+$("app").classList.remove("hidden");
+$("profile").textContent="Lecture du profil...";
+try{
+const profileSnap=await getDoc(doc(db,"Users",user.uid));
+if(!profileSnap.exists()){
+profileReady=false;
+$("profile").textContent="Profil introuvable.";
+return;
+}
+const profile=profileSnap.data();
+currentRole=profile.role;
+profileReady=profile.active===true;
+$("profile").textContent=
+"E-mail : "+(user.email||"")+
+"\nRôle : "+currentRole+
+"\nCompte actif : "+profile.active;
+$("adminPanel").classList.toggle("hidden",!isAdmin());
+if(!profileReady){
+$("machines").textContent="Compte inactif.";
+return;
+}
+await loadMachines();
+if(isAdmin())await initializeSchedule(false);
+}catch(e){
+$("profile").textContent="Erreur : "+e.message;
+}
+});
+
+// MACHINES
+async function loadMachines(){
+$("machines").textContent="Chargement des machines...";
+const snap=await getDocs(collection(db,"machines"));
+const machines=[];
+snap.forEach(d=>machines.push({id:d.id,...d.data()}));
+$("machines").textContent="";
+if(!machines.length){
+$("machines").textContent="Aucune machine trouvée.";
+return;
+}
+machines.sort((a,b)=>(a.name||a.id).localeCompare(b.name||b.id));
+machines.forEach(machine=>{
+const button=document.createElement("button");
+button.className="machine";
+const title=document.createElement("strong");
+title.textContent=machine.name||machine.id;
+const description=document.createElement("span");
+description.textContent=machine.description||"Ouvrir la maintenance";
+button.append(title,description);
+button.onclick=()=>openMachine(machine);
+$("machines").append(button);
+});
+}
+function openMachine(machine){
+currentMachine=machine;
+selectedTaskIds.clear();
+$("machineListCard").classList.add("hidden");
+$("machineDetail").classList.remove("hidden");
+$("detailName").textContent=machine.name||machine.id;
+$("detailInfo").textContent="Référence : "+machine.id;
+$("frequencyFilter").value="all";
+renderTasks();
+window.scrollTo(0,0);
+}
+
+// INITIALISATION DES 24 TÂCHES PAR MACHINE
+async function initializeSchedule(showMessage=true){
+if(!isAdmin())return;
+if(showMessage)$("initMsg").textContent="Initialisation en cours...";
+try{
+const machinesSnap=await getDocs(collection(db,"machines"));
+let created=0,existing=0;
+let batch=writeBatch(db),batchCount=0;
+for(const machineDoc of machinesSnap.docs){
+const machineId=machineDoc.id;
+const machineName=machineDoc.data().name||machineId;
+let taskNumber=0;
+for(const group of PROGRAM){
+for(const taskName of group.tasks){
+taskNumber++;
+const taskId=machineId+"_task_"+taskNumber;
+const taskRef=doc(db,"maintenance_tasks",taskId);
+const oldTask=await getDoc(taskRef);
+if(oldTask.exists()){
+existing++;
+continue;
+}
+batch.set(taskRef,{
+machineId,machineName,taskNumber,
+frequency:group.frequency,task:taskName,
+nextDueDate:todayISO(),status:"todo",completedCount:0,
+createdAt:serverTimestamp(),updatedAt:serverTimestamp()
+});
+created++;batchCount++;
+if(batchCount>=400){
+await batch.commit();
+batch=writeBatch(db);batchCount=0;
+}
+}
+}
+}
+if(batchCount>0)await batch.commit();
+$("initMsg").textContent=
+"Initialisation terminée.\nTâches créées : "+created+
+"\nTâches déjà présentes : "+existing+
+"\n24 tâches prévues par machine.";
+}catch(e){
+$("initMsg").textContent="Erreur : "+e.message;
+}
+}
+$("initBtn").onclick=()=>initializeSchedule(true);
+
+// CHARGEMENT DES TÂCHES
+async function loadMaintenanceTasks(machine){
+const snap=await getDocs(collection(db,"maintenance_tasks"));
+const tasks=[];
+snap.forEach(d=>{
+const data=d.data();
+if(data.machineId===machine.id)tasks.push({id:d.id,...data});
+});
+const order={"Hebdomadaire":1,"Mensuelle":2,"Semestrielle":3,"Annuelle":4};
+tasks.sort((a,b)=>(order[a.frequency]||9)-(order[b.frequency]||9)||(a.taskNumber||0)-(b.taskNumber||0));
+return tasks;
+}
+
+// AFFICHAGE DES CATÉGORIES ET CASES À COCHER
+async function renderTasks(){
+if(!currentMachine)return;
+$("tasks").textContent="Chargement des tâches...";
+try{
+const tasks=await loadMaintenanceTasks(currentMachine);
+$("tasks").textContent="";
+const filter=$("frequencyFilter").value;
+const filtered=tasks.filter(t=>filter==="all"||t.frequency===filter);
+if(!filtered.length){
+$("tasks").textContent="Aucune tâche trouvée. Vérifie l'initialisation.";
+return;
+}
+for(const group of PROGRAM){
+const groupTasks=filtered.filter(t=>t.frequency===group.frequency);
+if(!groupTasks.length)continue;
+
+const heading=document.createElement("h3");
+heading.className="category";
+heading.textContent="Entretien "+group.frequency+" — "+groupTasks.length+" tâches";
+$("tasks").append(heading);
+
+groupTasks.forEach(task=>$("tasks").append(makeTaskCard(task)));
+$("tasks").append(makeGroupActions(groupTasks,group.frequency));
+}
+const total=document.createElement("div");
+total.className="small";
+total.textContent="Tâches affichées : "+filtered.length+" / 24";
+$("tasks").append(total);
+}catch(e){
+$("tasks").textContent="Erreur : "+e.message;
+}
+}
+
+function makeTaskCard(task){
 const card=document.createElement("div");
 card.className="task";
 
@@ -590,170 +398,170 @@ const due=document.createElement("span");
 due.textContent="Prochaine échéance : "+dateLabel(task.nextDueDate);
 
 const status=document.createElement("span");
-status.innerHTML=
-'<span class="pill">'+statusLabel(task.status)+
-'</span><span class="pill">'+task.frequency+'</span>';
-
+status.innerHTML='<span class="pill">'+statusLabel(task.status)+'</span><span class="pill">'+task.frequency+'</span>';
 card.append(title,due,status);
 
 if(task.completedCount>0){
-
 const history=document.createElement("span");
-history.textContent=
-"Interventions validées : "+task.completedCount+
+history.textContent="Interventions validées : "+task.completedCount+
 " • Dernière intervention : "+dateLabel(task.lastCompletedDate);
-
 card.append(history);
 }
-
 if(task.adminComment){
 const comment=document.createElement("span");
 comment.textContent="Commentaire : "+task.adminComment;
 card.append(comment);
 }
 
-const actions=document.createElement("div");
-actions.className="task-actions";
-
-// Démarrer une tâche
-
-if(isTech()&&["todo","rejected"].includes(task.status)){
-
-const start=document.createElement("button");
-start.textContent="Commencer";
-
-start.onclick=()=>changeTask(task.id,{
-status:"in_progress",
-startedAt:serverTimestamp(),
-adminComment:""
-});
-
-actions.append(start);
-}
-
-// Demander la validation
-
-if(isTech()&&task.status==="in_progress"){
-
-const submit=document.createElement("button");
-submit.className="green";
-submit.textContent="Demander validation";
-
-submit.onclick=()=>changeTask(task.id,{
-status:"pending_validation",
-submittedAt:serverTimestamp(),
-adminComment:""
-});
-
-actions.append(submit);
-}
-
-// Validation ou refus par administrateur
-
-if(isAdmin()&&task.status==="pending_validation"){
-
-const comment=document.createElement("textarea");
-comment.placeholder="Commentaire obligatoire en cas de refus";
-
-const approve=document.createElement("button");
-approve.className="green";
-approve.textContent="Valider l'entretien";
-
-approve.onclick=()=>approveTask(task);
-
-const reject=document.createElement("button");
-reject.className="red";
-reject.textContent="Refuser";
-
-reject.onclick=()=>{
-
-if(!comment.value.trim()){
-alert("Indique la raison du refus.");
-return;
-}
-
-changeTask(task.id,{
-status:"rejected",
-rejectedAt:serverTimestamp(),
-rejectedBy:auth.currentUser.uid,
-adminComment:comment.value.trim()
-});
-
+// Une case à cocher par tâche. Aucun bouton individuel.
+if(isTech()&&["todo","rejected","in_progress"].includes(task.status)){
+const label=document.createElement("label");
+label.className="task-check";
+const checkbox=document.createElement("input");
+checkbox.type="checkbox";
+checkbox.checked=selectedTaskIds.has(task.id);
+checkbox.onchange=()=>{
+if(checkbox.checked)selectedTaskIds.add(task.id);
+else selectedTaskIds.delete(task.id);
+renderTasks();
 };
-
-actions.append(comment,approve,reject);
+const text=document.createElement("span");
+text.textContent="Tâche réalisée";
+label.append(checkbox,text);
+card.append(label);
 }
-
-if(actions.childNodes.length){
-card.append(actions);
-}
-
 return card;
 }
 
+// BOUTON UNIQUE DE CLÔTURE POUR CHAQUE GROUPE
+function makeGroupActions(groupTasks,frequency){
+const panel=document.createElement("div");
+panel.className="group-panel";
 
-// MODIFICATION DE L'ÉTAT
+const allPending=groupTasks.every(t=>t.status==="pending_validation");
+const allSelectable=groupTasks.every(t=>["todo","rejected","in_progress"].includes(t.status));
 
-async function changeTask(taskId,changes){
+if(allPending){
+const info=document.createElement("div");
+info.className="small";
+info.textContent="Toutes les tâches sont terminées. Le groupe attend la validation de l'administrateur.";
+panel.append(info);
+if(isAdmin()){
+const approve=document.createElement("button");
+approve.className="green";
+approve.textContent="Valider tout l'entretien";
+approve.onclick=()=>approveGroup(groupTasks,frequency);
+panel.append(approve);
+}
+return panel;
+}
 
-if(!profileReady)return;
+if(isTech()&&allSelectable){
+const count=groupTasks.filter(t=>selectedTaskIds.has(t.id)).length;
+const progressText=document.createElement("div");
+progressText.className="small";
+progressText.textContent="Progression : "+count+" / "+groupTasks.length+" tâches réalisées";
+panel.append(progressText);
+
+const progress=document.createElement("div");
+progress.className="progress";
+const bar=document.createElement("div");
+bar.className="progress-bar";
+bar.style.width=(count/groupTasks.length*100)+"%";
+progress.append(bar);
+panel.append(progress);
+
+const close=document.createElement("button");
+close.className="green";
+close.textContent="Clôturer l'entretien";
+close.disabled=count!==groupTasks.length;
+close.onclick=()=>submitGroup(groupTasks,frequency);
+panel.append(close);
+return panel;
+}
+
+const info=document.createElement("div");
+info.className="small";
+info.textContent="Ce groupe contient des tâches dans des états différents. Vérifie leur état avant de poursuivre.";
+panel.append(info);
+return panel;
+}
+
+// ENVOI GLOBAL À L'ADMINISTRATEUR
+async function submitGroup(groupTasks,frequency){
+if(!isTech())return;
+const allChecked=groupTasks.every(t=>selectedTaskIds.has(t.id));
+if(!allChecked){
+alert("Coche toutes les tâches réalisées avant de clôturer.");
+return;
+}
+if(!confirm("Envoyer les "+groupTasks.length+" tâches de l'entretien "+frequency+" à l'administrateur pour validation ?"))return;
 
 try{
-
-await updateDoc(
-doc(db,"maintenance_tasks",taskId),
-{
-...changes,
+// Étape 1 : démarrer les tâches qui ne le sont pas encore.
+let batch=writeBatch(db);
+let changes=0;
+for(const task of groupTasks){
+if(task.status==="in_progress")continue;
+batch.update(doc(db,"maintenance_tasks",task.id),{
+status:"in_progress",
+startedAt:serverTimestamp(),
+adminComment:"",
 updatedAt:serverTimestamp()
+});
+changes++;
 }
-);
+if(changes>0)await batch.commit();
 
+// Étape 2 : envoyer toutes les tâches du groupe à la validation.
+batch=writeBatch(db);
+for(const task of groupTasks){
+batch.update(doc(db,"maintenance_tasks",task.id),{
+status:"pending_validation",
+submittedAt:serverTimestamp(),
+adminComment:"",
+updatedAt:serverTimestamp()
+});
+}
+await batch.commit();
+
+selectedTaskIds.clear();
+alert("Entretien "+frequency+" envoyé à l'administrateur pour validation.");
 await renderTasks();
-
 }catch(e){
-alert("Erreur : "+e.message);
+alert("Erreur lors de la clôture : "+e.message);
+await renderTasks();
 }
 }
 
-
-// VALIDATION ET HISTORIQUE
-
-async function approveTask(task){
-
+// VALIDATION GLOBALE PAR L'ADMINISTRATEUR
+async function approveGroup(groupTasks,frequency){
 if(!isAdmin())return;
-
-if(!confirm("Confirmer la validation de cette intervention ?"))return;
+if(!groupTasks.every(t=>t.status==="pending_validation")){
+alert("Toutes les tâches du groupe doivent être en attente de validation.");
+return;
+}
+if(!confirm("Confirmer la validation des "+groupTasks.length+" tâches de l'entretien "+frequency+" ?"))return;
 
 try{
-
-const taskRef=doc(db,"maintenance_tasks",task.id);
-
-const historyRef=doc(
-collection(db,"maintenance_history")
-);
-
 const completedDate=todayISO();
-
-const nextDate=nextDueDate(
-task.frequency,
-completedDate
-);
-
 const batch=writeBatch(db);
 
+for(const task of groupTasks){
+const nextDate=nextDueDate(task.frequency,completedDate);
+const historyRef=doc(collection(db,"maintenance_history"));
 batch.set(historyRef,{
 taskId:task.id,
 machineId:task.machineId,
 machineName:task.machineName,
 task:task.task,
 frequency:task.frequency,
-completedDate:completedDate,
+completedDate,
 nextDueDate:nextDate,
 approvedBy:auth.currentUser.uid,
 approvedAt:serverTimestamp()
 });
-
-batch.update(taskRef,{
+batch.update(doc(db,"maintenance_tasks",task.id),{
 status:"todo",
 nextDueDate:nextDate,
 lastCompletedDate:completedDate,
@@ -763,21 +571,16 @@ completedCount:(task.completedCount||0)+1,
 adminComment:"",
 updatedAt:serverTimestamp()
 });
+}
 
 await batch.commit();
-
-alert(
-"Intervention validée.\n"+
-"Nouvelle échéance : "+dateLabel(nextDate)
-);
-
+selectedTaskIds.clear();
+alert("Entretien "+frequency+" validé. Toutes les tâches du groupe sont clôturées et leurs prochaines échéances sont calculées.");
 await renderTasks();
-
 }catch(e){
-alert("Erreur lors de la validation : "+e.message);
+alert("Erreur lors de la validation du groupe : "+e.message);
 }
 }
-
 </script>
 </body>
 </html>
