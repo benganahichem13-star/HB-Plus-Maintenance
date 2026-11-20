@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -6,40 +5,29 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#10243a">
 <title>HB+ Maintenance</title>
-
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#0b1725;color:#f4f8fc;font-family:Arial,sans-serif}
 header{background:#10243a;padding:18px;display:flex;align-items:center;justify-content:space-between;gap:12px}
-header h1{margin:0;font-size:23px}
-.header-title{min-width:0}
+header h1{margin:0;font-size:23px}.header-title{min-width:0}
 .menu-dot{flex:0 0 46px;width:46px;height:46px;border-radius:50%;padding:0;margin:0;background:#d00070;color:white;font-size:25px;line-height:1;box-shadow:0 0 0 4px #d0007022}
 .menu-dot:focus-visible{outline:3px solid white;outline-offset:3px}
 .drawer-backdrop{position:fixed;inset:0;background:#0009;z-index:1000}
 .drawer{position:fixed;top:0;right:0;height:100vh;height:100dvh;width:min(88vw,430px);overflow-y:auto;background:#10243a;border-left:1px solid #34516d;padding:18px;z-index:1001;box-shadow:-12px 0 35px #0008}
 .drawer-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}
-.drawer-head h2{margin:0}
-.drawer-section{background:#0c1b2b;border:1px solid #29435d;border-radius:10px;padding:13px;margin:12px 0}
-.drawer-section h3{margin:0 0 12px;color:#55b5ff;font-size:16px}
-.drawer .status{overflow-wrap:anywhere}
+.drawer-head h2{margin:0}.drawer-section{background:#0c1b2b;border:1px solid #29435d;border-radius:10px;padding:13px;margin:12px 0}
+.drawer-section h3{margin:0 0 12px;color:#55b5ff;font-size:16px}.drawer .status{overflow-wrap:anywhere}
 main{max-width:900px;margin:auto;padding:14px}
 .card{background:#14263a;border:1px solid #29435d;border-radius:13px;padding:15px;margin-bottom:14px}
-h2{font-size:19px;margin:5px 0 13px}
-h3{font-size:16px;color:#55b5ff;margin:18px 0 9px}
+h2{font-size:19px;margin:5px 0 13px}h3{font-size:16px;color:#55b5ff;margin:18px 0 9px}
 label{display:block;margin:12px 0 5px;color:#b5c5d5}
 input,select,textarea{width:100%;padding:12px;background:#0c1b2b;color:white;border:1px solid #34516d;border-radius:8px;font-size:15px}
-textarea{min-height:70px}
-button{border:0;border-radius:8px;padding:11px 14px;margin:7px 5px 0 0;background:#3b9cff;color:#071727;font-weight:bold;cursor:pointer}
-button.green{background:#23845d;color:white}
-button.red{background:#a94444;color:white}
-button.gray{background:#29435d;color:white}
-button:disabled{opacity:.4;cursor:not-allowed}
-.hidden{display:none!important}
-.small{font-size:13px;color:#a9bbcd}
-.status{background:#0c1b2b;padding:10px;border-radius:8px;margin:8px 0;white-space:pre-wrap;overflow-wrap:anywhere}
+textarea{min-height:70px}button{border:0;border-radius:8px;padding:11px 14px;margin:7px 5px 0 0;background:#3b9cff;color:#071727;font-weight:bold;cursor:pointer}
+button.green{background:#23845d;color:white}button.red{background:#a94444;color:white}button.gray{background:#29435d;color:white}
+button:disabled{opacity:.4;cursor:not-allowed}.hidden{display:none!important}
+.small{font-size:13px;color:#a9bbcd}.status{background:#0c1b2b;padding:10px;border-radius:8px;margin:8px 0;white-space:pre-wrap;overflow-wrap:anywhere}
 .machine,.task{background:#0c1b2b;border:1px solid #29435d;border-radius:10px;padding:13px;margin:9px 0}
-.machine{width:100%;text-align:left;color:white}
-.machine strong,.task strong{display:block;color:#55b5ff;font-size:16px}
+.machine{width:100%;text-align:left;color:white}.machine strong,.task strong{display:block;color:#55b5ff;font-size:16px}
 .machine span,.task span{display:block;color:#b5c5d5;font-size:13px;margin-top:6px}
 .pill{display:inline-block;background:#29435d;padding:5px 9px;border-radius:20px;font-size:12px;margin:7px 5px 0 0}
 .category{border-bottom:1px solid #34516d;padding-bottom:7px;margin-top:20px}
@@ -52,1262 +40,555 @@ button:disabled{opacity:.4;cursor:not-allowed}
 .stat-box{background:#0c1b2b;border:1px solid #29435d;border-radius:10px;padding:12px;min-width:0}
 .stat-box.interactive{cursor:pointer;text-align:left;color:inherit;font:inherit;width:100%;margin:0}
 .stat-box.interactive:hover,.stat-box.interactive:focus-visible{background:#142b42;border-color:#55b5ff;outline:2px solid #55b5ff}
-.stat-hint{font-size:10px;color:#8fa9c0;margin-top:7px}
-.stat-number{font-size:24px;font-weight:bold;color:#55b5ff}
+.stat-hint{font-size:10px;color:#8fa9c0;margin-top:7px}.stat-number{font-size:24px;font-weight:bold;color:#55b5ff}
 .stat-label{font-size:12px;color:#b5c5d5;margin-top:5px}
 .history-item{background:#0c1b2b;border:1px solid #29435d;border-radius:9px;padding:12px;margin:9px 0}
 .history-item strong{display:block;color:#55b5ff}
 .dashboard-panel{background:#0c1b2b;border:1px solid #29435d;border-radius:10px;padding:13px;min-width:0;margin-top:12px}
-
-/* PARC MACHINES */
-.stat-box.machine-stat{cursor:pointer}
-.stat-box.machine-stat.expanded{grid-column:1/-1;background:#142b42;border-color:#55b5ff}
+.stat-box.machine-stat{cursor:pointer}.stat-box.machine-stat.expanded{grid-column:1/-1;background:#142b42;border-color:#55b5ff}
 .machine-park-inline{margin-top:13px;padding-top:10px;border-top:1px solid #34516d;text-align:left;cursor:default}
 .machine-park-head{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
-.machine-park-head h3{margin:4px 0}
-.machine-park-count{font-size:12px;color:#a9bbcd;margin:7px 0}
+.machine-park-head h3{margin:4px 0}.machine-park-count{font-size:12px;color:#a9bbcd;margin:7px 0}
 .park-machine{display:block;width:100%;text-align:left;color:white;background:#14263a;border:1px solid #29435d;border-radius:9px;padding:13px;margin:7px 0}
-.park-machine strong{display:block;color:#55b5ff;font-size:16px}
-.park-machine span{display:block;color:#b5c5d5;font-size:12px;margin-top:5px}
-.frequency-row{margin:11px 0}
-.frequency-head{display:flex;justify-content:space-between;gap:8px;font-size:12px;color:#c6d5e3}
+.park-machine strong{display:block;color:#55b5ff;font-size:16px}.park-machine span{display:block;color:#b5c5d5;font-size:12px;margin-top:5px}
+.frequency-row{margin:11px 0}.frequency-head{display:flex;justify-content:space-between;gap:8px;font-size:12px;color:#c6d5e3}
 .frequency-track{height:7px;background:#29435d;border-radius:8px;overflow:hidden;margin-top:6px}
 .frequency-fill{height:100%;background:#55b5ff;border-radius:8px}
-.recent-row{padding:9px 0;border-bottom:1px solid #29435d}
-.recent-row:last-child{border-bottom:0}
-.recent-row strong{display:block;font-size:13px;color:#eaf4fc}
-.recent-row span{display:block;font-size:12px;color:#a9bbcd;margin-top:4px}
-
-/* SIGNATURE BY BENGANA */
+.recent-row{padding:9px 0;border-bottom:1px solid #29435d}.recent-row:last-child{border-bottom:0}
+.recent-row strong{display:block;font-size:13px;color:#eaf4fc}.recent-row span{display:block;font-size:12px;color:#a9bbcd;margin-top:4px}
 .app-footer{display:flex;justify-content:center;align-items:center;padding:18px 12px 22px;margin:12px auto 4px;text-align:center}
 .app-footer span{position:relative;display:inline-block;padding:0 18px 9px;color:#ff5aad;font-family:"Segoe Script","Brush Script MT",cursive;font-size:19px;font-style:italic;font-weight:600;letter-spacing:1.2px;text-shadow:0 0 12px #d0007055}
 .app-footer span::after{content:"";position:absolute;left:50%;bottom:0;width:100%;height:4px;border-radius:50%;background:#d00070;transform:translateX(-50%);box-shadow:0 0 9px #d0007066}
-
 @media(min-width:600px){.stats-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
 </style>
 </head>
-
 <body>
 <header>
-<div class="header-title">
-<h1>HB+ — Maintenance industrielle</h1>
-<div class="small">Gestion de la maintenance préventive</div>
-</div>
-<button id="menuButton" class="menu-dot hidden" type="button" aria-label="Ouvrir le menu" aria-expanded="false">●</button>
+ <div class="header-title"><h1>HB+ — Maintenance industrielle</h1><div class="small">Gestion de la maintenance préventive</div></div>
+ <button id="menuButton" class="menu-dot hidden" type="button" aria-label="Ouvrir le menu" aria-expanded="false">●</button>
 </header>
-
 <div id="drawerBackdrop" class="drawer-backdrop hidden"></div>
-
 <aside id="appDrawer" class="drawer hidden" aria-label="Menu et informations">
-<div class="drawer-head">
-<h2>Menu</h2>
-<button id="closeDrawerBtn" class="gray" type="button">Fermer ✕</button>
-</div>
-
-<section class="drawer-section">
-<h3>Profil utilisateur</h3>
-<div id="profile" class="status">Chargement...</div>
-<button id="logoutBtn" class="gray">Déconnexion</button>
-</section>
-
-<section id="drawerAdminSection" class="drawer-section hidden">
-<h3>Administration</h3>
-<p class="small">24 opérations fixes par machine, réparties en quatre catégories. Les tâches existantes ne sont pas dupliquées.</p>
-<button id="initBtn">Initialiser les tâches</button>
-<div id="initMsg" class="status">En attente.</div>
-</section>
-
-<section class="drawer-section">
-<h3>Répartition des opérations</h3>
-<div id="frequencyBreakdown" class="small">Chargement...</div>
-</section>
-
-<section class="drawer-section">
-<h3>Dernières interventions validées</h3>
-<div id="recentActivity" class="small">Chargement...</div>
-</section>
+ <div class="drawer-head"><h2>Menu</h2><button id="closeDrawerBtn" class="gray" type="button">Fermer ✕</button></div>
+ <section class="drawer-section"><h3>Profil utilisateur</h3><div id="profile" class="status">Chargement...</div><button id="logoutBtn" class="gray">Déconnexion</button></section>
+ <section id="drawerAdminSection" class="drawer-section hidden"><h3>Administration</h3><p class="small">24 opérations fixes par machine, réparties en quatre catégories. Les tâches existantes ne sont pas dupliquées.</p><button id="initBtn">Vérifier / initialiser les tâches manquantes</button><div id="initMsg" class="status">En attente.</div></section>
+ <section class="drawer-section"><h3>Répartition des opérations</h3><div id="frequencyBreakdown" class="small">Chargement...</div></section>
+ <section class="drawer-section"><h3>Dernières interventions validées</h3><div id="recentActivity" class="small">Chargement...</div></section>
 </aside>
-
 <main>
-<section id="login" class="card">
-<h2>Connexion</h2>
-<label>E-mail</label>
-<input id="email" type="email" autocomplete="username">
-<label>Mot de passe</label>
-<input id="password" type="password" autocomplete="current-password">
-<button id="loginBtn">Se connecter</button>
-<div id="loginMsg" class="status">Veuillez vous connecter.</div>
-</section>
-
-<section id="app" class="hidden">
-<div id="dashboardCard" class="card">
-<h2>Tableau de bord général</h2>
-<div id="dashboardStats" class="stats-grid">Chargement...</div>
-<div id="dashboardDetails" class="dashboard-panel hidden"></div>
-<div class="small">Progression globale de la maintenance</div>
-<div class="progress"><div id="globalProgressBar" class="progress-bar"></div></div>
-<div id="globalProgressText" class="small">Calcul en cours...</div>
-</div>
-
-<div id="machineDetail" class="card hidden">
-<button id="backBtn" class="gray">← Retour au tableau de bord</button>
-<h2 id="detailName">Machine</h2>
-<div id="detailInfo" class="small"></div>
-<div class="card">
-<h2>Tableau de suivi</h2>
-<div id="machineStats" class="stats-grid"></div>
-</div>
-<label>Filtrer les entretiens</label>
-<select id="frequencyFilter">
-<option value="all">Toutes les catégories</option>
-<option value="Hebdomadaire">Entretien hebdomadaire</option>
-<option value="Mensuelle">Entretien mensuel</option>
-<option value="Semestrielle">Entretien semestriel</option>
-<option value="Annuelle">Entretien annuel</option>
-</select>
-<div id="tasks">Chargement...</div>
-<div class="card">
-<h2>Historique des interventions</h2>
-<div id="history" class="small">Chargement de l'historique...</div>
-</div>
-</div>
-</section>
-
-<footer class="app-footer"><span>By Bengana</span></footer>
+ <section id="login" class="card">
+  <h2>Connexion</h2><label>E-mail</label><input id="email" type="email" autocomplete="username">
+  <label>Mot de passe</label><input id="password" type="password" autocomplete="current-password">
+  <button id="loginBtn">Se connecter</button><div id="loginMsg" class="status">Veuillez vous connecter.</div>
+ </section>
+ <section id="app" class="hidden">
+  <div id="dashboardCard" class="card">
+   <h2>Tableau de bord général</h2><div id="dashboardStats" class="stats-grid">Chargement...</div>
+   <div id="dashboardDetails" class="dashboard-panel hidden"></div>
+   <div class="small">Progression globale de la maintenance</div><div class="progress"><div id="globalProgressBar" class="progress-bar"></div></div>
+   <div id="globalProgressText" class="small">Calcul en cours...</div>
+  </div>
+  <div id="machineDetail" class="card hidden">
+   <button id="backBtn" class="gray">← Retour au tableau de bord</button>
+   <h2 id="detailName">Machine</h2><div id="detailInfo" class="small"></div>
+   <div class="card"><h2>Tableau de suivi</h2><div id="machineStats" class="stats-grid"></div></div>
+   <label>Filtrer les entretiens</label>
+   <select id="frequencyFilter">
+    <option value="all">Toutes les catégories</option><option value="Hebdomadaire">Entretien hebdomadaire</option>
+    <option value="Mensuelle">Entretien mensuel</option><option value="Semestrielle">Entretien semestriel</option>
+    <option value="Annuelle">Entretien annuel</option>
+   </select>
+   <div id="tasks">Chargement...</div>
+   <div class="card"><h2>Historique des interventions</h2><div id="history" class="small">Chargement de l'historique...</div></div>
+  </div>
+ </section>
+ <footer class="app-footer"><span>By Bengana</span></footer>
 </main>
 
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
-
-import {
-getAuth,signInWithEmailAndPassword,onAuthStateChanged,signOut
-} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
-
-import {
-getFirestore,doc,getDoc,collection,getDocs,serverTimestamp,
-writeBatch,runTransaction
-} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+import {getAuth,signInWithEmailAndPassword,onAuthStateChanged,signOut} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+import {getFirestore,doc,getDoc,collection,getDocs,serverTimestamp,writeBatch,runTransaction} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
 const firebaseConfig={
-apiKey:"AIzaSyAxdLwy1A-p5_qdY7OeinTQ0-_0xpuy0PE",
-authDomain:"hb-plus-maintenance.firebaseapp.com",
-projectId:"hb-plus-maintenance",
-storageBucket:"hb-plus-maintenance.firebasestorage.app",
-messagingSenderId:"227031997957",
-appId:"1:227031997957:web:435f5beb84cf4a0921866c"
+ apiKey:"AIzaSyAxdLwy1A-p5_qdY7OeinTQ0-_0xpuy0PE",
+ authDomain:"hb-plus-maintenance.firebaseapp.com",
+ projectId:"hb-plus-maintenance",
+ storageBucket:"hb-plus-maintenance.firebasestorage.app",
+ messagingSenderId:"227031997957",
+ appId:"1:227031997957:web:435f5beb84cf4a0921866c"
 };
-
-const firebaseApp=initializeApp(firebaseConfig);
-const auth=getAuth(firebaseApp);
-const db=getFirestore(firebaseApp);
+const firebaseApp=initializeApp(firebaseConfig),auth=getAuth(firebaseApp),db=getFirestore(firebaseApp);
 const $=id=>document.getElementById(id);
 
-function openDrawer(){
-$("appDrawer").classList.remove("hidden");
-$("drawerBackdrop").classList.remove("hidden");
-$("menuButton").setAttribute("aria-expanded","true");
-}
+function openDrawer(){$("appDrawer").classList.remove("hidden");$("drawerBackdrop").classList.remove("hidden");$("menuButton").setAttribute("aria-expanded","true")}
+function closeDrawer(){$("appDrawer").classList.add("hidden");$("drawerBackdrop").classList.add("hidden");$("menuButton").setAttribute("aria-expanded","false")}
+$("menuButton").onclick=openDrawer;$("closeDrawerBtn").onclick=closeDrawer;$("drawerBackdrop").onclick=closeDrawer;
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeDrawer()});
 
-function closeDrawer(){
-$("appDrawer").classList.add("hidden");
-$("drawerBackdrop").classList.add("hidden");
-$("menuButton").setAttribute("aria-expanded","false");
-}
-
-$("menuButton").onclick=openDrawer;
-$("closeDrawerBtn").onclick=closeDrawer;
-$("drawerBackdrop").onclick=closeDrawer;
-
-document.addEventListener("keydown",event=>{
-if(event.key==="Escape")closeDrawer();
-});
-
-let currentRole=null;
-let profileReady=false;
-let currentMachine=null;
-let selectedTaskIds=new Set();
-let approvalInProgress=false;
-let cachedMachines=[];
-let cachedTasks=[];
-let cachedHistory=[];
-
+let currentRole=null,profileReady=false,currentMachine=null,selectedTaskIds=new Set(),approvalInProgress=false;
+let cachedMachines=[],cachedTasks=[],cachedHistory=[];
 const PROGRAM=[
-{frequency:"Hebdomadaire",tasks:[
-"Nettoyer et contrôler le dispositif du chariot de coupe.",
-"Vérifier la lubrification des lances.",
-"Nettoyer et vérifier les tiges Rapière et les guides Rapière.",
-"Nettoyer et vérifier le jeu du mécanisme d'ouverture (Stäubli)."
-]},
-{frequency:"Mensuelle",tasks:[
-"Nettoyer le support du peigne.",
-"Vérifier le niveau d'huile des carters de peigne (gauche, centre et droite).",
-"Vérifier le niveau d'huile des carters de lance (gauche et droite).",
-"Vérifier le niveau et le fonctionnement du graisseur centralisé.",
-"Vérifier la lubrification de la tige de lance.",
-"Vérifier la pression pneumatique.",
-"Vérifier le système de lubrification sous pression (Dobby).",
-"Vérifier l'unité pneumatique (Dobby).",
-"Vérifier le niveau d'huile (Jacquard).",
-"Contrôler l'armoire électrique (contamination/condensation).",
-"Vérifier le refroidissement de l'armoire électrique.",
-"Vérifier les rouleaux de pression et les guides Rapière."
-]},
-{frequency:"Semestrielle",tasks:[
-"Lubrifier la chaîne du palier de faisceau.",
-"Lubrifier le palier de la poulie de renvoi.",
-"Graisser les roulements à rouleaux de renvoi.",
-"Enlever les résidus de fil de l'essieu.",
-"Purger les condensats du réservoir d'air comprimé.",
-"Lubrifier l'arbre à cardan du Dobby 2688S."
-]},
-{frequency:"Annuelle",tasks:[
-"Remplacer la cartouche du filtre à huile.",
-"Vérifier le serrage des vis d'ancrage au sol."
-]}
+ {frequency:"Hebdomadaire",tasks:[
+  "Nettoyer et contrôler le dispositif du chariot de coupe.",
+  "Vérifier la lubrification des lances.",
+  "Nettoyer et vérifier les tiges Rapière et les guides Rapière.",
+  "Nettoyer et vérifier le jeu du mécanisme d'ouverture (Stäubli)."
+ ]},
+ {frequency:"Mensuelle",tasks:[
+  "Nettoyer le support du peigne.",
+  "Vérifier le niveau d'huile des carters de peigne (gauche, centre et droite).",
+  "Vérifier le niveau d'huile des carters de lance (gauche et droite).",
+  "Vérifier le niveau et le fonctionnement du graisseur centralisé.",
+  "Vérifier la lubrification de la tige de lance.",
+  "Vérifier la pression pneumatique.",
+  "Vérifier le système de lubrification sous pression (Dobby).",
+  "Vérifier l'unité pneumatique (Dobby).",
+  "Vérifier le niveau d'huile (Jacquard).",
+  "Contrôler l'armoire électrique (contamination/condensation).",
+  "Vérifier le refroidissement de l'armoire électrique.",
+  "Vérifier les rouleaux de pression et les guides Rapière."
+ ]},
+ {frequency:"Semestrielle",tasks:[
+  "Lubrifier la chaîne du palier de faisceau.",
+  "Lubrifier le palier de la poulie de renvoi.",
+  "Graisser les roulements à rouleaux de renvoi.",
+  "Enlever les résidus de fil de l'essieu.",
+  "Purger les condensats du réservoir d'air comprimé.",
+  "Lubrifier l'arbre à cardan du Dobby 2688S."
+ ]},
+ {frequency:"Annuelle",tasks:[
+  "Remplacer la cartouche du filtre à huile.",
+  "Vérifier le serrage des vis d'ancrage au sol."
+ ]}
 ];
 
-function isAdmin(){
-return profileReady&&currentRole==="admin";
-}
-
-function isTech(){
-return profileReady&&["technicien","technician","admin"].includes(currentRole);
-}
-
-function todayISO(){
-const d=new Date();
-return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
-}
-
-function dateLabel(iso){
-if(!iso)return "Non définie";
-const [y,m,d]=iso.split("-").map(Number);
-return new Date(y,m-1,d).toLocaleDateString("fr-FR");
-}
-
+function isAdmin(){return profileReady&&currentRole==="admin"}
+function isTech(){return profileReady&&["technicien","technician","admin"].includes(currentRole)}
+function todayISO(){const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
+function dateLabel(iso){if(!iso)return "Non définie";const [y,m,d]=iso.split("-").map(Number);return new Date(y,m-1,d).toLocaleDateString("fr-FR")}
 function addMonthsISO(iso,months){
-const [year,month,day]=iso.split("-").map(Number);
-const firstDay=new Date(year,month-1+months,1);
-const lastDay=new Date(firstDay.getFullYear(),firstDay.getMonth()+1,0).getDate();
-
-return firstDay.getFullYear()+"-"+
-String(firstDay.getMonth()+1).padStart(2,"0")+"-"+
-String(Math.min(day,lastDay)).padStart(2,"0");
+ const [year,month,day]=iso.split("-").map(Number),first=new Date(year,month-1+months,1);
+ const last=new Date(first.getFullYear(),first.getMonth()+1,0).getDate();
+ return first.getFullYear()+"-"+String(first.getMonth()+1).padStart(2,"0")+"-"+String(Math.min(day,last)).padStart(2,"0");
 }
-
 function nextDueDate(frequency,fromDate){
-const date=fromDate||todayISO();
-
-if(frequency==="Hebdomadaire"){
-const d=new Date(date+"T12:00:00");
-d.setDate(d.getDate()+7);
-return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+ const date=fromDate||todayISO();
+ if(frequency==="Hebdomadaire"){const d=new Date(date+"T12:00:00");d.setDate(d.getDate()+7);return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
+ if(frequency==="Mensuelle")return addMonthsISO(date,1);
+ if(frequency==="Semestrielle")return addMonthsISO(date,6);
+ if(frequency==="Annuelle")return addMonthsISO(date,12);
+ throw new Error("Fréquence inconnue");
 }
-
-if(frequency==="Mensuelle")return addMonthsISO(date,1);
-if(frequency==="Semestrielle")return addMonthsISO(date,6);
-if(frequency==="Annuelle")return addMonthsISO(date,12);
-
-throw new Error("Fréquence inconnue");
-}
-
 function taskDisplayStatus(task){
-if(task.status==="pending_validation")return "En attente de validation";
-if(task.status==="in_progress")return "En cours";
-if(task.status==="rejected")return "Refusée";
-
-const today=todayISO();
-
-if(task.lastCompletedDate&&task.nextDueDate&&task.nextDueDate>today){
-return "Réalisée";
+ if(task.status==="pending_validation")return "En attente de validation";
+ if(task.status==="in_progress")return "En cours";
+ if(task.status==="rejected")return "Refusée";
+ const today=todayISO();
+ if(task.lastCompletedDate&&task.nextDueDate&&task.nextDueDate>today)return "Réalisée";
+ if(task.nextDueDate&&task.nextDueDate<today)return "En retard";
+ return "À faire";
 }
-
-if(task.nextDueDate&&task.nextDueDate<today){
-return "En retard";
-}
-
-return "À faire";
+function showError(prefix,error){
+ const detail=error?.message||String(error);
+ alert(prefix+detail+(detail.toLowerCase().includes("quota")?"\n\nLe quota Firebase est atteint. Les optimisations ne rétablissent pas un quota quotidien déjà épuisé. Vérifie Firebase Console > Firestore > Usage.":""));
 }
 
 $("loginBtn").onclick=async()=>{
-$("loginMsg").textContent="Connexion en cours...";
-try{
-await signInWithEmailAndPassword(auth,$("email").value.trim(),$("password").value);
-}catch(e){
-$("loginMsg").textContent="Erreur : "+e.message;
-}
+ $("loginMsg").textContent="Connexion en cours...";
+ try{await signInWithEmailAndPassword(auth,$("email").value.trim(),$("password").value)}
+ catch(e){$("loginMsg").textContent="Erreur : "+e.message}
 };
-
 $("logoutBtn").onclick=()=>signOut(auth);
-
-$("backBtn").onclick=async()=>{
-currentMachine=null;
-selectedTaskIds.clear();
-$("machineDetail").classList.add("hidden");
-$("dashboardCard").classList.remove("hidden");
-await loadMachines();
-window.scrollTo(0,0);
+$("backBtn").onclick=()=>{
+ currentMachine=null;selectedTaskIds.clear();
+ $("machineDetail").classList.add("hidden");$("dashboardCard").classList.remove("hidden");
+ renderDashboard(cachedMachines,cachedTasks,cachedHistory);window.scrollTo(0,0);
 };
-
 $("frequencyFilter").onchange=renderTasks;
 
 onAuthStateChanged(auth,async user=>{
-
-if(!user){
-closeDrawer();
-$("menuButton").classList.add("hidden");
-profileReady=false;
-currentRole=null;
-currentMachine=null;
-selectedTaskIds.clear();
-$("login").classList.remove("hidden");
-$("app").classList.add("hidden");
-return;
-}
-
-$("login").classList.add("hidden");
-$("app").classList.remove("hidden");
-$("menuButton").classList.remove("hidden");
-$("profile").textContent="Lecture du profil...";
-
-try{
-const profileSnap=await getDoc(doc(db,"Users",user.uid));
-
-if(!profileSnap.exists()){
-profileReady=false;
-$("profile").textContent="Profil introuvable.";
-return;
-}
-
-const profile=profileSnap.data();
-currentRole=profile.role;
-profileReady=profile.active===true;
-
-$("profile").textContent=
-"E-mail : "+(user.email||"")+
-"\nRôle : "+currentRole+
-"\nCompte actif : "+profile.active;
-
-$("drawerAdminSection").classList.toggle("hidden",!isAdmin());
-
-if(!profileReady){
-$("dashboardStats").textContent="Compte inactif.";
-return;
-}
-
-await loadMachines();
-if(isAdmin())await initializeSchedule(false);
-
-}catch(e){
-$("profile").textContent="Erreur : "+e.message;
-}
+ if(!user){
+  closeDrawer();$("menuButton").classList.add("hidden");profileReady=false;currentRole=null;currentMachine=null;
+  selectedTaskIds.clear();cachedMachines=[];cachedTasks=[];cachedHistory=[];
+  $("login").classList.remove("hidden");$("app").classList.add("hidden");return;
+ }
+ $("login").classList.add("hidden");$("app").classList.remove("hidden");$("menuButton").classList.remove("hidden");
+ $("profile").textContent="Lecture du profil...";
+ try{
+  const profileSnap=await getDoc(doc(db,"Users",user.uid));
+  if(!profileSnap.exists()){profileReady=false;$("profile").textContent="Profil introuvable.";return}
+  const profile=profileSnap.data();currentRole=profile.role;profileReady=profile.active===true;
+  $("profile").textContent="E-mail : "+(user.email||"")+"\nRôle : "+currentRole+"\nCompte actif : "+profile.active;
+  $("drawerAdminSection").classList.toggle("hidden",!isAdmin());
+  if(!profileReady){$("dashboardStats").textContent="Compte inactif.";return}
+  await loadMachines();
+  if(isAdmin())await initializeSchedule(false);
+ }catch(e){$("profile").textContent="Erreur : "+e.message}
 });
 
-// MACHINES
+// Charge les collections une fois à l'ouverture de session ou lors d'une actualisation explicite.
 async function loadMachines(){
-
-$("dashboardStats").textContent="Chargement des indicateurs...";
-
-try{
-
-const [machinesSnap,tasksSnap,historySnap]=await Promise.all([
-getDocs(collection(db,"machines")),
-getDocs(collection(db,"maintenance_tasks")),
-getDocs(collection(db,"maintenance_history"))
-]);
-
-const machines=[],tasks=[],history=[];
-
-machinesSnap.forEach(d=>machines.push({id:d.id,...d.data()}));
-tasksSnap.forEach(d=>tasks.push({id:d.id,...d.data()}));
-historySnap.forEach(d=>history.push({id:d.id,...d.data()}));
-
-machines.sort((a,b)=>(a.name||a.id).localeCompare(b.name||b.id));
-
-cachedMachines=machines;
-cachedTasks=tasks;
-cachedHistory=history;
-
-renderDashboard(machines,tasks,history);
-
-}catch(e){
-$("dashboardStats").textContent="Impossible de charger les indicateurs.";
-}
+ $("dashboardStats").textContent="Chargement des indicateurs...";
+ const [machinesSnap,tasksSnap,historySnap]=await Promise.all([
+  getDocs(collection(db,"machines")),
+  getDocs(collection(db,"maintenance_tasks")),
+  getDocs(collection(db,"maintenance_history"))
+ ]);
+ cachedMachines=machinesSnap.docs.map(d=>({id:d.id,...d.data()}));
+ cachedTasks=tasksSnap.docs.map(d=>({id:d.id,...d.data()}));
+ cachedHistory=historySnap.docs.map(d=>({id:d.id,...d.data()}));
+ cachedMachines.sort((a,b)=>(a.name||a.id).localeCompare(b.name||b.id));
+ renderDashboard(cachedMachines,cachedTasks,cachedHistory);
 }
 
-function renderMachinePark(machines){
-
-const container=$("dashboardMachines");
-if(!container)return;
-
-container.textContent="";
-
-const count=$("machineParkCount");
-if(count)count.textContent=machines.length+" machine(s) disponible(s)";
-
-if(!machines.length){
-container.textContent="Aucune machine trouvée.";
-return;
-}
-
-machines.forEach(machine=>{
-
-const button=document.createElement("button");
-button.type="button";
-button.className="park-machine";
-
-const title=document.createElement("strong");
-title.textContent=machine.name||machine.id;
-
-const description=document.createElement("span");
-description.textContent=machine.description||"Toucher pour ouvrir la maintenance";
-
-button.append(title,description);
-
-button.onclick=event=>{
-event.stopPropagation();
-openMachine(machine);
-};
-
-container.append(button);
-});
-}
-
-// TABLEAU DE BORD
-function renderDashboard(machines,tasks,history){
-
-const total=tasks.length;
-
-const todo=tasks.filter(t=>taskDisplayStatus(t)==="À faire").length;
-const inProgress=tasks.filter(t=>taskDisplayStatus(t)==="En cours").length;
-const overdue=tasks.filter(t=>taskDisplayStatus(t)==="En retard").length;
-const pending=tasks.filter(t=>taskDisplayStatus(t)==="En attente de validation").length;
-const rejected=tasks.filter(t=>taskDisplayStatus(t)==="Refusée").length;
-const completed=tasks.filter(t=>taskDisplayStatus(t)==="Réalisée").length;
-
-const percent=total?Math.round(completed/total*100):0;
-
-const stats=[
-{key:"machines",number:machines.length,label:"Machines"},
-{key:"all",number:total,label:"Opérations programmées"},
-{key:"todo",number:todo,label:"Tâches à faire"},
-{key:"in_progress",number:inProgress,label:"En cours"},
-{key:"overdue",number:overdue,label:"En retard"},
-{key:"pending_validation",number:pending,label:"À valider"},
-{key:"rejected",number:rejected,label:"Refusées"},
-{key:"completed",number:percent+"%",label:"Maintenance réalisée"}
-];
-
-$("dashboardStats").textContent="";
-
-stats.forEach(item=>{
-
-const box=document.createElement(item.key==="machines"?"div":"button");
-
-if(item.key!=="machines")box.type="button";
-
-box.className="stat-box interactive";
-
-if(item.key==="machines"){
-box.classList.add("machine-stat");
-box.setAttribute("role","button");
-box.setAttribute("tabindex","0");
-box.setAttribute("aria-expanded","false");
-}
-
-const number=document.createElement("div");
-number.className="stat-number";
-number.textContent=item.number;
-
-const label=document.createElement("div");
-label.className="stat-label";
-label.textContent=item.label;
-
-const hint=document.createElement("div");
-hint.className="stat-hint";
-hint.textContent=item.key==="machines"?"Toucher pour afficher les machines":"Toucher pour afficher";
-
-box.append(number,label,hint);
-
-if(item.key==="machines"){
-
-const park=document.createElement("div");
-park.id="machineParkInline";
-park.className="machine-park-inline hidden";
-
-const parkHead=document.createElement("div");
-parkHead.className="machine-park-head";
-
-const parkTitle=document.createElement("h3");
-parkTitle.textContent="Parc machines";
-
-const close=document.createElement("button");
-close.type="button";
-close.className="gray";
-close.textContent="Fermer ✕";
-close.onclick=event=>{
-event.stopPropagation();
-park.classList.add("hidden");
-box.classList.remove("expanded");
-box.setAttribute("aria-expanded","false");
-};
-
-parkHead.append(parkTitle,close);
-
-const count=document.createElement("div");
-count.id="machineParkCount";
-count.className="machine-park-count";
-
-const list=document.createElement("div");
-list.id="dashboardMachines";
-list.textContent="Chargement des machines...";
-
-park.append(parkHead,count,list);
-box.append(park);
-
-box.onclick=event=>{
-
-if(event.target.closest(".machine-park-inline"))return;
-
-const opening=park.classList.contains("hidden");
-
-$("dashboardDetails").classList.add("hidden");
-
-park.classList.toggle("hidden",!opening);
-box.classList.toggle("expanded",opening);
-box.setAttribute("aria-expanded",String(opening));
-
-};
-
-box.onkeydown=event=>{
-if(event.key==="Enter"||event.key===" "){
-event.preventDefault();
-box.click();
-}
-};
-
-}else{
-
-box.onclick=()=>{
-showDashboardDetails(item.key,item.label,machines,tasks);
-};
-
-}
-
-$("dashboardStats").append(box);
-});
-
-renderMachinePark(machines);
-
-$("globalProgressBar").style.width=percent+"%";
-$("globalProgressText").textContent=
-completed+" opérations réalisées et à jour sur "+total+
-" opérations programmées ("+percent+"%).";
-
-const frequencies=["Hebdomadaire","Mensuelle","Semestrielle","Annuelle"];
-const frequencyBox=$("frequencyBreakdown");
-frequencyBox.textContent="";
-
-frequencies.forEach(freq=>{
-
-const count=tasks.filter(t=>t.frequency===freq).length;
-
-const row=document.createElement("div");
-row.className="frequency-row";
-
-const head=document.createElement("div");
-head.className="frequency-head";
-
-const name=document.createElement("span");
-name.textContent=freq;
-
-const value=document.createElement("span");
-value.textContent=count+" opération"+(count>1?"s":"");
-
-head.append(name,value);
-
-const track=document.createElement("div");
-track.className="frequency-track";
-
-const fill=document.createElement("div");
-fill.className="frequency-fill";
-fill.style.width=(total?count/total*100:0)+"%";
-
-track.append(fill);
-row.append(head,track);
-frequencyBox.append(row);
-});
-
-const recentBox=$("recentActivity");
-recentBox.textContent="";
-
-history.sort((a,b)=>(b.completedDate||"").localeCompare(a.completedDate||""));
-
-if(!history.length){
-recentBox.textContent="Aucune intervention validée pour le moment.";
-}else{
-history.slice(0,5).forEach(item=>{
-
-const row=document.createElement("div");
-row.className="recent-row";
-
-const task=document.createElement("strong");
-task.textContent=item.task||"Intervention";
-
-const detail=document.createElement("span");
-detail.textContent=
-(item.machineName||item.machineId||"Machine")+
-" • "+(item.frequency||"")+
-" • "+dateLabel(item.completedDate);
-
-row.append(task,detail);
-recentBox.append(row);
-});
-}
-}
-
-// DÉTAILS DES INDICATEURS
-function showDashboardDetails(key,label,machines,tasks){
-
-const panel=$("dashboardDetails");
-panel.textContent="";
-panel.classList.remove("hidden");
-
-const heading=document.createElement("h3");
-heading.textContent=label;
-
-const close=document.createElement("button");
-close.type="button";
-close.className="gray";
-close.textContent="Fermer";
-close.onclick=()=>panel.classList.add("hidden");
-
-panel.append(heading,close);
-
-const filtered=tasks.filter(t=>{
-const state=taskDisplayStatus(t);
-
-if(key==="all")return true;
-if(key==="completed")return state==="Réalisée";
-if(key==="todo")return state==="À faire";
-if(key==="in_progress")return state==="En cours";
-if(key==="overdue")return state==="En retard";
-if(key==="pending_validation")return state==="En attente de validation";
-if(key==="rejected")return state==="Refusée";
-
-return false;
-});
-
-const summary=document.createElement("p");
-summary.className="small";
-summary.textContent=filtered.length+" opération(s) trouvée(s).";
-panel.append(summary);
-
-if(!filtered.length){
-const empty=document.createElement("p");
-empty.textContent="Aucune opération dans cette catégorie.";
-panel.append(empty);
-return;
-}
-
-filtered.forEach(task=>{
-
-const row=document.createElement("div");
-row.className="recent-row";
-
-const title=document.createElement("strong");
-title.textContent=task.task||"Opération";
-
-const detail=document.createElement("span");
-detail.textContent=
-(task.machineName||task.machineId||"Machine")+
-" • "+(task.frequency||"")+
-" • "+taskDisplayStatus(task);
-
-const open=document.createElement("button");
-open.type="button";
-open.className="gray";
-open.textContent="Ouvrir la machine";
-open.onclick=()=>{
-const machine=machines.find(m=>m.id===task.machineId);
-if(machine)openMachine(machine);
-};
-
-row.append(title,detail,open);
-panel.append(row);
-});
-}
-
-// OUVERTURE MACHINE
-function openMachine(machine){
-
-currentMachine=machine;
-selectedTaskIds.clear();
-
-$("dashboardCard").classList.add("hidden");
-$("machineDetail").classList.remove("hidden");
-
-$("dashboardDetails").classList.add("hidden");
-
-const inlinePark=$("machineParkInline");
-if(inlinePark)inlinePark.classList.add("hidden");
-
-const machineBox=document.querySelector(".machine-stat");
-if(machineBox){
-machineBox.classList.remove("expanded");
-machineBox.setAttribute("aria-expanded","false");
-}
-
-$("detailName").textContent=machine.name||machine.id;
-$("detailInfo").textContent="Référence : "+machine.id;
-$("frequencyFilter").value="all";
-
-renderTasks();
-renderHistory();
-window.scrollTo(0,0);
-}
-
-// INITIALISATION
+// Vérifie les identifiants en mémoire et crée uniquement les tâches absentes.
+// Une seule lecture de la collection des tâches, jamais un getDoc pour chaque tâche.
 async function initializeSchedule(showMessage=true){
-
-if(!isAdmin())return;
-
-if(showMessage)$("initMsg").textContent="Initialisation en cours...";
-
-try{
-
-const machinesSnap=await getDocs(collection(db,"machines"));
-let created=0,existing=0;
-
-let batch=writeBatch(db);
-let batchCount=0;
-
-for(const machineDoc of machinesSnap.docs){
-
-const machineId=machineDoc.id;
-const machineName=machineDoc.data().name||machineId;
-let taskNumber=0;
-
-for(const group of PROGRAM){
-for(const taskName of group.tasks){
-
-taskNumber++;
-const taskId=machineId+"_task_"+taskNumber;
-const taskRef=doc(db,"maintenance_tasks",taskId);
-const oldTask=await getDoc(taskRef);
-
-if(oldTask.exists()){
-existing++;
-continue;
+ if(!isAdmin())return;
+ if(showMessage)$("initMsg").textContent="Vérification des tâches en cours...";
+ try{
+  const existingIds=new Set(cachedTasks.map(t=>t.id));
+  const batchLimit=450;let batch=writeBatch(db),batchCount=0,created=0,existing=0;
+  const newlyCreated=[];
+  for(const machine of cachedMachines){
+   let taskNumber=0;
+   for(const group of PROGRAM){
+    for(const taskName of group.tasks){
+     taskNumber++;
+     const taskId=machine.id+"_task_"+taskNumber;
+     if(existingIds.has(taskId)){existing++;continue}
+     const taskRef=doc(db,"maintenance_tasks",taskId);
+     const data={
+      machineId:machine.id,machineName:machine.name||machine.id,taskNumber,
+      frequency:group.frequency,task:taskName,nextDueDate:todayISO(),
+      status:"todo",completedCount:0,createdAt:serverTimestamp(),updatedAt:serverTimestamp()
+     };
+     batch.set(taskRef,data);
+     newlyCreated.push({id:taskId,...data,createdAt:null,updatedAt:null});
+     existingIds.add(taskId);created++;batchCount++;
+     if(batchCount>=batchLimit){await batch.commit();batch=writeBatch(db);batchCount=0}
+    }
+   }
+  }
+  if(batchCount)await batch.commit();
+  if(created){
+   cachedTasks=[...cachedTasks,...newlyCreated];
+   renderDashboard(cachedMachines,cachedTasks,cachedHistory);
+   if(currentMachine)await renderTasks();
+  }
+  $("initMsg").textContent="Vérification terminée.\nTâches créées : "+created+"\nTâches déjà présentes : "+existing+"\n24 tâches prévues par machine.";
+ }catch(e){$("initMsg").textContent="Erreur : "+e.message}
 }
-
-batch.set(taskRef,{
-machineId,
-machineName,
-taskNumber,
-frequency:group.frequency,
-task:taskName,
-nextDueDate:todayISO(),
-status:"todo",
-completedCount:0,
-createdAt:serverTimestamp(),
-updatedAt:serverTimestamp()
-});
-
-created++;
-batchCount++;
-
-if(batchCount>=400){
-await batch.commit();
-batch=writeBatch(db);
-batchCount=0;
-}
-}
-}
-}
-
-if(batchCount>0)await batch.commit();
-
-$("initMsg").textContent=
-"Initialisation terminée.\nTâches créées : "+created+
-"\nTâches déjà présentes : "+existing+
-"\n24 tâches prévues par machine.";
-
-await loadMachines();
-
-}catch(e){
-$("initMsg").textContent="Erreur : "+e.message;
-}
-}
-
 $("initBtn").onclick=()=>initializeSchedule(true);
 
-// CHARGEMENT DES TÂCHES
+function renderMachinePark(machines){
+ const container=$("dashboardMachines");if(!container)return;container.textContent="";
+ const count=$("machineParkCount");if(count)count.textContent=machines.length+" machine(s) disponible(s)";
+ if(!machines.length){container.textContent="Aucune machine trouvée.";return}
+ machines.forEach(machine=>{
+  const button=document.createElement("button");button.type="button";button.className="park-machine";
+  const title=document.createElement("strong");title.textContent=machine.name||machine.id;
+  const description=document.createElement("span");description.textContent=machine.description||"Toucher pour ouvrir la maintenance";
+  button.append(title,description);button.onclick=e=>{e.stopPropagation();openMachine(machine)};container.append(button);
+ });
+}
+
+function renderDashboard(machines,tasks,history){
+ const total=tasks.length;
+ const todo=tasks.filter(t=>taskDisplayStatus(t)==="À faire").length;
+ const inProgress=tasks.filter(t=>taskDisplayStatus(t)==="En cours").length;
+ const overdue=tasks.filter(t=>taskDisplayStatus(t)==="En retard").length;
+ const pending=tasks.filter(t=>taskDisplayStatus(t)==="En attente de validation").length;
+ const rejected=tasks.filter(t=>taskDisplayStatus(t)==="Refusée").length;
+ const completed=tasks.filter(t=>taskDisplayStatus(t)==="Réalisée").length;
+ const percent=total?Math.round(completed/total*100):0;
+ const stats=[
+  {key:"machines",number:machines.length,label:"Machines"},
+  {key:"all",number:total,label:"Opérations programmées"},
+  {key:"todo",number:todo,label:"Tâches à faire"},
+  {key:"in_progress",number:inProgress,label:"En cours"},
+  {key:"overdue",number:overdue,label:"En retard"},
+  {key:"pending_validation",number:pending,label:"À valider"},
+  {key:"rejected",number:rejected,label:"Refusées"},
+  {key:"completed",number:percent+"%",label:"Maintenance réalisée"}
+ ];
+ $("dashboardStats").textContent="";
+ stats.forEach(item=>{
+  const box=document.createElement(item.key==="machines"?"div":"button");
+  if(item.key!=="machines")box.type="button";
+  box.className="stat-box interactive";
+  if(item.key==="machines"){
+   box.classList.add("machine-stat");box.setAttribute("role","button");box.setAttribute("tabindex","0");box.setAttribute("aria-expanded","false");
+  }
+  const number=document.createElement("div");number.className="stat-number";number.textContent=item.number;
+  const label=document.createElement("div");label.className="stat-label";label.textContent=item.label;
+  const hint=document.createElement("div");hint.className="stat-hint";hint.textContent=item.key==="machines"?"Toucher pour afficher les machines":"Toucher pour afficher";
+  box.append(number,label,hint);
+  if(item.key==="machines"){
+   const park=document.createElement("div");park.id="machineParkInline";park.className="machine-park-inline hidden";
+   const head=document.createElement("div");head.className="machine-park-head";
+   const title=document.createElement("h3");title.textContent="Parc machines";
+   const close=document.createElement("button");close.type="button";close.className="gray";close.textContent="Fermer ✕";
+   close.onclick=e=>{e.stopPropagation();park.classList.add("hidden");box.classList.remove("expanded");box.setAttribute("aria-expanded","false")};
+   head.append(title,close);
+   const count=document.createElement("div");count.id="machineParkCount";count.className="machine-park-count";
+   const list=document.createElement("div");list.id="dashboardMachines";list.textContent="Chargement des machines...";
+   park.append(head,count,list);box.append(park);
+   box.onclick=e=>{
+    if(e.target.closest(".machine-park-inline"))return;
+    const opening=park.classList.contains("hidden");$("dashboardDetails").classList.add("hidden");
+    park.classList.toggle("hidden",!opening);box.classList.toggle("expanded",opening);box.setAttribute("aria-expanded",String(opening));
+   };
+   box.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();box.click()}};
+  }else box.onclick=()=>showDashboardDetails(item.key,item.label,machines,tasks);
+  $("dashboardStats").append(box);
+ });
+ renderMachinePark(machines);
+ $("globalProgressBar").style.width=percent+"%";
+ $("globalProgressText").textContent=completed+" opérations réalisées et à jour sur "+total+" opérations programmées ("+percent+"%).";
+ const frequencies=["Hebdomadaire","Mensuelle","Semestrielle","Annuelle"],frequencyBox=$("frequencyBreakdown");
+ frequencyBox.textContent="";
+ frequencies.forEach(freq=>{
+  const count=tasks.filter(t=>t.frequency===freq).length,row=document.createElement("div");row.className="frequency-row";
+  const head=document.createElement("div");head.className="frequency-head";
+  const name=document.createElement("span");name.textContent=freq;
+  const value=document.createElement("span");value.textContent=count+" opération"+(count>1?"s":"");
+  head.append(name,value);
+  const track=document.createElement("div");track.className="frequency-track";
+  const fill=document.createElement("div");fill.className="frequency-fill";fill.style.width=(total?count/total*100:0)+"%";
+  track.append(fill);row.append(head,track);frequencyBox.append(row);
+ });
+ const recentBox=$("recentActivity");recentBox.textContent="";
+ const sortedHistory=[...history].sort((a,b)=>(b.completedDate||"").localeCompare(a.completedDate||""));
+ if(!sortedHistory.length)recentBox.textContent="Aucune intervention validée pour le moment.";
+ else sortedHistory.slice(0,5).forEach(item=>{
+  const row=document.createElement("div");row.className="recent-row";
+  const task=document.createElement("strong");task.textContent=item.task||"Intervention";
+  const detail=document.createElement("span");detail.textContent=(item.machineName||item.machineId||"Machine")+" • "+(item.frequency||"")+" • "+dateLabel(item.completedDate);
+  row.append(task,detail);recentBox.append(row);
+ });
+}
+
+function showDashboardDetails(key,label,machines,tasks){
+ const panel=$("dashboardDetails");panel.textContent="";panel.classList.remove("hidden");
+ const heading=document.createElement("h3");heading.textContent=label;
+ const close=document.createElement("button");close.type="button";close.className="gray";close.textContent="Fermer";close.onclick=()=>panel.classList.add("hidden");
+ panel.append(heading,close);
+ const filtered=tasks.filter(t=>{
+  const state=taskDisplayStatus(t);
+  if(key==="all")return true;if(key==="completed")return state==="Réalisée";
+  if(key==="todo")return state==="À faire";if(key==="in_progress")return state==="En cours";
+  if(key==="overdue")return state==="En retard";if(key==="pending_validation")return state==="En attente de validation";
+  if(key==="rejected")return state==="Refusée";return false;
+ });
+ const summary=document.createElement("p");summary.className="small";summary.textContent=filtered.length+" opération(s) trouvée(s).";panel.append(summary);
+ if(!filtered.length){const empty=document.createElement("p");empty.textContent="Aucune opération dans cette catégorie.";panel.append(empty);return}
+ filtered.forEach(task=>{
+  const row=document.createElement("div");row.className="recent-row";
+  const title=document.createElement("strong");title.textContent=task.task||"Opération";
+  const detail=document.createElement("span");detail.textContent=(task.machineName||task.machineId||"Machine")+" • "+(task.frequency||"")+" • "+taskDisplayStatus(task);
+  const open=document.createElement("button");open.type="button";open.className="gray";open.textContent="Ouvrir la machine";
+  open.onclick=()=>{const machine=machines.find(m=>m.id===task.machineId);if(machine)openMachine(machine)};
+  row.append(title,detail,open);panel.append(row);
+ });
+}
+
+function openMachine(machine){
+ currentMachine=machine;selectedTaskIds.clear();
+ $("dashboardCard").classList.add("hidden");$("machineDetail").classList.remove("hidden");$("dashboardDetails").classList.add("hidden");
+ const park=$("machineParkInline");if(park)park.classList.add("hidden");
+ const machineBox=document.querySelector(".machine-stat");if(machineBox){machineBox.classList.remove("expanded");machineBox.setAttribute("aria-expanded","false")}
+ $("detailName").textContent=machine.name||machine.id;$("detailInfo").textContent="Référence : "+machine.id;
+ $("frequencyFilter").value="all";renderTasks();renderHistory();window.scrollTo(0,0);
+}
+
 async function loadMaintenanceTasks(machine){
-
-const snap=await getDocs(collection(db,"maintenance_tasks"));
-const tasks=[];
-
-snap.forEach(d=>{
-const data=d.data();
-if(data.machineId===machine.id)tasks.push({id:d.id,...data});
-});
-
-const order={
-"Hebdomadaire":1,
-"Mensuelle":2,
-"Semestrielle":3,
-"Annuelle":4
-};
-
-tasks.sort((a,b)=>
-(order[a.frequency]||9)-(order[b.frequency]||9)||
-(a.taskNumber||0)-(b.taskNumber||0)
-);
-
-return tasks;
+ const tasks=cachedTasks.filter(task=>task.machineId===machine.id);
+ const order={"Hebdomadaire":1,"Mensuelle":2,"Semestrielle":3,"Annuelle":4};
+ tasks.sort((a,b)=>(order[a.frequency]||9)-(order[b.frequency]||9)||(a.taskNumber||0)-(b.taskNumber||0));
+ return tasks;
 }
 
-// INDICATEURS MACHINE
 function updateMachineStats(tasks){
-
-const total=tasks.length;
-const todo=tasks.filter(t=>taskDisplayStatus(t)==="À faire").length;
-const completed=tasks.filter(t=>taskDisplayStatus(t)==="Réalisée").length;
-const overdue=tasks.filter(t=>taskDisplayStatus(t)==="En retard").length;
-const progress=tasks.filter(t=>taskDisplayStatus(t)==="En cours").length;
-const pending=tasks.filter(t=>taskDisplayStatus(t)==="En attente de validation").length;
-const rejected=tasks.filter(t=>taskDisplayStatus(t)==="Refusée").length;
-
-const stats=[
-{number:total,label:"Total des tâches"},
-{number:todo,label:"À faire"},
-{number:completed,label:"Réalisées"},
-{number:overdue,label:"En retard"},
-{number:progress,label:"En cours"},
-{number:pending,label:"En attente de validation"},
-{number:rejected,label:"Refusées"}
-];
-
-$("machineStats").textContent="";
-
-stats.forEach(item=>{
-
-const box=document.createElement("div");
-box.className="stat-box";
-
-const number=document.createElement("div");
-number.className="stat-number";
-number.textContent=item.number;
-
-const label=document.createElement("div");
-label.className="stat-label";
-label.textContent=item.label;
-
-box.append(number,label);
-$("machineStats").append(box);
-});
+ const total=tasks.length,todo=tasks.filter(t=>taskDisplayStatus(t)==="À faire").length;
+ const completed=tasks.filter(t=>taskDisplayStatus(t)==="Réalisée").length;
+ const overdue=tasks.filter(t=>taskDisplayStatus(t)==="En retard").length;
+ const progress=tasks.filter(t=>taskDisplayStatus(t)==="En cours").length;
+ const pending=tasks.filter(t=>taskDisplayStatus(t)==="En attente de validation").length;
+ const rejected=tasks.filter(t=>taskDisplayStatus(t)==="Refusée").length;
+ const stats=[
+  {number:total,label:"Total des tâches"},{number:todo,label:"À faire"},{number:completed,label:"Réalisées"},
+  {number:overdue,label:"En retard"},{number:progress,label:"En cours"},{number:pending,label:"En attente de validation"},
+  {number:rejected,label:"Refusées"}
+ ];
+ $("machineStats").textContent="";
+ stats.forEach(item=>{
+  const box=document.createElement("div");box.className="stat-box";
+  const number=document.createElement("div");number.className="stat-number";number.textContent=item.number;
+  const label=document.createElement("div");label.className="stat-label";label.textContent=item.label;
+  box.append(number,label);$("machineStats").append(box);
+ });
 }
 
-// HISTORIQUE
 async function renderHistory(){
-
-if(!currentMachine)return;
-
-$("history").textContent="Chargement de l'historique...";
-
-try{
-
-const snap=await getDocs(collection(db,"maintenance_history"));
-const entries=[];
-
-snap.forEach(d=>{
-const data=d.data();
-if(data.machineId===currentMachine.id)entries.push({id:d.id,...data});
-});
-
-entries.sort((a,b)=>(b.completedDate||"").localeCompare(a.completedDate||""));
-
-$("history").textContent="";
-
-if(!entries.length){
-$("history").textContent="Aucune intervention validée pour cette machine.";
-return;
+ if(!currentMachine)return;
+ $("history").textContent="Chargement de l'historique...";
+ const entries=cachedHistory.filter(item=>item.machineId===currentMachine.id)
+  .slice().sort((a,b)=>(b.completedDate||"").localeCompare(a.completedDate||""));
+ $("history").textContent="";
+ if(!entries.length){$("history").textContent="Aucune intervention validée pour cette machine.";return}
+ const summary=document.createElement("div");summary.className="small";summary.textContent="Nombre total d'interventions validées : "+entries.length;$("history").append(summary);
+ entries.slice(0,100).forEach(item=>{
+  const card=document.createElement("div");card.className="history-item";
+  const task=document.createElement("strong");task.textContent=item.task||"Intervention";
+  const frequency=document.createElement("div");frequency.className="small";frequency.textContent="Catégorie : "+(item.frequency||"Non définie");
+  const completed=document.createElement("div");completed.className="small";completed.textContent="Date de validation : "+dateLabel(item.completedDate);
+  const next=document.createElement("div");next.className="small";next.textContent="Prochaine échéance : "+dateLabel(item.nextDueDate);
+  card.append(task,frequency,completed,next);$("history").append(card);
+ });
 }
 
-const summary=document.createElement("div");
-summary.className="small";
-summary.textContent="Nombre total d'interventions validées : "+entries.length;
-$("history").append(summary);
-
-entries.slice(0,100).forEach(item=>{
-
-const card=document.createElement("div");
-card.className="history-item";
-
-const task=document.createElement("strong");
-task.textContent=item.task||"Intervention";
-
-const frequency=document.createElement("div");
-frequency.className="small";
-frequency.textContent="Catégorie : "+(item.frequency||"Non définie");
-
-const completed=document.createElement("div");
-completed.className="small";
-completed.textContent="Date de validation : "+dateLabel(item.completedDate);
-
-const next=document.createElement("div");
-next.className="small";
-next.textContent="Prochaine échéance : "+dateLabel(item.nextDueDate);
-
-card.append(task,frequency,completed,next);
-$("history").append(card);
-});
-
-}catch(e){
-$("history").textContent="Erreur de chargement de l'historique : "+e.message;
-}
-}
-
-// AFFICHAGE DES TÂCHES
 async function renderTasks(){
-
-if(!currentMachine)return;
-
-$("tasks").textContent="Chargement des tâches...";
-
-try{
-
-const tasks=await loadMaintenanceTasks(currentMachine);
-updateMachineStats(tasks);
-$("tasks").textContent="";
-
-const filter=$("frequencyFilter").value;
-const filtered=tasks.filter(t=>filter==="all"||t.frequency===filter);
-
-if(!filtered.length){
-$("tasks").textContent="Aucune tâche trouvée. Vérifie l'initialisation.";
-return;
-}
-
-for(const group of PROGRAM){
-
-const groupTasks=filtered.filter(t=>t.frequency===group.frequency);
-if(!groupTasks.length)continue;
-
-const heading=document.createElement("h3");
-heading.className="category";
-heading.textContent="Entretien "+group.frequency+" — "+groupTasks.length+" tâches";
-$("tasks").append(heading);
-
-groupTasks.forEach(task=>$("tasks").append(makeTaskCard(task)));
-$("tasks").append(makeGroupActions(groupTasks,group.frequency));
-}
-
-const total=document.createElement("div");
-total.className="small";
-total.textContent="Tâches affichées : "+filtered.length+" / 24";
-$("tasks").append(total);
-
-}catch(e){
-$("tasks").textContent="Erreur : "+e.message;
-}
+ if(!currentMachine)return;
+ $("tasks").textContent="Chargement des tâches...";
+ try{
+  const tasks=await loadMaintenanceTasks(currentMachine);updateMachineStats(tasks);$("tasks").textContent="";
+  const filter=$("frequencyFilter").value,filtered=tasks.filter(t=>filter==="all"||t.frequency===filter);
+  if(!filtered.length){$("tasks").textContent="Aucune tâche trouvée. Vérifie l'initialisation.";return}
+  for(const group of PROGRAM){
+   const groupTasks=filtered.filter(t=>t.frequency===group.frequency);if(!groupTasks.length)continue;
+   const heading=document.createElement("h3");heading.className="category";heading.textContent="Entretien "+group.frequency+" — "+groupTasks.length+" tâches";$("tasks").append(heading);
+   groupTasks.forEach(task=>$("tasks").append(makeTaskCard(task)));
+   $("tasks").append(makeGroupActions(groupTasks,group.frequency));
+  }
+  const total=document.createElement("div");total.className="small";total.textContent="Tâches affichées : "+filtered.length+" / 24";$("tasks").append(total);
+ }catch(e){$("tasks").textContent="Erreur : "+e.message}
 }
 
 function makeTaskCard(task){
-
-const card=document.createElement("div");
-card.className="task";
-
-const title=document.createElement("strong");
-title.textContent=task.task;
-
-const due=document.createElement("span");
-due.textContent="Prochaine échéance : "+dateLabel(task.nextDueDate);
-
-const status=document.createElement("span");
-status.innerHTML=
-'<span class="pill">'+taskDisplayStatus(task)+'</span>'+
-'<span class="pill">'+task.frequency+'</span>';
-
-card.append(title,due,status);
-
-if(task.completedCount>0){
-const history=document.createElement("span");
-history.textContent=
-"Interventions validées : "+task.completedCount+
-" • Dernière intervention : "+dateLabel(task.lastCompletedDate);
-card.append(history);
+ const card=document.createElement("div");card.className="task";
+ const title=document.createElement("strong");title.textContent=task.task;
+ const due=document.createElement("span");due.textContent="Prochaine échéance : "+dateLabel(task.nextDueDate);
+ const status=document.createElement("span");
+ status.innerHTML='<span class="pill">'+taskDisplayStatus(task)+'</span><span class="pill">'+task.frequency+'</span>';
+ card.append(title,due,status);
+ if(task.completedCount>0){
+  const history=document.createElement("span");history.textContent="Interventions validées : "+task.completedCount+" • Dernière intervention : "+dateLabel(task.lastCompletedDate);card.append(history);
+ }
+ if(task.adminComment){const comment=document.createElement("span");comment.textContent="Commentaire : "+task.adminComment;card.append(comment)}
+ if(isTech()&&["todo","rejected","in_progress"].includes(task.status)){
+  const label=document.createElement("label");label.className="task-check";
+  const checkbox=document.createElement("input");checkbox.type="checkbox";checkbox.checked=selectedTaskIds.has(task.id);
+  checkbox.onchange=()=>{if(checkbox.checked)selectedTaskIds.add(task.id);else selectedTaskIds.delete(task.id);renderTasks()};
+  const text=document.createElement("span");text.textContent="Tâche réalisée";label.append(checkbox,text);card.append(label);
+ }
+ return card;
 }
 
-if(task.adminComment){
-const comment=document.createElement("span");
-comment.textContent="Commentaire : "+task.adminComment;
-card.append(comment);
-}
-
-if(isTech()&&["todo","rejected","in_progress"].includes(task.status)){
-
-const label=document.createElement("label");
-label.className="task-check";
-
-const checkbox=document.createElement("input");
-checkbox.type="checkbox";
-checkbox.checked=selectedTaskIds.has(task.id);
-
-checkbox.onchange=()=>{
-if(checkbox.checked)selectedTaskIds.add(task.id);
-else selectedTaskIds.delete(task.id);
-renderTasks();
-};
-
-const text=document.createElement("span");
-text.textContent="Tâche réalisée";
-
-label.append(checkbox,text);
-card.append(label);
-}
-
-return card;
-}
-
-// ACTIONS DE GROUPE
 function makeGroupActions(groupTasks,frequency){
-
-const panel=document.createElement("div");
-panel.className="group-panel";
-
-const allPending=groupTasks.every(t=>t.status==="pending_validation");
-
-const canSubmit=groupTasks.every(t=>
-t.status==="pending_validation"||
-["todo","rejected","in_progress"].includes(t.status)
-);
-
-if(allPending){
-
-const info=document.createElement("div");
-info.className="small";
-info.textContent="Toutes les tâches sont terminées. Le groupe attend la validation de l'administrateur.";
-panel.append(info);
-
-if(isAdmin()){
-const approve=document.createElement("button");
-approve.className="green";
-approve.textContent=approvalInProgress?"Validation en cours...":"Valider tout l'entretien";
-approve.disabled=approvalInProgress;
-approve.onclick=()=>approveGroup(groupTasks,frequency);
-panel.append(approve);
+ const panel=document.createElement("div");panel.className="group-panel";
+ const allPending=groupTasks.every(t=>t.status==="pending_validation");
+ const canSubmit=groupTasks.every(t=>t.status==="pending_validation"||["todo","rejected","in_progress"].includes(t.status));
+ if(allPending){
+  const info=document.createElement("div");info.className="small";info.textContent="Toutes les tâches sont terminées. Le groupe attend la validation de l'administrateur.";panel.append(info);
+  if(isAdmin()){
+   const approve=document.createElement("button");approve.className="green";
+   approve.textContent=approvalInProgress?"Validation en cours...":"Valider tout l'entretien";approve.disabled=approvalInProgress;
+   approve.onclick=()=>approveGroup(groupTasks,frequency);panel.append(approve);
+  }
+  return panel;
+ }
+ if(isTech()&&canSubmit){
+  const remaining=groupTasks.filter(t=>t.status!=="pending_validation");
+  const count=remaining.filter(t=>selectedTaskIds.has(t.id)).length,alreadyPending=groupTasks.length-remaining.length;
+  const progressText=document.createElement("div");progressText.className="small";
+  progressText.textContent="Progression : "+(alreadyPending+count)+" / "+groupTasks.length+" tâches envoyées ou réalisées";panel.append(progressText);
+  const progress=document.createElement("div");progress.className="progress";
+  const bar=document.createElement("div");bar.className="progress-bar";bar.style.width=((alreadyPending+count)/groupTasks.length*100)+"%";progress.append(bar);panel.append(progress);
+  const close=document.createElement("button");close.className="green";
+  close.textContent=alreadyPending>0?"Envoyer les tâches restantes":"Clôturer l'entretien";
+  close.disabled=count!==remaining.length||remaining.length===0;close.onclick=()=>submitGroup(groupTasks,frequency);panel.append(close);
+  return panel;
+ }
+ const info=document.createElement("div");info.className="small";info.textContent="Ce groupe contient des tâches dans des états différents. Vérifie leur état avant de poursuivre.";panel.append(info);return panel;
 }
 
-return panel;
-}
-
-if(isTech()&&canSubmit){
-
-const remaining=groupTasks.filter(t=>t.status!=="pending_validation");
-const count=remaining.filter(t=>selectedTaskIds.has(t.id)).length;
-const alreadyPending=groupTasks.length-remaining.length;
-
-const progressText=document.createElement("div");
-progressText.className="small";
-progressText.textContent=
-"Progression : "+(alreadyPending+count)+" / "+groupTasks.length+
-" tâches envoyées ou réalisées";
-panel.append(progressText);
-
-const progress=document.createElement("div");
-progress.className="progress";
-
-const bar=document.createElement("div");
-bar.className="progress-bar";
-bar.style.width=((alreadyPending+count)/groupTasks.length*100)+"%";
-
-progress.append(bar);
-panel.append(progress);
-
-const close=document.createElement("button");
-close.className="green";
-close.textContent=alreadyPending>0?"Envoyer les tâches restantes":"Clôturer l'entretien";
-close.disabled=count!==remaining.length||remaining.length===0;
-close.onclick=()=>submitGroup(groupTasks,frequency);
-panel.append(close);
-
-return panel;
-}
-
-const info=document.createElement("div");
-info.className="small";
-info.textContent="Ce groupe contient des tâches dans des états différents. Vérifie leur état avant de poursuivre.";
-panel.append(info);
-
-return panel;
-}
-
-// ENVOI À L'ADMINISTRATEUR
 async function submitGroup(groupTasks,frequency){
-
-if(!isTech())return;
-
-const remaining=groupTasks.filter(t=>t.status!=="pending_validation");
-const allChecked=remaining.every(t=>selectedTaskIds.has(t.id));
-
-if(!allChecked){
-alert("Coche toutes les tâches restantes réalisées avant de clôturer.");
-return;
+ if(!isTech())return;
+ const remaining=groupTasks.filter(t=>t.status!=="pending_validation");
+ if(!remaining.every(t=>selectedTaskIds.has(t.id))){alert("Coche toutes les tâches restantes réalisées avant de clôturer.");return}
+ if(!remaining.length){alert("Toutes les tâches de ce groupe sont déjà en attente de validation.");return}
+ if(!confirm("Envoyer les "+remaining.length+" tâches restantes de l'entretien "+frequency+" à l'administrateur pour validation ?"))return;
+ try{
+  const batch=writeBatch(db);
+  for(const task of remaining)batch.update(doc(db,"maintenance_tasks",task.id),{
+   status:"pending_validation",submittedAt:serverTimestamp(),adminComment:"",updatedAt:serverTimestamp()
+  });
+  await batch.commit();
+  const submittedIds=new Set(remaining.map(t=>t.id));
+  cachedTasks=cachedTasks.map(t=>submittedIds.has(t.id)?{...t,status:"pending_validation",adminComment:""}:t);
+  selectedTaskIds.clear();
+  alert("Les tâches restantes de l'entretien "+frequency+" ont été envoyées à l'administrateur.");
+  await renderTasks();
+ }catch(e){showError("Erreur lors de la clôture : ",e);await renderTasks()}
 }
 
-if(remaining.length===0){
-alert("Toutes les tâches de ce groupe sont déjà en attente de validation.");
-return;
-}
-
-if(!confirm(
-"Envoyer les "+remaining.length+
-" tâches restantes de l'entretien "+frequency+
-" à l'administrateur pour validation ?"
-))return;
-
-try{
-
-const batch=writeBatch(db);
-
-for(const task of remaining){
-batch.update(doc(db,"maintenance_tasks",task.id),{
-status:"pending_validation",
-submittedAt:serverTimestamp(),
-adminComment:"",
-updatedAt:serverTimestamp()
-});
-}
-
-await batch.commit();
-
-selectedTaskIds.clear();
-
-alert("Les tâches restantes de l'entretien "+frequency+" ont été envoyées à l'administrateur.");
-
-await renderTasks();
-await loadMachines();
-
-}catch(e){
-alert("Erreur lors de la clôture : "+e.message);
-await renderTasks();
-}
-}
-
-// VALIDATION ADMINISTRATEUR
+// Validation transactionnelle : vérifie l'état des tâches et l'absence d'un historique du même jour.
 async function approveGroup(groupTasks,frequency){
-
-if(!isAdmin()||approvalInProgress)return;
-
-if(!groupTasks.every(t=>t.status==="pending_validation")){
-alert("Toutes les tâches du groupe doivent être en attente de validation.");
-return;
+ if(!isAdmin()||approvalInProgress)return;
+ if(!groupTasks.every(t=>t.status==="pending_validation")){alert("Toutes les tâches du groupe doivent être en attente de validation.");return}
+ if(!confirm("Confirmer la validation des "+groupTasks.length+" tâches de l'entretien "+frequency+" ?"))return;
+ approvalInProgress=true;
+ try{
+  const completedDate=todayISO(),approvedBy=auth.currentUser.uid;
+  const resultRecords=await runTransaction(db,async transaction=>{
+   const records=[];
+   // Toutes les lectures sont faites avant les écritures (règle Firestore transactions).
+   for(const task of groupTasks){
+    const taskRef=doc(db,"maintenance_tasks",task.id);
+    const taskSnap=await transaction.get(taskRef);
+    if(!taskSnap.exists()||taskSnap.data().status!=="pending_validation")
+     throw new Error("La tâche « "+task.task+" » n'est plus en attente de validation. Actualise les données.");
+    const historyId=task.id+"_"+completedDate,historyRef=doc(db,"maintenance_history",historyId);
+    const historySnap=await transaction.get(historyRef);
+    if(historySnap.exists())throw new Error("Une validation existe déjà aujourd'hui pour : "+task.task);
+    records.push({task,taskRef,taskData:taskSnap.data(),historyRef});
+   }
+   for(const record of records){
+    const {task,taskRef,taskData,historyRef}=record,nextDate=nextDueDate(task.frequency,completedDate);
+    transaction.set(historyRef,{
+     taskId:task.id,machineId:task.machineId,machineName:taskData.machineName||task.machineName,
+     task:task.task,frequency:task.frequency,completedDate,nextDueDate:nextDate,
+     approvedBy,approvedAt:serverTimestamp()
+    });
+    transaction.update(taskRef,{
+     status:"todo",nextDueDate:nextDate,lastCompletedDate:completedDate,
+     lastApprovedAt:serverTimestamp(),lastApprovedBy:approvedBy,
+     completedCount:(taskData.completedCount||0)+1,adminComment:"",updatedAt:serverTimestamp()
+    });
+    records[records.length-1].resultRecord={
+     id:task.id,taskId:task.id,machineId:task.machineId,machineName:taskData.machineName||task.machineName,
+     task:task.task,frequency:task.frequency,completedDate,nextDueDate:nextDate,
+     approvedBy,completedCount:(taskData.completedCount||0)+1
+    };
+   }
+   return records.map(record=>record.resultRecord);
+  });
+  const byId=new Map(resultRecords.map(r=>[r.id,r]));
+  cachedTasks=cachedTasks.map(t=>{
+   const r=byId.get(t.id);if(!r)return t;
+   return {...t,status:"todo",nextDueDate:r.nextDueDate,lastCompletedDate:r.completedDate,
+    lastApprovedBy:r.approvedBy,completedCount:r.completedCount,adminComment:""};
+  });
+  cachedHistory=[...cachedHistory,...resultRecords.map(({id,...r})=>r)];
+  selectedTaskIds.clear();
+  renderDashboard(cachedMachines,cachedTasks,cachedHistory);
+  alert("Entretien "+frequency+" validé. Toutes les tâches sont clôturées et leurs prochaines échéances sont calculées.");
+  await renderTasks();await renderHistory();
+ }catch(e){showError("Erreur lors de la validation du groupe : ",e)}
+ finally{approvalInProgress=false;if(currentMachine)await renderTasks()}
 }
-
-if(!confirm(
-"Confirmer la validation des "+groupTasks.length+
-" tâches de l'entretien "+frequency+" ?"
-))return;
-
-approvalInProgress=true;
-
-try{
-
-const completedDate=todayISO();
-
-await runTransaction(db,async transaction=>{
-
-const records=[];
-
-for(const task of groupTasks){
-
-const taskRef=doc(db,"maintenance_tasks",task.id);
-const taskSnap=await transaction.get(taskRef);
-
-if(!taskSnap.exists()||taskSnap.data().status!=="pending_validation"){
-throw new Error(
-"La tâche « "+task.task+
-" » n'est plus en attente de validation. Actualise la page."
-);
-}
-
-const historyId=task.id+"_"+completedDate;
-const historyRef=doc(db,"maintenance_history",historyId);
-const historySnap=await transaction.get(historyRef);
-
-if(historySnap.exists()){
-throw new Error(
-"Une validation existe déjà aujourd'hui pour : "+task.task
-);
-}
-
-records.push({
-task,
-taskRef,
-taskData:taskSnap.data(),
-historyRef
-});
-}
-
-for(const record of records){
-
-const {task,taskRef,taskData,historyRef}=record;
-const nextDate=nextDueDate(task.frequency,completedDate);
-
-transaction.set(historyRef,{
-taskId:task.id,
-machineId:task.machineId,
-machineName:taskData.machineName||task.machineName,
-task:task.task,
-frequency:task.frequency,
-completedDate,
-nextDueDate:nextDate,
-approvedBy:auth.currentUser.uid,
-approvedAt:serverTimestamp()
-});
-
-transaction.update(taskRef,{
-status:"todo",
-nextDueDate:nextDate,
-lastCompletedDate:completedDate,
-lastApprovedAt:serverTimestamp(),
-lastApprovedBy:auth.currentUser.uid,
-completedCount:(taskData.completedCount||0)+1,
-adminComment:"",
-updatedAt:serverTimestamp()
-});
-
-}
-
-});
-
-selectedTaskIds.clear();
-
-alert(
-"Entretien "+frequency+
-" validé. Toutes les tâches sont clôturées et leurs prochaines échéances sont calculées."
-);
-
-await renderTasks();
-await renderHistory();
-await loadMachines();
-
-}catch(e){
-
-alert("Erreur lors de la validation du groupe : "+e.message);
-
-}finally{
-
-approvalInProgress=false;
-
-if(currentMachine)await renderTasks();
-
-}
-
-}
-
 </script>
 </body>
 </html>
