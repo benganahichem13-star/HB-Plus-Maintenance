@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0F172A">
+  <meta name="description" content="HB+ Maintenance industrielle">
+  <link rel="manifest" href="manifest.webmanifest">
+  <title>HB+ Maintenance</title>
+</head>
+<body>
+  <h1>HB+</h1>
+  <h2>Maintenance industrielle</h2>
+  <p>Bienvenue dans votre application de maintenance.</p>
+</body>
+</html>
