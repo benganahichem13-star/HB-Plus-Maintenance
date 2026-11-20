@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -546,7 +545,10 @@ const panel=document.createElement("div");
 panel.className="group-panel";
 
 const allPending=groupTasks.every(t=>t.status==="pending_validation");
-const allSelectable=groupTasks.every(t=>["todo","rejected","in_progress"].includes(t.status));
+const canSubmit=groupTasks.every(t=>
+t.status==="pending_validation"||
+["todo","rejected","in_progress"].includes(t.status)
+);
 
 if(allPending){
 const info=document.createElement("div");
@@ -563,25 +565,28 @@ panel.append(approve);
 return panel;
 }
 
-if(isTech()&&allSelectable){
-const count=groupTasks.filter(t=>selectedTaskIds.has(t.id)).length;
+if(isTech()&&canSubmit){
+const remaining=groupTasks.filter(t=>t.status!=="pending_validation");
+const count=remaining.filter(t=>selectedTaskIds.has(t.id)).length;
+const alreadyPending=groupTasks.length-remaining.length;
+
 const progressText=document.createElement("div");
 progressText.className="small";
-progressText.textContent="Progression : "+count+" / "+groupTasks.length+" tâches réalisées";
+progressText.textContent="Progression : "+(alreadyPending+count)+" / "+groupTasks.length+" tâches envoyées ou réalisées";
 panel.append(progressText);
 
 const progress=document.createElement("div");
 progress.className="progress";
 const bar=document.createElement("div");
 bar.className="progress-bar";
-bar.style.width=(count/groupTasks.length*100)+"%";
+bar.style.width=((alreadyPending+count)/groupTasks.length*100)+"%";
 progress.append(bar);
 panel.append(progress);
 
 const close=document.createElement("button");
 close.className="green";
-close.textContent="Clôturer l'entretien";
-close.disabled=count!==groupTasks.length;
+close.textContent=alreadyPending>0?"Envoyer les tâches restantes":"Clôturer l'entretien";
+close.disabled=count!==remaining.length||remaining.length===0;
 close.onclick=()=>submitGroup(groupTasks,frequency);
 panel.append(close);
 return panel;
@@ -597,30 +602,26 @@ return panel;
 // ENVOI GLOBAL À L'ADMINISTRATEUR
 async function submitGroup(groupTasks,frequency){
 if(!isTech())return;
-const allChecked=groupTasks.every(t=>selectedTaskIds.has(t.id));
+
+const remaining=groupTasks.filter(t=>t.status!=="pending_validation");
+const allChecked=remaining.every(t=>selectedTaskIds.has(t.id));
+
 if(!allChecked){
-alert("Coche toutes les tâches réalisées avant de clôturer.");
+alert("Coche toutes les tâches restantes réalisées avant de clôturer.");
 return;
 }
-if(!confirm("Envoyer les "+groupTasks.length+" tâches de l'entretien "+frequency+" à l'administrateur pour validation ?"))return;
+
+if(remaining.length===0){
+alert("Toutes les tâches de ce groupe sont déjà en attente de validation.");
+return;
+}
+
+if(!confirm("Envoyer les "+remaining.length+" tâches restantes de l'entretien "+frequency+" à l'administrateur pour validation ?"))return;
 
 try{
-let batch=writeBatch(db);
-let changes=0;
-for(const task of groupTasks){
-if(task.status==="in_progress")continue;
-batch.update(doc(db,"maintenance_tasks",task.id),{
-status:"in_progress",
-startedAt:serverTimestamp(),
-adminComment:"",
-updatedAt:serverTimestamp()
-});
-changes++;
-}
-if(changes>0)await batch.commit();
+const batch=writeBatch(db);
 
-batch=writeBatch(db);
-for(const task of groupTasks){
+for(const task of remaining){
 batch.update(doc(db,"maintenance_tasks",task.id),{
 status:"pending_validation",
 submittedAt:serverTimestamp(),
@@ -628,11 +629,13 @@ adminComment:"",
 updatedAt:serverTimestamp()
 });
 }
+
 await batch.commit();
 
 selectedTaskIds.clear();
-alert("Entretien "+frequency+" envoyé à l'administrateur pour validation.");
+alert("Les tâches restantes de l'entretien "+frequency+" ont été envoyées à l'administrateur.");
 await renderTasks();
+
 }catch(e){
 alert("Erreur lors de la clôture : "+e.message);
 await renderTasks();
