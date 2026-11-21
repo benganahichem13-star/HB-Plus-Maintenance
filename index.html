@@ -18,13 +18,45 @@ header .small{color:#a9c7e8}
 .bell-wrap{position:relative}
 .bell-button{position:relative;width:46px;height:46px;border-radius:50%;padding:0;margin:0;background:#122d50;color:#fff;border:1px solid #41658e;font-size:22px;box-shadow:0 0 0 3px #55b5ff18}
 .bell-count{position:absolute;top:-5px;right:-5px;min-width:19px;height:19px;padding:0 5px;border-radius:20px;background:#ff3156;color:#fff;font-size:11px;line-height:19px;text-align:center;border:2px solid #10243a}
-.notification-panel{position:fixed;right:12px;left:auto;top:68px;width:min(calc(100vw - 24px),380px);max-height:70vh;overflow:auto;background:#0d2547;border:1px solid #315780;border-radius:15px;padding:13px;z-index:1100;box-shadow:0 12px 35px #0009}
-.notification-head{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:9px}
-.notification-head h3{margin:0;color:#55b5ff}
+
+/* Correction du panneau de notifications */
+.notification-panel{
+ position:fixed;
+ top:74px;
+ left:12px;
+ right:12px;
+ width:auto;
+ max-width:390px;
+ margin-left:auto;
+ max-height:70vh;
+ overflow:auto;
+ background:linear-gradient(160deg,#102b52,#091d3b);
+ border:1px solid #355d88;
+ border-radius:18px;
+ padding:16px;
+ z-index:1100;
+ box-shadow:0 16px 38px rgba(0,0,0,.65)
+}
+.notification-panel::before{
+ content:"";
+ position:absolute;
+ top:-8px;
+ right:62px;
+ width:14px;
+ height:14px;
+ background:#102b52;
+ border-left:1px solid #355d88;
+ border-top:1px solid #355d88;
+ transform:rotate(45deg)
+}
+.notification-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px}
+.notification-head h3{margin:0;color:#55b5ff;font-size:18px}
+.notification-head button{margin:0;padding:9px 14px;border-radius:12px;font-size:13px}
 .notification-item{background:#081a34;border:1px solid #29496f;border-radius:11px;padding:10px;margin:8px 0;font-size:13px}
 .notification-item strong{display:block;color:#f4f8fc;margin-bottom:4px}
 .notification-item span{color:#b5c5d5;display:block}
-.notification-empty{color:#a9bbcd;font-size:13px;padding:10px}
+.notification-empty{color:#c5d8ec;font-size:14px;text-align:center;padding:14px 10px}
+
 .drawer-backdrop{position:fixed;inset:0;background:#0009;z-index:1000}
 .drawer{position:fixed;top:0;right:0;left:auto;height:100vh;height:100dvh;width:min(88vw,430px);overflow-y:auto;background:linear-gradient(180deg,#102e55,#06172f);border-left:1px solid #345a83;border-right:0;padding:18px;z-index:1001;box-shadow:-12px 0 35px #0009}
 .drawer-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}
