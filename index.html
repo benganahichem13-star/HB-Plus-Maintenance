@@ -1,482 +1,262 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0f172a">
   <title>HB+ Maintenance — Préventive Machines</title>
   <style>
     :root {
-      --bg: #0f172a;
-      --card: #1e293b;
-      --card-2: #162032;
-      --text: #f8fafc;
-      --muted: #94a3b8;
-      --accent: #38bdf8;
-      --accent-2: #22c55e;
-      --border: #334155;
+      --bg:#0f172a; --card:#1e293b; --card2:#162032; --text:#f8fafc;
+      --muted:#94a3b8; --accent:#38bdf8; --green:#22c55e; --border:#334155;
+      --danger:#ef4444;
     }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-    }
-
-    body {
-      background: var(--bg);
-      color: var(--text);
-      padding: 16px;
-      line-height: 1.45;
-    }
-
-    .container {
-      max-width: 900px;
-      margin: 0 auto;
-    }
-
-    header {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 16px;
-      padding-bottom: 12px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    h1 {
-      font-size: 1.25rem;
-    }
-
-    .badge {
-      background: rgba(56, 189, 248, 0.15);
-      color: var(--accent);
-      border: 1px solid rgba(56, 189, 248, 0.35);
-      padding: 4px 10px;
-      border-radius: 999px;
-      font-size: 0.8rem;
-      font-weight: 600;
-    }
-
-    .panel {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 14px;
-      margin-bottom: 14px;
-    }
-
-    .group-tabs, .machines-grid, .freq-tabs {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-    button {
-      background: var(--card-2);
-      color: var(--text);
-      border: 1px solid var(--border);
-      padding: 8px 14px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 0.9rem;
-      transition: 0.15s ease;
-    }
-
-    button:hover {
-      border-color: var(--accent);
-    }
-
-    button.active {
-      background: var(--accent);
-      color: #062033;
-      border-color: var(--accent);
-      font-weight: 700;
-    }
-
-    .section-title {
-      font-size: 0.85rem;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: var(--muted);
-      margin-bottom: 10px;
-    }
-
-    .machine-meta {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 12px;
-    }
-
-    .progress-wrap {
-      width: 100%;
-      background: #0b1220;
-      border-radius: 999px;
-      height: 10px;
-      overflow: hidden;
-      margin-bottom: 14px;
-    }
-
-    .progress-bar {
-      height: 100%;
-      background: var(--accent-2);
-      width: 0%;
-      transition: width 0.2s ease;
-    }
-
-    .task-list {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .task-item {
-      display: flex;
-      align-items: flex-start;
-      gap: 10px;
-      background: var(--card-2);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 10px 12px;
-    }
-
-    .task-item.done {
-      opacity: 0.7;
-      border-color: rgba(34, 197, 94, 0.45);
-    }
-
-    .task-item input[type="checkbox"] {
-      width: 18px;
-      height: 18px;
-      margin-top: 2px;
-      accent-color: var(--accent-2);
-      cursor: pointer;
-      flex-shrink: 0;
-    }
-
-    .task-code {
-      font-weight: 700;
-      color: var(--accent);
-      margin-right: 6px;
-    }
-
-    .task-freq {
-      display: inline-block;
-      margin-top: 4px;
-      font-size: 0.75rem;
-      color: var(--muted);
-      background: rgba(148, 163, 184, 0.12);
-      padding: 2px 8px;
-      border-radius: 6px;
-    }
-
-    .empty {
-      text-align: center;
-      color: var(--muted);
-      padding: 24px 12px;
-    }
-
-    .reset-btn {
-      background: transparent;
-      border-color: #ef4444;
-      color: #fca5a5;
-      font-size: 0.8rem;
-      padding: 6px 10px;
-    }
-
-    .reset-btn:hover {
-      background: rgba(239, 68, 68, 0.15);
+    * { box-sizing:border-box; margin:0; padding:0; font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; }
+    body { background:var(--bg); color:var(--text); padding:16px; line-height:1.5; }
+    .container { max-width:900px; margin:0 auto; }
+    header { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:12px; margin-bottom:16px; padding-bottom:12px; border-bottom:1px solid var(--border); }
+    h1 { font-size:1.2rem; }
+    .badge { background:rgba(56,189,248,.15); color:var(--accent); border:1px solid rgba(56,189,248,.35); padding:5px 10px; border-radius:999px; font-size:.78rem; font-weight:700; }
+    .panel { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:14px; margin-bottom:14px; }
+    .section-title { font-size:.8rem; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); margin-bottom:10px; }
+    .group-tabs,.machines-grid,.freq-tabs { display:flex; flex-wrap:wrap; gap:8px; }
+    button { background:var(--card2); color:var(--text); border:1px solid var(--border); padding:9px 13px; border-radius:8px; cursor:pointer; font-size:.88rem; transition:.15s ease; }
+    button:hover { border-color:var(--accent); }
+    button:focus-visible,input:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+    button.active { background:var(--accent); color:#062033; border-color:var(--accent); font-weight:700; }
+    .machine-meta { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:10px; margin-bottom:12px; }
+    .machine-name { font-size:1rem; }
+    #taskCounter { color:var(--muted); margin-left:7px; font-size:.88rem; }
+    .progress-wrap { width:100%; background:#0b1220; border-radius:999px; height:10px; overflow:hidden; margin-bottom:14px; }
+    .progress-bar { height:100%; width:0%; background:var(--green); transition:width .2s ease; }
+    .task-list { display:flex; flex-direction:column; gap:8px; }
+    .task-item { display:flex; align-items:flex-start; gap:10px; background:var(--card2); border:1px solid var(--border); border-radius:10px; padding:11px 12px; cursor:pointer; }
+    .task-item.done { opacity:.72; border-color:rgba(34,197,94,.5); }
+    .task-item input { width:18px; height:18px; margin-top:3px; accent-color:var(--green); cursor:pointer; flex-shrink:0; }
+    .task-content { min-width:0; }
+    .task-code { font-weight:800; color:var(--accent); margin-right:6px; white-space:nowrap; }
+    .task-text { overflow-wrap:anywhere; }
+    .task-freq { display:inline-block; margin-top:5px; font-size:.73rem; color:var(--muted); background:rgba(148,163,184,.12); padding:2px 8px; border-radius:6px; }
+    .empty { text-align:center; color:var(--muted); padding:24px 12px; }
+    .reset-btn { background:transparent; border-color:var(--danger); color:#fca5a5; font-size:.78rem; padding:7px 10px; }
+    .reset-btn:hover { background:rgba(239,68,68,.15); }
+    .notice { color:var(--muted); font-size:.78rem; margin-top:12px; }
+    @media(max-width:520px) {
+      body { padding:10px; }
+      .panel { padding:11px; }
+      button { padding:8px 10px; font-size:.82rem; }
+      .machine-meta { align-items:flex-start; }
+      .reset-btn { width:100%; }
     }
   </style>
 </head>
 <body>
-  <div class="container">
+  <main class="container">
     <header>
       <h1>Maintenance Préventive — Par Machine</h1>
       <span id="programBadge" class="badge">Programme</span>
     </header>
 
-    <div class="panel">
+    <section class="panel">
       <div class="section-title">1. Choisir la famille / le groupe</div>
-      <div id="groupTabs" class="group-tabs" style="margin-bottom: 14px;"></div>
-
+      <div id="groupTabs" class="group-tabs" style="margin-bottom:14px"></div>
       <div class="section-title">2. Choisir la machine</div>
-      <div id="machinesGrid" class="machines-grid" style="margin-bottom: 14px;"></div>
-
+      <div id="machinesGrid" class="machines-grid" style="margin-bottom:14px"></div>
       <div class="section-title">3. Filtrer par fréquence</div>
       <div id="freqTabs" class="freq-tabs"></div>
-    </div>
+    </section>
 
-    <div class="panel">
+    <section class="panel">
       <div class="machine-meta">
         <div>
-          <strong id="selectedMachineTitle">Machine</strong>
-          <span id="taskCounter" style="color: var(--muted); margin-left: 8px;"></span>
+          <strong id="selectedMachineTitle" class="machine-name">Machine</strong>
+          <span id="taskCounter"></span>
         </div>
-        <button id="resetMachineBtn" class="reset-btn">Réinitialiser cette machine</button>
+        <button id="resetMachineBtn" class="reset-btn" type="button">Réinitialiser cette machine</button>
       </div>
-
-      <div class="progress-wrap">
+      <div class="progress-wrap" role="progressbar" aria-label="Progression des tâches" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="progressWrap">
         <div id="progressBar" class="progress-bar"></div>
       </div>
-
       <div id="taskList" class="task-list"></div>
-    </div>
-  </div>
+      <p class="notice">Le suivi est enregistré dans le stockage local de ce navigateur et de cet appareil.</p>
+    </section>
+  </main>
 
   <script>
+    "use strict";
+
     const GROUPS = [
-      { id: "ALL", label: "Toutes les machines" },
-      { id: "RCE_USE", label: "RCE / USE (M01–M69)" },
-      { id: "STAUBLI", label: "Stäubli (M24–M25)" }
+      { id:"ALL", label:"Toutes les machines" },
+      { id:"RCE_USE", label:"RCE / USE" },
+      { id:"STAUBLI", label:"Stäubli" }
     ];
 
     const MACHINES = [
-      { id: "M01", label: "M01", group: "RCE_USE", program: "RCE_USE" },
-      { id: "M02", label: "M02", group: "RCE_USE", program: "RCE_USE" },
-      { id: "M14", label: "M14", group: "RCE_USE", program: "RCE_USE" },
-      { id: "M15", label: "M15", group: "RCE_USE", program: "RCE_USE" },
-      { id: "M16", label: "M16", group: "RCE_USE", program: "RCE_USE" },
-      { id: "M17", label: "M17", group: "RCE_USE", program: "RCE_USE" },
-      { id: "M69", label: "M69", group: "RCE_USE", program: "RCE_USE" },
-      { id: "M24", label: "M24 (Stäubli)", group: "STAUBLI", program: "STAUBLI" },
-      { id: "M25", label: "M25 (Stäubli)", group: "STAUBLI", program: "STAUBLI" }
+      { id:"M01", group:"RCE_USE", program:"RCE_USE" },
+      { id:"M02", group:"RCE_USE", program:"RCE_USE" },
+      { id:"M14", group:"RCE_USE", program:"RCE_USE" },
+      { id:"M15", group:"RCE_USE", program:"RCE_USE" },
+      { id:"M16", group:"RCE_USE", program:"RCE_USE" },
+      { id:"M17", group:"RCE_USE", program:"RCE_USE" },
+      { id:"M69", group:"RCE_USE", program:"RCE_USE" },
+      { id:"M24", group:"STAUBLI", program:"STAUBLI" },
+      { id:"M25", group:"STAUBLI", program:"STAUBLI" }
     ];
 
     const PROGRAMS = {
-      RCE_USE: { label: "Programme RCE / USE (41 tâches)" },
-      STAUBLI: { label: "Programme Stäubli (24 tâches)" }
+      RCE_USE: { label:"Programme RCE / USE — 41 tâches" },
+      STAUBLI: { label:"Programme Stäubli — 24 tâches" }
     };
 
     const TASKS_BY_PROGRAM = {
       RCE_USE: [
-        // Mensuel (19)
-        { id: "rce_m_01", freq: "Mensuel", code: "01", text: "Vérifier l'état et le bon fonctionnement du système coupe (poulie, roulement, raccord de graissage, circuit de graisse)" }, //[span_5](start_span)[span_5](end_span)
-        { id: "rce_m_02", freq: "Mensuel", code: "02", text: "Nettoyer et graisser l'arbre à cardan relié à RD" }, //[span_6](start_span)[span_6](end_span)
-        { id: "rce_m_03", freq: "Mensuel", code: "03", text: "Nettoyer et graisser l'arbre à cardan Jacquard" }, //[span_7](start_span)[span_7](end_span)
-        { id: "rce_m_04", freq: "Mensuel", code: "04", text: "Nettoyer et graisser les pignons des rouleaux tireurs" }, //[span_8](start_span)[span_8](end_span)
-        { id: "rce_m_05", freq: "Mensuel", code: "05", text: "Nettoyer et graisser la glissière et les articulations de levier ciseaux" }, //[span_9](start_span)[span_9](end_span)
-        { id: "rce_m_06", freq: "Mensuel", code: "06", text: "Remplir la pompe du SGC et assurer la lubrification des lances" }, //[span_10](start_span)[span_10](end_span)
-        { id: "rce_m_07", freq: "Mensuel", code: "07", text: "Nettoyer le climatiseur CHILLER et les armoires électriques" }, //[span_11](start_span)[span_11](end_span)
-        { id: "rce_m_08", freq: "Mensuel", code: "08", text: "Nettoyer l'armoire électrique de l'éclairage machine" }, //[span_12](start_span)[span_12](end_span)
-        { id: "rce_m_09", freq: "Mensuel", code: "09", text: "Nettoyer le moteur principal" }, //[span_13](start_span)[span_13](end_span)
-        { id: "rce_m_10", freq: "Mensuel", code: "10", text: "Vérifier l'état des poulies et de la corde" }, //[span_14](start_span)[span_14](end_span)
-        { id: "rce_m_11", freq: "Mensuel", code: "11", text: "Vérifier les fuites ainsi que le niveau d'huile des carters et de graisse" }, //[span_15](start_span)[span_15](end_span)
-        { id: "rce_m_12", freq: "Mensuel", code: "12", text: "Vérifier le jeu de la roue dentée de la lance" }, //[span_16](start_span)[span_16](end_span)
-        { id: "rce_m_13", freq: "Mensuel", code: "13", text: "Vérifier la circulation d'air à travers les orifices de la roue dentée" }, //[span_17](start_span)[span_17](end_span)
-        { id: "rce_m_14", freq: "Mensuel", code: "14", text: "Appliquer quelques gouttes d'huile au niveau des lattes de lancette" }, //[span_18](start_span)[span_18](end_span)
-        { id: "rce_m_15", freq: "Mensuel", code: "15", text: "Vérifier les embouts Jacquard à l'aide du gabarit" }, //[span_19](start_span)[span_19](end_span)
-        { id: "rce_m_16", freq: "Mensuel", code: "16", text: "Nettoyer le mécanisme de lisière à l'air comprimé" }, //[span_20](start_span)[span_20](end_span)
-        { id: "rce_m_17", freq: "Mensuel", code: "17", text: "Nettoyer les cartes du mécanisme Jacquard" }, //[span_21](start_span)[span_21](end_span)
-        { id: "rce_m_18", freq: "Mensuel", code: "18", text: "Graisser le support guide (plastique) des couteaux Jacquard avec de la graisse Molykote blanche" }, //[span_22](start_span)[span_22](end_span)
-        { id: "rce_m_19", freq: "Mensuel", code: "19", text: "Déposer les filtres Jacquard de leurs supports et les souffler à l'air comprimé de l'intérieur vers l'extérieur" }, //[span_23](start_span)[span_23](end_span)
-
-        // Trimestriel (2)
-        { id: "rce_t_01", freq: "Trimestriel", code: "01", text: "Nettoyer et graisser les guides des griffes Jacquard avec de la graisse MOLYKOTE (blanche)" }, //[span_24](start_span)[span_24](end_span)
-        { id: "rce_t_02", freq: "Trimestriel", code: "02", text: "Nettoyer et graisser le moteur principal" }, //[span_25](start_span)[span_25](end_span)
-
-        // Semestriel (3)
-        { id: "rce_s_01", freq: "Semestriel", code: "01", text: "Nettoyer et graisser les leviers de mouvement des cadres 4 points (pour RCE-USE 4m) et 5 points (pour RCE 5m)" }, //[span_26](start_span)[span_26](end_span)
-        { id: "rce_s_02", freq: "Semestriel", code: "02", text: "Nettoyer le filtre d'aspiration d'huile" }, //[span_27](start_span)[span_27](end_span)
-        { id: "rce_s_03", freq: "Semestriel", code: "03", text: "Vérifier le serrage général des boulons" }, //[span_28](start_span)[span_28](end_span)
-
-        // Annuel (17)
-        { id: "rce_a_01", freq: "Annuel", code: "01", text: "Nettoyer et graisser les paliers des rouleaux à picots (2 points)" }, //[span_29](start_span)[span_29](end_span)
-        { id: "rce_a_02", freq: "Annuel", code: "02", text: "Nettoyer et graisser les paliers des rouleaux tireurs du tapis" }, //[span_30](start_span)[span_30](end_span)
-        { id: "rce_a_03", freq: "Annuel", code: "03", text: "Nettoyer et graisser les paliers des axes du fond" }, //[span_31](start_span)[span_31](end_span)
-        { id: "rce_a_04", freq: "Annuel", code: "04", text: "Nettoyer et graisser les paliers des axes d'ensouple (Niveau bas : 2 pts / Niveau...)" }, //[span_32](start_span)[span_32](end_span)
-        { id: "rce_a_05", freq: "Annuel", code: "05", text: "Nettoyer et graisser les leviers des cadres de chaîne" }, //[span_33](start_span)[span_33](end_span)
-        { id: "rce_a_06", freq: "Annuel", code: "06", text: "Effectuer la vidange du carter des lances droite" }, //[span_34](start_span)[span_34](end_span)
-        { id: "rce_a_07", freq: "Annuel", code: "07", text: "Effectuer la vidange de tous les carters du peigne" }, //[span_35](start_span)[span_35](end_span)
-        { id: "rce_a_08", freq: "Annuel", code: "08", text: "Effectuer la vidange des réducteurs moteurs des ensouples" }, //[span_36](start_span)[span_36](end_span)
-        { id: "rce_a_09", freq: "Annuel", code: "09", text: "Effectuer la vidange du carter des lances gauche" }, //[span_37](start_span)[span_37](end_span)
-        { id: "rce_a_10", freq: "Annuel", code: "10", text: "Effectuer la vidange du carter régulateur de duite et nettoyer son filtre" }, //[span_38](start_span)[span_38](end_span)
-        { id: "rce_a_11", freq: "Annuel", code: "11", text: "Effectuer la vidange du réducteur moteur du régulateur de duite (1,9 Litre)" }, //[span_39](start_span)[span_39](end_span)
-        { id: "rce_a_12", freq: "Annuel", code: "12", text: "Effectuer la vidange du carter d'entraînement Jacquard" }, //[span_40](start_span)[span_40](end_span)
-        { id: "rce_a_13", freq: "Annuel", code: "13", text: "Effectuer la vidange du carter renvoi d'angle Jacquard (6,5 Litres)" }, //[span_41](start_span)[span_41](end_span)
-        { id: "rce_a_14", freq: "Annuel", code: "14", text: "Effectuer la vidange du carter de recherche de duite" }, //[span_42](start_span)[span_42](end_span)
-        { id: "rce_a_15", freq: "Annuel", code: "15", text: "Effectuer la vidange du carter d'ouvre-pince (0,3 Litre)" }, //[span_43](start_span)[span_43](end_span)
-        { id: "rce_a_16", freq: "Annuel", code: "16", text: "Nettoyer les détecteurs de circulation d'huile (débitmètres)" }, //[span_44](start_span)[span_44](end_span)
-        { id: "rce_a_17", freq: "Annuel", code: "17", text: "Nettoyer le filtre à huile principal" } //[span_45](start_span)[span_45](end_span)
+        {id:"rce_m_01",freq:"Mensuel",code:"01",text:"Vérifier l'état et le bon fonctionnement du système coupe (poulie, roulement, raccord de graissage, circuit de graisse)"},
+        {id:"rce_m_02",freq:"Mensuel",code:"02",text:"Nettoyer et graisser l'arbre à cardan relié à RD"},
+        {id:"rce_m_03",freq:"Mensuel",code:"03",text:"Nettoyer et graisser l'arbre à cardan Jacquard"},
+        {id:"rce_m_04",freq:"Mensuel",code:"04",text:"Nettoyer et graisser les pignons des rouleaux tireurs"},
+        {id:"rce_m_05",freq:"Mensuel",code:"05",text:"Nettoyer et graisser la glissière et les articulations de levier ciseaux"},
+        {id:"rce_m_06",freq:"Mensuel",code:"06",text:"Remplir la pompe du SGC et assurer la lubrification des lances"},
+        {id:"rce_m_07",freq:"Mensuel",code:"07",text:"Nettoyer le climatiseur CHILLER et les armoires électriques"},
+        {id:"rce_m_08",freq:"Mensuel",code:"08",text:"Nettoyer l'armoire électrique de l'éclairage machine"},
+        {id:"rce_m_09",freq:"Mensuel",code:"09",text:"Nettoyer le moteur principal"},
+        {id:"rce_m_10",freq:"Mensuel",code:"10",text:"Vérifier l'état des poulies et de la corde"},
+        {id:"rce_m_11",freq:"Mensuel",code:"11",text:"Vérifier les fuites ainsi que le niveau d'huile des carters et de graisse"},
+        {id:"rce_m_12",freq:"Mensuel",code:"12",text:"Vérifier le jeu de la roue dentée de la lance"},
+        {id:"rce_m_13",freq:"Mensuel",code:"13",text:"Vérifier la circulation d'air à travers les orifices de la roue dentée"},
+        {id:"rce_m_14",freq:"Mensuel",code:"14",text:"Appliquer quelques gouttes d'huile au niveau des lattes de lancette"},
+        {id:"rce_m_15",freq:"Mensuel",code:"15",text:"Vérifier les embouts Jacquard à l'aide du gabarit"},
+        {id:"rce_m_16",freq:"Mensuel",code:"16",text:"Nettoyer le mécanisme de lisière à l'air comprimé"},
+        {id:"rce_m_17",freq:"Mensuel",code:"17",text:"Nettoyer les cartes du mécanisme Jacquard"},
+        {id:"rce_m_18",freq:"Mensuel",code:"18",text:"Graisser le support guide (plastique) des couteaux Jacquard avec de la graisse Molykote blanche"},
+        {id:"rce_m_19",freq:"Mensuel",code:"19",text:"Déposer les filtres Jacquard de leurs supports et les souffler à l'air comprimé de l'intérieur vers l'extérieur"},
+        {id:"rce_t_01",freq:"Trimestriel",code:"01",text:"Nettoyer et graisser les guides des griffes Jacquard avec de la graisse MOLYKOTE (blanche)"},
+        {id:"rce_t_02",freq:"Trimestriel",code:"02",text:"Nettoyer et graisser le moteur principal"},
+        {id:"rce_s_01",freq:"Semestriel",code:"01",text:"Nettoyer et graisser les leviers de mouvement des cadres 4 points (pour RCE-USE 4m) et 5 points (pour RCE 5m)"},
+        {id:"rce_s_02",freq:"Semestriel",code:"02",text:"Nettoyer le filtre d'aspiration d'huile"},
+        {id:"rce_s_03",freq:"Semestriel",code:"03",text:"Vérifier le serrage général des boulons"},
+        {id:"rce_a_01",freq:"Annuel",code:"01",text:"Nettoyer et graisser les paliers des rouleaux à picots (2 points)"},
+        {id:"rce_a_02",freq:"Annuel",code:"02",text:"Nettoyer et graisser les paliers des rouleaux tireurs du tapis"},
+        {id:"rce_a_03",freq:"Annuel",code:"03",text:"Nettoyer et graisser les paliers des axes du fond"},
+        {id:"rce_a_04",freq:"Annuel",code:"04",text:"Nettoyer et graisser les paliers des axes d'ensouple (Niveau bas : 2 pts / Niveau...)"},
+        {id:"rce_a_05",freq:"Annuel",code:"05",text:"Nettoyer et graisser les leviers des cadres de chaîne"},
+        {id:"rce_a_06",freq:"Annuel",code:"06",text:"Effectuer la vidange du carter des lances droite"},
+        {id:"rce_a_07",freq:"Annuel",code:"07",text:"Effectuer la vidange de tous les carters du peigne"},
+        {id:"rce_a_08",freq:"Annuel",code:"08",text:"Effectuer la vidange des réducteurs moteurs des ensouples"},
+        {id:"rce_a_09",freq:"Annuel",code:"09",text:"Effectuer la vidange du carter des lances gauche"},
+        {id:"rce_a_10",freq:"Annuel",code:"10",text:"Effectuer la vidange du carter régulateur de duite et nettoyer son filtre"},
+        {id:"rce_a_11",freq:"Annuel",code:"11",text:"Effectuer la vidange du réducteur moteur du régulateur de duite (1,9 Litre)"},
+        {id:"rce_a_12",freq:"Annuel",code:"12",text:"Effectuer la vidange du carter d'entraînement Jacquard"},
+        {id:"rce_a_13",freq:"Annuel",code:"13",text:"Effectuer la vidange du carter renvoi d'angle Jacquard (6,5 Litres)"},
+        {id:"rce_a_14",freq:"Annuel",code:"14",text:"Effectuer la vidange du carter de recherche de duite"},
+        {id:"rce_a_15",freq:"Annuel",code:"15",text:"Effectuer la vidange du carter d'ouvre-pince (0,3 Litre)"},
+        {id:"rce_a_16",freq:"Annuel",code:"16",text:"Nettoyer les détecteurs de circulation d'huile (débitmètres)"},
+        {id:"rce_a_17",freq:"Annuel",code:"17",text:"Nettoyer le filtre à huile principal"}
       ],
-
-      // Ajoutez ici vos 24 tâches Stäubli (M24 / M25)
+      /* Les intitulés Stäubli ne figuraient pas dans le code fourni.
+         Remplacer ces libellés par les 24 tâches réelles avant utilisation opérationnelle. */
       STAUBLI: [
-        { id: "stb_01", freq: "Mensuel", code: "01", text: "Tâche Stäubli #01 (à personnaliser)" },
-        { id: "stb_02", freq: "Mensuel", code: "02", text: "Tâche Stäubli #02 (à personnaliser)" },
-        { id: "stb_03", freq: "Mensuel", code: "03", text: "Tâche Stäubli #03 (à personnaliser)" },
-        { id: "stb_04", freq: "Mensuel", code: "04", text: "Tâche Stäubli #04 (à personnaliser)" },
-        { id: "stb_05", freq: "Mensuel", code: "05", text: "Tâche Stäubli #05 (à personnaliser)" },
-        { id: "stb_06", freq: "Mensuel", code: "06", text: "Tâche Stäubli #06 (à personnaliser)" },
-        { id: "stb_07", freq: "Mensuel", code: "07", text: "Tâche Stäubli #07 (à personnaliser)" },
-        { id: "stb_08", freq: "Mensuel", code: "08", text: "Tâche Stäubli #08 (à personnaliser)" },
-        { id: "stb_09", freq: "Mensuel", code: "09", text: "Tâche Stäubli #09 (à personnaliser)" },
-        { id: "stb_10", freq: "Mensuel", code: "10", text: "Tâche Stäubli #10 (à personnaliser)" },
-        { id: "stb_11", freq: "Mensuel", code: "11", text: "Tâche Stäubli #11 (à personnaliser)" },
-        { id: "stb_12", freq: "Mensuel", code: "12", text: "Tâche Stäubli #12 (à personnaliser)" },
-        { id: "stb_13", freq: "Trimestriel", code: "13", text: "Tâche Stäubli #13 (à personnaliser)" },
-        { id: "stb_14", freq: "Trimestriel", code: "14", text: "Tâche Stäubli #14 (à personnaliser)" },
-        { id: "stb_15", freq: "Trimestriel", code: "15", text: "Tâche Stäubli #15 (à personnaliser)" },
-        { id: "stb_16", freq: "Trimestriel", code: "16", text: "Tâche Stäubli #16 (à personnaliser)" },
-        { id: "stb_17", freq: "Semestriel", code: "17", text: "Tâche Stäubli #17 (à personnaliser)" },
-        { id: "stb_18", freq: "Semestriel", code: "18", text: "Tâche Stäubli #18 (à personnaliser)" },
-        { id: "stb_19", freq: "Semestriel", code: "19", text: "Tâche Stäubli #19 (à personnaliser)" },
-        { id: "stb_20", freq: "Semestriel", code: "20", text: "Tâche Stäubli #20 (à personnaliser)" },
-        { id: "stb_21", freq: "Annuel", code: "21", text: "Tâche Stäubli #21 (à personnaliser)" },
-        { id: "stb_22", freq: "Annuel", code: "22", text: "Tâche Stäubli #22 (à personnaliser)" },
-        { id: "stb_23", freq: "Annuel", code: "23", text: "Tâche Stäubli #23 (à personnaliser)" },
-        { id: "stb_24", freq: "Annuel", code: "24", text: "Tâche Stäubli #24 (à personnaliser)" }
+        ...Array.from({length:12},(_,i)=>({id:`stb_${String(i+1).padStart(2,"0")}`,freq:"Mensuel",code:String(i+1).padStart(2,"0"),text:`Tâche Stäubli #${String(i+1).padStart(2,"0")} — intitulé à compléter`})),
+        ...Array.from({length:4},(_,i)=>({id:`stb_${String(i+13).padStart(2,"0")}`,freq:"Trimestriel",code:String(i+13).padStart(2,"0"),text:`Tâche Stäubli #${String(i+13).padStart(2,"0")} — intitulé à compléter`})),
+        ...Array.from({length:4},(_,i)=>({id:`stb_${String(i+17).padStart(2,"0")}`,freq:"Semestriel",code:String(i+17).padStart(2,"0"),text:`Tâche Stäubli #${String(i+17).padStart(2,"0")} — intitulé à compléter`})),
+        ...Array.from({length:4},(_,i)=>({id:`stb_${String(i+21).padStart(2,"0")}`,freq:"Annuel",code:String(i+21).padStart(2,"0"),text:`Tâche Stäubli #${String(i+21).padStart(2,"0")} — intitulé à compléter`}))
       ]
     };
 
-    const FREQUENCIES = ["Toutes", "Mensuel", "Trimestriel", "Semestriel", "Annuel"];
-
-    let state = {
-      group: "ALL",
-      machineId: "M01",
-      freq: "Toutes"
-    };
+    const FREQUENCIES = ["Toutes","Mensuel","Trimestriel","Semestriel","Annuel"];
+    const state = { group:"ALL", machineId:"M01", freq:"Toutes" };
+    const STORAGE_PREFIX = "hb_preventive_v2";
 
     function storageKey(machineId, taskId) {
-      return `hb_task_${machineId}_${taskId}`;
+      return `${STORAGE_PREFIX}_${machineId}_${taskId}`;
     }
-
     function isDone(machineId, taskId) {
-      return localStorage.getItem(storageKey(machineId, taskId)) === "true";
+      try { return localStorage.getItem(storageKey(machineId,taskId)) === "true"; }
+      catch (error) { console.error("Lecture du stockage impossible",error); return false; }
     }
-
     function setDone(machineId, taskId, checked) {
-      localStorage.setItem(storageKey(machineId, taskId), checked ? "true" : "false");
+      try { localStorage.setItem(storageKey(machineId,taskId),checked ? "true" : "false"); }
+      catch (error) { alert("Impossible d'enregistrer : le stockage du navigateur est indisponible."); }
     }
-
     function getVisibleMachines() {
-      if (state.group === "ALL") return MACHINES;
-      return MACHINES.filter(m => m.group === state.group);
+      return state.group === "ALL" ? MACHINES : MACHINES.filter(m=>m.group===state.group);
     }
-
     function getCurrentMachine() {
-      return MACHINES.find(m => m.id === state.machineId) || MACHINES[0];
+      return MACHINES.find(m=>m.id===state.machineId) || MACHINES[0];
     }
-
+    function makeButton(label, active, onClick) {
+      const btn=document.createElement("button");
+      btn.type="button"; btn.textContent=label; btn.className=active ? "active" : "";
+      btn.setAttribute("aria-pressed",String(active)); btn.addEventListener("click",onClick);
+      return btn;
+    }
     function renderGroups() {
-      const el = document.getElementById("groupTabs");
-      el.innerHTML = "";
-      GROUPS.forEach(g => {
-        const btn = document.createElement("button");
-        btn.textContent = g.label;
-        btn.className = state.group === g.id ? "active" : "";
-        btn.onclick = () => {
-          state.group = g.id;
-          const visible = getVisibleMachines();
-          if (!visible.some(m => m.id === state.machineId) && visible.length > 0) {
-            state.machineId = visible[0].id;
-          }
-          renderAll();
-        };
-        el.appendChild(btn);
-      });
+      const el=document.getElementById("groupTabs"); el.replaceChildren();
+      GROUPS.forEach(g=>el.appendChild(makeButton(g.label,state.group===g.id,()=>{
+        state.group=g.id;
+        const visible=getVisibleMachines();
+        if (!visible.some(m=>m.id===state.machineId)) state.machineId=visible[0].id;
+        state.freq="Toutes"; renderAll();
+      })));
     }
-
     function renderMachines() {
-      const el = document.getElementById("machinesGrid");
-      el.innerHTML = "";
-      getVisibleMachines().forEach(m => {
-        const btn = document.createElement("button");
-        btn.textContent = m.label;
-        btn.className = state.machineId === m.id ? "active" : "";
-        btn.onclick = () => {
-          state.machineId = m.id;
-          renderAll();
-        };
-        el.appendChild(btn);
-      });
+      const el=document.getElementById("machinesGrid"); el.replaceChildren();
+      getVisibleMachines().forEach(m=>el.appendChild(makeButton(m.id,state.machineId===m.id,()=>{
+        state.machineId=m.id; state.freq="Toutes"; renderAll();
+      })));
     }
-
     function renderFrequencies() {
-      const el = document.getElementById("freqTabs");
-      el.innerHTML = "";
-      FREQUENCIES.forEach(f => {
-        const btn = document.createElement("button");
-        btn.textContent = f;
-        btn.className = state.freq === f ? "active" : "";
-        btn.onclick = () => {
-          state.freq = f;
-          renderTasks();
-        };
-        el.appendChild(btn);
-      });
+      const el=document.getElementById("freqTabs"); el.replaceChildren();
+      FREQUENCIES.forEach(f=>el.appendChild(makeButton(f,state.freq===f,()=>{
+        state.freq=f; renderTasks();
+      })));
     }
-
     function renderTasks() {
-      const machine = getCurrentMachine();
-      const prog = PROGRAMS[machine.program];
-      const allProgramTasks = TASKS_BY_PROGRAM[machine.program] || [];
-      const filteredTasks = state.freq === "Toutes"
-        ? allProgramTasks
-        : allProgramTasks.filter(t => t.freq === state.freq);
+      const machine=getCurrentMachine();
+      const program=PROGRAMS[machine.program];
+      const allTasks=TASKS_BY_PROGRAM[machine.program] || [];
+      const tasks=state.freq==="Toutes" ? allTasks : allTasks.filter(t=>t.freq===state.freq);
+      const done=tasks.filter(t=>isDone(machine.id,t.id)).length;
+      const total=tasks.length;
+      const percent=total ? Math.round(done/total*100) : 0;
 
-      document.getElementById("programBadge").textContent = prog ? prog.label : machine.program;
-      document.getElementById("selectedMachineTitle").textContent = `Machine ${machine.label}`;
+      document.getElementById("programBadge").textContent=program ? program.label : "Programme non défini";
+      document.getElementById("selectedMachineTitle").textContent=`Machine ${machine.id}`;
+      document.getElementById("taskCounter").textContent=`(${done}/${total} — ${percent} %)`;
+      document.getElementById("progressBar").style.width=`${percent}%`;
+      document.getElementById("progressWrap").setAttribute("aria-valuenow",String(percent));
 
-      const doneCount = filteredTasks.filter(t => isDone(machine.id, t.id)).length;
-      const totalCount = filteredTasks.length;
-      const pct = totalCount > 0 ? Math.round((doneCount / totalCount) * 100) : 0;
-
-      document.getElementById("taskCounter").textContent = `(${doneCount}/${totalCount} — ${pct}%)`;
-      document.getElementById("progressBar").style.width = `${pct}%`;
-
-      const listEl = document.getElementById("taskList");
-      listEl.innerHTML = "";
-
-      if (filteredTasks.length === 0) {
-        listEl.innerHTML = `<div class="empty">Aucune tâche pour ce filtre sur ${machine.id}.</div>`;
-        return;
+      const list=document.getElementById("taskList"); list.replaceChildren();
+      if (!tasks.length) {
+        const empty=document.createElement("div"); empty.className="empty";
+        empty.textContent=`Aucune tâche pour ce filtre sur ${machine.id}.`; list.appendChild(empty); return;
       }
-
-      filteredTasks.forEach(task => {
-        const checked = isDone(machine.id, task.id);
-        const row = document.createElement("label");
-        row.className = `task-item ${checked ? "done" : ""}`;
-
-        const cb = document.createElement("input");
-        cb.type = "checkbox";
-        cb.checked = checked;
-        cb.onchange = () => {
-          setDone(machine.id, task.id, cb.checked);
-          renderTasks();
-        };
-
-        const content = document.createElement("div");
-        content.innerHTML = `
-          <div><span class="task-code">#${task.code}</span>${task.text}</div>
-          <span class="task-freq">${task.freq}</span>
-        `;
-
-        row.appendChild(cb);
-        row.appendChild(content);
-        listEl.appendChild(row);
+      tasks.forEach(task=>{
+        const checked=isDone(machine.id,task.id);
+        const row=document.createElement("label"); row.className=`task-item${checked?" done":""}`;
+        const checkbox=document.createElement("input"); checkbox.type="checkbox"; checkbox.checked=checked;
+        checkbox.setAttribute("aria-label",`Terminer la tâche ${task.code}`);
+        checkbox.addEventListener("change",()=>{
+          setDone(machine.id,task.id,checkbox.checked); renderTasks();
+        });
+        const content=document.createElement("div"); content.className="task-content";
+        const line=document.createElement("div"); line.className="task-text";
+        const code=document.createElement("span"); code.className="task-code"; code.textContent=`#${task.code}`;
+        line.append(code,document.createTextNode(task.text));
+        const freq=document.createElement("span"); freq.className="task-freq"; freq.textContent=task.freq;
+        content.append(line,freq); row.append(checkbox,content); list.appendChild(row);
       });
     }
-
-    document.getElementById("resetMachineBtn").onclick = () => {
-      const machine = getCurrentMachine();
-      const tasks = TASKS_BY_PROGRAM[machine.program] || [];
-      tasks.forEach(t => localStorage.removeItem(storageKey(machine.id, t.id)));
+    document.getElementById("resetMachineBtn").addEventListener("click",()=>{
+      const machine=getCurrentMachine();
+      const tasks=TASKS_BY_PROGRAM[machine.program] || [];
+      if (!confirm(`Réinitialiser le suivi des ${tasks.length} tâches de ${machine.id} sur cet appareil ?`)) return;
+      tasks.forEach(task=>{
+        try { localStorage.removeItem(storageKey(machine.id,task.id)); }
+        catch(error) { console.error("Réinitialisation impossible",error); }
+      });
       renderTasks();
-    };
-
-    function renderAll() {
-      renderGroups();
-      renderMachines();
-      renderFrequencies();
-      renderTasks();
-    }
-
+    });
+    function renderAll() { renderGroups(); renderMachines(); renderFrequencies(); renderTasks(); }
     renderAll();
   </script>
 </body>
