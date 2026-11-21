@@ -10,6 +10,16 @@
 body{margin:0;background:#0b1725;color:#f4f8fc;font-family:Arial,sans-serif}
 header{background:#10243a;padding:18px;display:flex;align-items:center;justify-content:space-between;gap:12px}
 header h1{margin:0;font-size:23px}.header-title{min-width:0}
+.header-actions{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.notif-btn{position:relative;flex:0 0 42px;width:42px;height:42px;border-radius:50%;padding:0;margin:0;background:#d00070;color:#fff;font-size:18px;line-height:1;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 3px #d0007033}
+.notif-btn:focus-visible{outline:3px solid #fff;outline-offset:3px}
+.notif-badge{position:absolute;top:-4px;right:-4px;min-width:19px;height:19px;padding:0 5px;border-radius:999px;background:#ffcf33;color:#071727;font-size:11px;font-weight:bold;line-height:19px;text-align:center;border:2px solid #10243a}
+.notif-panel{position:fixed;top:76px;right:14px;width:min(92vw,360px);max-height:70vh;overflow-y:auto;background:#10243a;border:1px solid #34516d;border-radius:12px;padding:14px;z-index:1002;box-shadow:0 12px 30px #000a}
+.notif-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid #29435d}
+.notif-item{background:#0c1b2b;border:1px solid #29435d;border-radius:9px;padding:10px;margin:8px 0;cursor:pointer}
+.notif-item:hover{border-color:#55b5ff}
+.notif-item strong{display:block;color:#55b5ff;font-size:13px}
+.notif-item span{display:block;color:#b5c5d5;font-size:12px;margin-top:4px}
 .menu-dot{flex:0 0 46px;width:46px;height:46px;border-radius:50%;padding:0;margin:0;background:#d00070;color:white;font-size:25px;line-height:1;box-shadow:0 0 0 4px #d0007022}
 .menu-dot:focus-visible{outline:3px solid white;outline-offset:3px}
 .drawer-backdrop{position:fixed;inset:0;background:#0009;z-index:1000}
@@ -65,13 +75,26 @@ button:disabled{opacity:.4;cursor:not-allowed}.hidden{display:none!important}
 <body>
 <header>
  <div class="header-title"><h1>HB+ — Maintenance industrielle</h1><div class="small">Gestion de la maintenance préventive</div></div>
- <button id="menuButton" class="menu-dot hidden" type="button" aria-label="Ouvrir le menu" aria-expanded="false">●</button>
+ <div class="header-actions">
+  <button id="notifButton" class="notif-btn hidden" type="button" aria-label="Notifications" aria-expanded="false">
+   <span class="bell-icon" aria-hidden="true">🔔</span>
+   <span id="notifBadge" class="notif-badge hidden">0</span>
+  </button>
+  <button id="menuButton" class="menu-dot hidden" type="button" aria-label="Ouvrir le menu" aria-expanded="false">●</button>
+ </div>
 </header>
+<div id="notifPanel" class="notif-panel hidden" role="region" aria-label="Notifications de maintenance">
+ <div class="notif-head">
+  <strong>Notifications</strong>
+  <button id="closeNotifBtn" class="gray" type="button">Fermer ✕</button>
+ </div>
+ <div id="notifList" class="small">Aucune notification.</div>
+</div>
 <div id="drawerBackdrop" class="drawer-backdrop hidden"></div>
 <aside id="appDrawer" class="drawer hidden" aria-label="Menu et informations">
  <div class="drawer-head"><h2>Menu</h2><button id="closeDrawerBtn" class="gray" type="button">Fermer ✕</button></div>
- <section class="drawer-section"><h3>Profil utilisateur</h3><div id="profile" class="status">Chargement...</div><button id="logoutBtn" class="gray">Déconnexion</button></section>
- <section id="drawerAdminSection" class="drawer-section hidden"><h3>Administration</h3><p class="small">24 opérations fixes par machine, réparties en quatre catégories. Les tâches existantes ne sont pas dupliquées.</p><button id="initBtn">Vérifier / initialiser les tâches manquantes</button><div id="initMsg" class="status">En attente.</div></section>
+ <section class="drawer-section"><h3>Profil utilisateur</h3><div id="profile" class="status">Chargement...</div><button id="refreshBtn" class="gray" type="button">Actualiser les données</button><button id="logoutBtn" class="gray" type="button">Déconnexion</button></section>
+ <section id="drawerAdminSection" class="drawer-section hidden"><h3>Administration</h3><p class="small">24 opérations fixes par machine, réparties en quatre catégories. Les tâches existantes ne sont pas dupliquées.</p><button id="initBtn" type="button">Vérifier / initialiser les tâches manquantes</button><div id="initMsg" class="status">En attente.</div></section>
  <section class="drawer-section"><h3>Répartition des opérations</h3><div id="frequencyBreakdown" class="small">Chargement...</div></section>
  <section class="drawer-section"><h3>Dernières interventions validées</h3><div id="recentActivity" class="small">Chargement...</div></section>
 </aside>
@@ -79,7 +102,7 @@ button:disabled{opacity:.4;cursor:not-allowed}.hidden{display:none!important}
  <section id="login" class="card">
   <h2>Connexion</h2><label>E-mail</label><input id="email" type="email" autocomplete="username">
   <label>Mot de passe</label><input id="password" type="password" autocomplete="current-password">
-  <button id="loginBtn">Se connecter</button><div id="loginMsg" class="status">Veuillez vous connecter.</div>
+  <button id="loginBtn" type="button">Se connecter</button><div id="loginMsg" class="status">Veuillez vous connecter.</div>
  </section>
  <section id="app" class="hidden">
   <div id="dashboardCard" class="card">
@@ -89,7 +112,7 @@ button:disabled{opacity:.4;cursor:not-allowed}.hidden{display:none!important}
    <div id="globalProgressText" class="small">Calcul en cours...</div>
   </div>
   <div id="machineDetail" class="card hidden">
-   <button id="backBtn" class="gray">← Retour au tableau de bord</button>
+   <button id="backBtn" class="gray" type="button">← Retour au tableau de bord</button>
    <h2 id="detailName">Machine</h2><div id="detailInfo" class="small"></div>
    <div class="card"><h2>Tableau de suivi</h2><div id="machineStats" class="stats-grid"></div></div>
    <label>Filtrer les entretiens</label>
@@ -121,10 +144,22 @@ const firebaseConfig={
 const firebaseApp=initializeApp(firebaseConfig),auth=getAuth(firebaseApp),db=getFirestore(firebaseApp);
 const $=id=>document.getElementById(id);
 
-function openDrawer(){$("appDrawer").classList.remove("hidden");$("drawerBackdrop").classList.remove("hidden");$("menuButton").setAttribute("aria-expanded","true")}
+function openDrawer(){closeNotif();$("appDrawer").classList.remove("hidden");$("drawerBackdrop").classList.remove("hidden");$("menuButton").setAttribute("aria-expanded","true")}
 function closeDrawer(){$("appDrawer").classList.add("hidden");$("drawerBackdrop").classList.add("hidden");$("menuButton").setAttribute("aria-expanded","false")}
 $("menuButton").onclick=openDrawer;$("closeDrawerBtn").onclick=closeDrawer;$("drawerBackdrop").onclick=closeDrawer;
-document.addEventListener("keydown",e=>{if(e.key==="Escape")closeDrawer()});
+
+function openNotif(){closeDrawer();$("notifPanel").classList.remove("hidden");$("notifButton").setAttribute("aria-expanded","true")}
+function closeNotif(){$("notifPanel").classList.add("hidden");$("notifButton").setAttribute("aria-expanded","false")}
+$("notifButton").onclick=e=>{
+ e.stopPropagation();
+ const isOpen=!$("notifPanel").classList.contains("hidden");
+ if(isOpen)closeNotif();else openNotif();
+};
+$("closeNotifBtn").onclick=closeNotif;
+document.addEventListener("click",e=>{
+ if(!e.target.closest("#notifPanel")&&!e.target.closest("#notifButton"))closeNotif();
+});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeDrawer();closeNotif()}});
 
 let currentRole=null,profileReady=false,currentMachine=null,selectedTaskIds=new Set(),approvalInProgress=false;
 let cachedMachines=[],cachedTasks=[],cachedHistory=[];
@@ -200,6 +235,12 @@ $("loginBtn").onclick=async()=>{
  catch(e){$("loginMsg").textContent="Erreur : "+e.message}
 };
 $("logoutBtn").onclick=()=>signOut(auth);
+$("refreshBtn").onclick=async()=>{
+ if(!profileReady)return;
+ closeDrawer();
+ await loadMachines();
+ if(currentMachine){await renderTasks();await renderHistory()}
+};
 $("backBtn").onclick=()=>{
  currentMachine=null;selectedTaskIds.clear();
  $("machineDetail").classList.add("hidden");$("dashboardCard").classList.remove("hidden");
@@ -209,11 +250,14 @@ $("frequencyFilter").onchange=renderTasks;
 
 onAuthStateChanged(auth,async user=>{
  if(!user){
-  closeDrawer();$("menuButton").classList.add("hidden");profileReady=false;currentRole=null;currentMachine=null;
+  closeDrawer();closeNotif();
+  $("menuButton").classList.add("hidden");$("notifButton").classList.add("hidden");
+  profileReady=false;currentRole=null;currentMachine=null;
   selectedTaskIds.clear();cachedMachines=[];cachedTasks=[];cachedHistory=[];
   $("login").classList.remove("hidden");$("app").classList.add("hidden");return;
  }
- $("login").classList.add("hidden");$("app").classList.remove("hidden");$("menuButton").classList.remove("hidden");
+ $("login").classList.add("hidden");$("app").classList.remove("hidden");
+ $("menuButton").classList.remove("hidden");$("notifButton").classList.remove("hidden");
  $("profile").textContent="Lecture du profil...";
  try{
   const profileSnap=await getDoc(doc(db,"Users",user.uid));
@@ -227,7 +271,6 @@ onAuthStateChanged(auth,async user=>{
  }catch(e){$("profile").textContent="Erreur : "+e.message}
 });
 
-// Charge les collections une fois à l'ouverture de session ou lors d'une actualisation explicite.
 async function loadMachines(){
  $("dashboardStats").textContent="Chargement des indicateurs...";
  const [machinesSnap,tasksSnap,historySnap]=await Promise.all([
@@ -242,8 +285,6 @@ async function loadMachines(){
  renderDashboard(cachedMachines,cachedTasks,cachedHistory);
 }
 
-// Vérifie les identifiants en mémoire et crée uniquement les tâches absentes.
-// Une seule lecture de la collection des tâches, jamais un getDoc pour chaque tâche.
 async function initializeSchedule(showMessage=true){
  if(!isAdmin())return;
  if(showMessage)$("initMsg").textContent="Vérification des tâches en cours...";
@@ -281,6 +322,41 @@ async function initializeSchedule(showMessage=true){
  }catch(e){$("initMsg").textContent="Erreur : "+e.message}
 }
 $("initBtn").onclick=()=>initializeSchedule(true);
+
+function renderNotifications(tasks,machines){
+ const pending=tasks.filter(t=>taskDisplayStatus(t)==="En attente de validation");
+ const overdue=tasks.filter(t=>taskDisplayStatus(t)==="En retard");
+ const items=[
+  ...pending.map(t=>({task:t,type:"À valider"})),
+  ...overdue.map(t=>({task:t,type:"En retard"}))
+ ];
+ const badge=$("notifBadge"),list=$("notifList");
+ if(!badge||!list)return;
+ if(items.length>0){
+  badge.textContent=items.length>99?"99+":String(items.length);
+  badge.classList.remove("hidden");
+ }else{
+  badge.classList.add("hidden");
+ }
+ list.textContent="";
+ if(!items.length){list.textContent="Aucune tâche à valider ni en retard.";return}
+ const summary=document.createElement("div");
+ summary.className="small";
+ summary.textContent=pending.length+" à valider • "+overdue.length+" en retard";
+ list.append(summary);
+ items.slice(0,25).forEach(({task,type})=>{
+  const row=document.createElement("div");row.className="notif-item";
+  const title=document.createElement("strong");title.textContent="["+type+"] "+(task.task||"Opération");
+  const sub=document.createElement("span");sub.textContent=(task.machineName||task.machineId||"Machine")+" • "+(task.frequency||"");
+  row.append(title,sub);
+  row.onclick=()=>{
+   closeNotif();
+   const machine=machines.find(m=>m.id===task.machineId);
+   if(machine)openMachine(machine);
+  };
+  list.append(row);
+ });
+}
 
 function renderMachinePark(machines){
  const container=$("dashboardMachines");if(!container)return;container.textContent="";
@@ -345,6 +421,7 @@ function renderDashboard(machines,tasks,history){
   $("dashboardStats").append(box);
  });
  renderMachinePark(machines);
+ renderNotifications(tasks,machines);
  $("globalProgressBar").style.width=percent+"%";
  $("globalProgressText").textContent=completed+" opérations réalisées et à jour sur "+total+" opérations programmées ("+percent+"%).";
  const frequencies=["Hebdomadaire","Mensuelle","Semestrielle","Annuelle"],frequencyBox=$("frequencyBreakdown");
@@ -471,7 +548,9 @@ function makeTaskCard(task){
  const title=document.createElement("strong");title.textContent=task.task;
  const due=document.createElement("span");due.textContent="Prochaine échéance : "+dateLabel(task.nextDueDate);
  const status=document.createElement("span");
- status.innerHTML='<span class="pill">'+taskDisplayStatus(task)+'</span><span class="pill">'+task.frequency+'</span>';
+ const p1=document.createElement("span");p1.className="pill";p1.textContent=taskDisplayStatus(task);
+ const p2=document.createElement("span");p2.className="pill";p2.textContent=task.frequency;
+ status.append(p1,p2);
  card.append(title,due,status);
  if(task.completedCount>0){
   const history=document.createElement("span");history.textContent="Interventions validées : "+task.completedCount+" • Dernière intervention : "+dateLabel(task.lastCompletedDate);card.append(history);
@@ -493,7 +572,7 @@ function makeGroupActions(groupTasks,frequency){
  if(allPending){
   const info=document.createElement("div");info.className="small";info.textContent="Toutes les tâches sont terminées. Le groupe attend la validation de l'administrateur.";panel.append(info);
   if(isAdmin()){
-   const approve=document.createElement("button");approve.className="green";
+   const approve=document.createElement("button");approve.className="green";approve.type="button";
    approve.textContent=approvalInProgress?"Validation en cours...":"Valider tout l'entretien";approve.disabled=approvalInProgress;
    approve.onclick=()=>approveGroup(groupTasks,frequency);panel.append(approve);
   }
@@ -506,7 +585,7 @@ function makeGroupActions(groupTasks,frequency){
   progressText.textContent="Progression : "+(alreadyPending+count)+" / "+groupTasks.length+" tâches envoyées ou réalisées";panel.append(progressText);
   const progress=document.createElement("div");progress.className="progress";
   const bar=document.createElement("div");bar.className="progress-bar";bar.style.width=((alreadyPending+count)/groupTasks.length*100)+"%";progress.append(bar);panel.append(progress);
-  const close=document.createElement("button");close.className="green";
+  const close=document.createElement("button");close.className="green";close.type="button";
   close.textContent=alreadyPending>0?"Envoyer les tâches restantes":"Clôturer l'entretien";
   close.disabled=count!==remaining.length||remaining.length===0;close.onclick=()=>submitGroup(groupTasks,frequency);panel.append(close);
   return panel;
@@ -534,7 +613,6 @@ async function submitGroup(groupTasks,frequency){
  }catch(e){showError("Erreur lors de la clôture : ",e);await renderTasks()}
 }
 
-// Validation transactionnelle : vérifie l'état des tâches et l'absence d'un historique du même jour.
 async function approveGroup(groupTasks,frequency){
  if(!isAdmin()||approvalInProgress)return;
  if(!groupTasks.every(t=>t.status==="pending_validation")){alert("Toutes les tâches du groupe doivent être en attente de validation.");return}
@@ -544,7 +622,6 @@ async function approveGroup(groupTasks,frequency){
   const completedDate=todayISO(),approvedBy=auth.currentUser.uid;
   const resultRecords=await runTransaction(db,async transaction=>{
    const records=[];
-   // Toutes les lectures sont faites avant les écritures (règle Firestore transactions).
    for(const task of groupTasks){
     const taskRef=doc(db,"maintenance_tasks",task.id);
     const taskSnap=await transaction.get(taskRef);
@@ -567,7 +644,7 @@ async function approveGroup(groupTasks,frequency){
      lastApprovedAt:serverTimestamp(),lastApprovedBy:approvedBy,
      completedCount:(taskData.completedCount||0)+1,adminComment:"",updatedAt:serverTimestamp()
     });
-    records[records.length-1].resultRecord={
+    record.resultRecord={
      id:task.id,taskId:task.id,machineId:task.machineId,machineName:taskData.machineName||task.machineName,
      task:task.task,frequency:task.frequency,completedDate,nextDueDate:nextDate,
      approvedBy,completedCount:(taskData.completedCount||0)+1
@@ -592,3 +669,4 @@ async function approveGroup(groupTasks,frequency){
 </script>
 </body>
 </html>
+s
