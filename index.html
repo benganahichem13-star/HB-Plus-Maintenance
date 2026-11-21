@@ -7,102 +7,90 @@
 <title>HB+ Maintenance</title>
 <style>
 *{box-sizing:border-box}
-body{margin:0;background:#0b1725;color:#f4f8fc;font-family:Arial,sans-serif}
-header{background:#10243a;padding:18px;display:flex;align-items:center;justify-content:space-between;gap:12px}
-header h1{margin:0;font-size:23px}.header-title{min-width:0}
-.menu-dot{flex:0 0 46px;width:46px;height:46px;border-radius:50%;padding:0;margin:0;background:#d00070;color:white;font-size:25px;line-height:1;box-shadow:0 0 0 4px #d0007022}
-.menu-dot:focus-visible{outline:3px solid white;outline-offset:3px}
+body{margin:0;background:radial-gradient(ellipse at 80% 0%,#123c70 0,#071a35 42%,#041126 100%);color:#f5f9ff;font-family:Arial,sans-serif;min-height:100vh}
+header{position:sticky;top:0;z-index:50;background:rgba(5,19,42,.94);backdrop-filter:blur(14px);border-bottom:1px solid #25466c;padding:13px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;box-shadow:0 8px 28px #0005}
+header h1{margin:0;font-size:clamp(18px,4vw,24px);letter-spacing:.2px}
+header .small{color:#a9c7e8}
+.header-title{min-width:0}
 .header-actions{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.menu-dot{flex:0 0 46px;width:46px;height:46px;border-radius:50%;padding:0;margin:0;background:linear-gradient(145deg,#087df0,#0753bc);color:white;font-size:23px;line-height:1;box-shadow:0 0 18px #0785ff55}
+.menu-dot:focus-visible{outline:3px solid white;outline-offset:3px}
 .bell-wrap{position:relative}
-.bell-button{position:relative;width:46px;height:46px;border-radius:50%;padding:0;margin:0;background:#203e5b;color:#fff;border:1px solid #45627d;font-size:22px;box-shadow:0 0 0 3px #55b5ff18}
-.bell-count{position:absolute;top:-5px;right:-5px;min-width:19px;height:19px;padding:0 5px;border-radius:20px;background:#e11d48;color:#fff;font-size:11px;line-height:19px;text-align:center;border:2px solid #10243a}
-.notification-panel{position:absolute;right:0;top:56px;width:min(88vw,370px);max-height:70vh;overflow:auto;background:#10243a;border:1px solid #34516d;border-radius:13px;padding:13px;z-index:1100;box-shadow:0 12px 35px #0009}
+.bell-button{position:relative;width:46px;height:46px;border-radius:50%;padding:0;margin:0;background:#122d50;color:#fff;border:1px solid #41658e;font-size:22px;box-shadow:0 0 0 3px #55b5ff18}
+.bell-count{position:absolute;top:-5px;right:-5px;min-width:19px;height:19px;padding:0 5px;border-radius:20px;background:#ff3156;color:#fff;font-size:11px;line-height:19px;text-align:center;border:2px solid #10243a}
+.notification-panel{position:fixed;right:12px;top:68px;width:min(calc(100vw - 24px),380px);max-height:70vh;overflow:auto;background:#0d2547;border:1px solid #315780;border-radius:15px;padding:13px;z-index:1100;box-shadow:0 12px 35px #0009}
 .notification-head{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:9px}
 .notification-head h3{margin:0;color:#55b5ff}
-.notification-item{background:#0c1b2b;border:1px solid #29435d;border-radius:9px;padding:10px;margin:8px 0;font-size:13px}
+.notification-item{background:#081a34;border:1px solid #29496f;border-radius:11px;padding:10px;margin:8px 0;font-size:13px}
 .notification-item strong{display:block;color:#f4f8fc;margin-bottom:4px}
-.notification-item span{color:#b5c5d5}.notification-empty{color:#a9bbcd;font-size:13px;padding:10px}
+.notification-item span{color:#b5c5d5;display:block}
+.notification-empty{color:#a9bbcd;font-size:13px;padding:10px}
 .drawer-backdrop{position:fixed;inset:0;background:#0009;z-index:1000}
-.drawer{position:fixed;top:0;right:0;height:100vh;height:100dvh;width:min(88vw,430px);overflow-y:auto;background:#10243a;border-left:1px solid #34516d;padding:18px;z-index:1001;box-shadow:-12px 0 35px #0008}
+.drawer{position:fixed;top:0;right:0;left:auto;height:100vh;height:100dvh;width:min(88vw,430px);overflow-y:auto;background:linear-gradient(180deg,#102e55,#06172f);border-left:1px solid #345a83;border-right:0;padding:18px;z-index:1001;box-shadow:-12px 0 35px #0009}
 .drawer-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}
-.drawer-head h2{margin:0}.drawer-section{background:#0c1b2b;border:1px solid #29435d;border-radius:10px;padding:13px;margin:12px 0}
-.drawer-section h3{margin:0 0 12px;color:#55b5ff;font-size:16px}.drawer .status{overflow-wrap:anywhere}
-main{max-width:900px;margin:auto;padding:14px}
-.card{background:#14263a;border:1px solid #29435d;border-radius:13px;padding:15px;margin-bottom:14px}
-h2{font-size:19px;margin:5px 0 13px}h3{font-size:16px;color:#55b5ff;margin:18px 0 9px}
-label{display:block;margin:12px 0 5px;color:#b5c5d5}
-input,select,textarea{width:100%;padding:12px;background:#0c1b2b;color:white;border:1px solid #34516d;border-radius:8px;font-size:15px}
-textarea{min-height:70px}button{border:0;border-radius:8px;padding:11px 14px;margin:7px 5px 0 0;background:#3b9cff;color:#071727;font-weight:bold;cursor:pointer}
-button.green{background:#23845d;color:white}button.red{background:#a94444;color:white}button.gray{background:#29435d;color:white}
-button:disabled{opacity:.4;cursor:not-allowed}.hidden{display:none!important}
-.small{font-size:13px;color:#a9bbcd}.status{background:#0c1b2b;padding:10px;border-radius:8px;margin:8px 0;white-space:pre-wrap;overflow-wrap:anywhere}
-.machine,.task{background:#0c1b2b;border:1px solid #29435d;border-radius:10px;padding:13px;margin:9px 0}
-.machine{width:100%;text-align:left;color:white}.machine strong,.task strong{display:block;color:#55b5ff;font-size:16px}
-.machine span,.task span{display:block;color:#b5c5d5;font-size:13px;margin-top:6px}
-.pill{display:inline-block;background:#29435d;padding:5px 9px;border-radius:20px;font-size:12px;margin:7px 5px 0 0}
-.category{border-bottom:1px solid #34516d;padding-bottom:7px;margin-top:20px}
-.task-check{display:flex;align-items:center;gap:10px;margin-top:13px;color:white}
-.task-check input{width:21px;height:21px;accent-color:#23845d}
-.group-panel{background:#14263a;border:1px solid #34516d;border-radius:10px;padding:13px;margin:12px 0 20px}
-.progress{height:8px;background:#29435d;border-radius:8px;overflow:hidden;margin:9px 0}
-.progress-bar{height:100%;background:#23845d;width:0}
-.stats-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:12px 0}
-.stat-box{background:#0c1b2b;border:1px solid #29435d;border-radius:10px;padding:12px;min-width:0}
-.stat-box.interactive{cursor:pointer;text-align:left;color:inherit;font:inherit;width:100%;margin:0}
-.stat-box.interactive:hover,.stat-box.interactive:focus-visible{background:#142b42;border-color:#55b5ff;outline:2px solid #55b5ff}
-.stat-hint{font-size:10px;color:#8fa9c0;margin-top:7px}.stat-number{font-size:24px;font-weight:bold;color:#55b5ff}
-.stat-label{font-size:12px;color:#b5c5d5;margin-top:5px}
-.history-item{background:#0c1b2b;border:1px solid #29435d;border-radius:9px;padding:12px;margin:9px 0}
-.history-item strong{display:block;color:#55b5ff}
-.dashboard-panel{background:#0c1b2b;border:1px solid #29435d;border-radius:10px;padding:13px;min-width:0;margin-top:12px}
-.machine-park-section{margin-top:16px;padding-top:12px;border-top:1px solid #2d5a8b}
-.machine-park-head{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
-.machine-park-head h3{margin:4px 0}.machine-park-count{font-size:12px;color:#a9bbcd;margin:7px 0}
-.park-machine{display:block;width:100%;text-align:left;color:white;background:#14263a;border:1px solid #29435d;border-radius:9px;padding:13px;margin:7px 0}
-.park-machine strong{display:block;color:#55b5ff;font-size:16px}.park-machine span{display:block;color:#b5c5d5;font-size:12px;margin-top:5px}
-.frequency-row{margin:11px 0}.frequency-head{display:flex;justify-content:space-between;gap:8px;font-size:12px;color:#c6d5e3}
-.frequency-track{height:7px;background:#29435d;border-radius:8px;overflow:hidden;margin-top:6px}
-.frequency-fill{height:100%;background:#55b5ff;border-radius:8px}
-.recent-row{padding:9px 0;border-bottom:1px solid #29435d}.recent-row:last-child{border-bottom:0}
-.recent-row strong{display:block;font-size:13px;color:#eaf4fc}.recent-row span{display:block;font-size:12px;color:#a9bbcd;margin-top:4px}
-.app-footer{display:flex;justify-content:center;align-items:center;padding:18px 12px 22px;margin:12px auto 4px;text-align:center}
-.app-footer span{position:relative;display:inline-block;padding:0 18px 9px;color:#ff5aad;font-family:"Segoe Script","Brush Script MT",cursive;font-size:19px;font-style:italic;font-weight:600;letter-spacing:1.2px;text-shadow:0 0 12px #d0007055}
-.app-footer span::after{content:"";position:absolute;left:50%;bottom:0;width:100%;height:4px;border-radius:50%;background:#d00070;transform:translateX(-50%);box-shadow:0 0 9px #d0007066}
-@media(min-width:600px){.stats-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
-
-/* HB+ visual demo skin — conserves Firebase and maintenance logic */
-:root{color-scheme:dark;--navy:#06152d;--panel:#0e2342;--line:#28466b;--blue:#087df0;--cyan:#36c5f4;--muted:#b8c9df}
-body{background:radial-gradient(ellipse at 80% 0%,#123c70 0,#071a35 42%,#041126 100%);color:#f5f9ff;min-height:100vh}
-header{position:sticky;top:0;z-index:50;background:rgba(5,19,42,.94);backdrop-filter:blur(14px);border-bottom:1px solid #25466c;padding:13px 16px;box-shadow:0 8px 28px #0005}
-header h1{font-size:clamp(18px,4vw,24px);letter-spacing:.2px}header .small{color:#a9c7e8}
-.menu-dot{background:linear-gradient(145deg,#087df0,#0753bc);box-shadow:0 0 18px #0785ff55;font-size:23px}
-.bell-button{background:#122d50;border-color:#41658e}.bell-count{background:#ff3156}
-main{max-width:1050px;padding:18px 14px 28px}
-.card,.dashboard-panel,.group-panel{background:linear-gradient(145deg,rgba(18,43,78,.96),rgba(8,25,50,.98));border:1px solid #2a4b75;border-radius:19px;box-shadow:0 12px 32px #0003}
+.drawer-head h2{margin:0}
+.drawer-section{background:#0a2040;border:1px solid #294b72;border-radius:14px;padding:13px;margin:12px 0}
+.drawer-section h3{margin:0 0 12px;color:#55b5ff;font-size:16px}
+.drawer .status{overflow-wrap:anywhere}
+main{max-width:1050px;margin:auto;padding:18px 14px 28px}
+.card,.dashboard-panel,.group-panel{background:linear-gradient(145deg,rgba(18,43,78,.96),rgba(8,25,50,.98));border:1px solid #2a4b75;border-radius:19px;padding:15px;margin-bottom:14px;box-shadow:0 12px 32px #0003}
 #dashboardCard{padding:19px;background:linear-gradient(145deg,#102c51,#071b36);overflow:hidden;position:relative}
 #dashboardCard:before{content:"";display:block;height:5px;width:100%;position:absolute;top:0;left:0;background:linear-gradient(90deg,#087df0,#23d4e7,#087df0)}
-h2{font-size:20px;letter-spacing:.1px}h3{color:#5bc8ff}
-.stats-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
-.stat-box{background:linear-gradient(150deg,#143963,#0b2445);border:1px solid #2d5a8b;border-radius:15px;padding:15px;box-shadow:inset 0 1px #ffffff0c}
-.stat-number{font-size:29px;color:#54c7ff}.stat-label{font-size:13px;color:#d1e4f8}
+h2{font-size:20px;margin:5px 0 13px;letter-spacing:.1px}
+h3{font-size:16px;color:#5bc8ff;margin:18px 0 9px}
+label{display:block;margin:12px 0 5px;color:#c5d9ef}
+input,select,textarea{width:100%;padding:13px;background:#081a34;color:white;border:1px solid #35577f;border-radius:11px;font-size:15px}
+textarea{min-height:70px}
+button{border:0;border-radius:11px;padding:12px 16px;margin:7px 5px 0 0;background:linear-gradient(135deg,#168dff,#0865d5);color:white;font-weight:bold;cursor:pointer;box-shadow:0 4px 14px #007bff24}
+button.green{background:linear-gradient(135deg,#08c985,#079b6d);color:white}
+button.red{background:linear-gradient(135deg,#f12d4e,#b90d32);color:white}
+button.gray{background:#19385d;color:#eaf5ff;border:1px solid #36577c}
+button:disabled{opacity:.4;cursor:not-allowed}
+.hidden{display:none!important}
+.small{font-size:13px;color:#a9bbcd}
+.status{background:#0c1b2b;padding:10px;border-radius:8px;margin:8px 0;white-space:pre-wrap;overflow-wrap:anywhere}
+.task{background:rgba(7,25,49,.9);border:1px solid #29496f;border-radius:12px;padding:13px;margin:9px 0}
+.task strong{display:block;color:#eff7ff;font-size:16px}
+.task span{display:block;color:#b5c5d5;font-size:13px;margin-top:6px}
+.pill{display:inline-block;background:#29435d;padding:5px 9px;border-radius:20px;font-size:12px;margin:7px 5px 0 0}
+.category{border-bottom:1px solid #315477;padding-bottom:7px;margin-top:20px;color:#55c9ff}
+.task-check{display:flex;align-items:center;gap:10px;margin-top:13px;color:white}
+.task-check input{width:21px;height:21px;accent-color:#00d18b}
+.group-panel{margin:12px 0 20px}
+.progress{height:11px;background:#233f62;border-radius:20px;overflow:hidden;margin:9px 0}
+.progress-bar{height:100%;background:linear-gradient(90deg,#00c987,#48e5ae);border-radius:20px;width:0}
+.stats-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px;margin:12px 0}
+.stat-box{background:linear-gradient(150deg,#143963,#0b2445);border:1px solid #2d5a8b;border-radius:15px;padding:15px;min-width:0;box-shadow:inset 0 1px #ffffff0c}
+.stat-box.interactive{cursor:pointer;text-align:left;color:inherit;font:inherit;width:100%;margin:0}
+.stat-box.interactive:hover,.stat-box.interactive:focus-visible{background:#142b42;border-color:#55b5ff;outline:2px solid #55b5ff}
+.stat-number{font-size:29px;font-weight:bold;color:#54c7ff}
+.stat-label{font-size:13px;color:#d1e4f8;margin-top:5px}
 .stat-box:nth-child(3n+1) .stat-number{color:#45baff}
 .stat-box:nth-child(3n+2) .stat-number{color:#35e5a1}
 .stat-box:nth-child(3n) .stat-number{color:#ffbd4a}
-.machine,.park-machine{background:linear-gradient(145deg,#12345d,#0b2241);border:1px solid #315987;border-radius:14px;transition:transform .18s,border-color .18s}
-.machine:active,.park-machine:active{transform:scale(.99)}.machine strong,.park-machine strong{color:#f3f8ff;font-size:17px}
-button{border-radius:11px;background:linear-gradient(135deg,#168dff,#0865d5);color:white;padding:12px 16px;box-shadow:0 4px 14px #007bff24}
-button.green{background:linear-gradient(135deg,#08c985,#079b6d);color:white}button.red{background:linear-gradient(135deg,#f12d4e,#b90d32);color:white}button.gray{background:#19385d;color:#eaf5ff;border:1px solid #36577c}
-input,select,textarea{background:#081a34;border:1px solid #35577f;border-radius:11px;padding:13px}
-label{color:#c5d9ef}.progress{height:11px;background:#233f62;border-radius:20px}.progress-bar{background:linear-gradient(90deg,#00c987,#48e5ae);border-radius:20px}
-.task{background:rgba(7,25,49,.9);border:1px solid #29496f;border-radius:12px;padding:13px}.task strong{color:#eff7ff}
-.task-check input{accent-color:#00d18b}
-.category{border-color:#315477;color:#55c9ff}
-.drawer{left:0;right:auto;border-left:0;border-right:1px solid #345a83;background:linear-gradient(180deg,#102e55,#06172f);box-shadow:12px 0 35px #0009}
-.drawer-section{background:#0a2040;border-color:#294b72;border-radius:14px}
-.notification-panel{background:#0d2547;border-color:#315780;border-radius:15px}
-.notification-item{background:#081a34;border-color:#29496f;border-radius:11px}
-.app-footer span{color:#ff70bd;font-size:21px;text-shadow:0 0 16px #ff3b9b88}.app-footer span:after{background:#e72d91;box-shadow:0 0 13px #e72d91}
-#machineDetail{padding:16px}#machineDetail>.card{background:rgba(7,24,47,.6);border-radius:15px}
+.history-item{background:#0c1b2b;border:1px solid #29435d;border-radius:9px;padding:12px;margin:9px 0}
+.history-item strong{display:block;color:#55b5ff}
+.dashboard-panel{min-width:0;margin-top:12px}
+.machine-park-head{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.machine-park-head h3{margin:4px 0}
+.machine-park-count{font-size:12px;color:#a9bbcd;margin:7px 0}
+.park-machine{display:block;width:100%;text-align:left;color:white;background:linear-gradient(145deg,#12345d,#0b2241);border:1px solid #315987;border-radius:14px;padding:13px;margin:7px 0;transition:transform .18s,border-color .18s}
+.park-machine:active{transform:scale(.99)}
+.park-machine strong{display:block;color:#f3f8ff;font-size:17px}
+.park-machine span{display:block;color:#b5c5d5;font-size:12px;margin-top:5px}
+.frequency-row{margin:11px 0}
+.frequency-head{display:flex;justify-content:space-between;gap:8px;font-size:12px;color:#c6d5e3}
+.frequency-track{height:7px;background:#29435d;border-radius:8px;overflow:hidden;margin-top:6px}
+.frequency-fill{height:100%;background:#55b5ff;border-radius:8px}
+.recent-row{padding:9px 0;border-bottom:1px solid #29435d}
+.recent-row:last-child{border-bottom:0}
+.recent-row strong{display:block;font-size:13px;color:#eaf4fc}
+.recent-row span{display:block;font-size:12px;color:#a9bbcd;margin-top:4px}
+.app-footer{display:flex;justify-content:center;align-items:center;padding:18px 12px 22px;margin:12px auto 4px;text-align:center}
+.app-footer span{position:relative;display:inline-block;padding:0 18px 9px;color:#ff70bd;font-family:"Segoe Script","Brush Script MT",cursive;font-size:21px;font-style:italic;font-weight:600;letter-spacing:1.2px;text-shadow:0 0 16px #ff3b9b88}
+.app-footer span::after{content:"";position:absolute;left:50%;bottom:0;width:100%;height:4px;border-radius:50%;background:#e72d91;transform:translateX(-50%);box-shadow:0 0 13px #e72d91}
+#machineDetail{padding:16px}
+#machineDetail>.card{background:rgba(7,24,47,.6);border-radius:15px}
 @media(min-width:650px){.stats-grid{grid-template-columns:repeat(3,minmax(0,1fr))}main{padding-top:24px}}
 @media(max-width:420px){header{padding:11px}main{padding:12px 10px}.card{padding:13px}.stat-box{padding:12px}.stat-number{font-size:25px}}
 </style>
@@ -137,15 +125,22 @@ label{color:#c5d9ef}.progress{height:11px;background:#233f62;border-radius:20px}
  </section>
  <section id="app" class="hidden">
   <div id="dashboardCard" class="card">
-   <h2>Tableau de bord général</h2>
+   <div class="machine-park-head">
+    <h2>Tableau de bord général</h2>
+    <button id="openMachinesBtn" type="button">Voir toutes les machines</button>
+   </div>
    <div id="dashboardStats" class="stats-grid">Chargement...</div>
    <div id="dashboardDetails" class="dashboard-panel hidden"></div>
    <div class="small">Progression globale de la maintenance</div><div class="progress"><div id="globalProgressBar" class="progress-bar"></div></div>
    <div id="globalProgressText" class="small">Calcul en cours...</div>
-   <div class="machine-park-section">
-    <div class="machine-park-head"><h3>Parc machines</h3><div id="machineParkCount" class="machine-park-count"></div></div>
-    <div id="dashboardMachines">Chargement des machines...</div>
+  </div>
+  <div id="machinesListCard" class="card hidden">
+   <div class="machine-park-head">
+    <h2>Toutes les machines</h2>
+    <button id="closeMachinesBtn" class="gray" type="button">← Retour au tableau de bord</button>
    </div>
+   <div id="machineParkCount" class="machine-park-count"></div>
+   <div id="dashboardMachines">Chargement des machines...</div>
   </div>
   <div id="machineDetail" class="card hidden">
    <button id="backBtn" class="gray">← Retour au tableau de bord</button>
@@ -252,9 +247,8 @@ const STAUBLI_PROGRAM=[
  ]}
 ];
 
-// Programme RCE/USE issu du PDF « Préventive - Métier RCE - USE ».
-const RCE_MACHINES=new Set(["M01","M02","M14","M15","M16","M17","M69"]);
-const STAUBLI_MACHINES=new Set(["M24","M25"]);
+const RCE_CODES=new Set(["M01","M02","M14","M15","M16","M17","M69"]);
+const STAUBLI_CODES=new Set(["M24","M25"]);
 
 const RCE_PROGRAM=[
  {frequency:"Mensuelle",tasks:[
@@ -308,10 +302,18 @@ const RCE_PROGRAM=[
  ]}
 ];
 
-function programForMachine(machine){
+function extractMachineCode(machine){
+ const raw=(String(machine?.name||"")+" "+String(machine?.id||"")).toUpperCase();
+ const match=raw.match(/\bM\d{1,3}\b/);
+ if(match)return match[0];
  const id=String(machine?.id||"").toUpperCase();
- if(RCE_MACHINES.has(id))return RCE_PROGRAM;
- if(STAUBLI_MACHINES.has(id))return STAUBLI_PROGRAM;
+ return id;
+}
+
+function programForMachine(machine){
+ const code=extractMachineCode(machine);
+ if(RCE_CODES.has(code))return RCE_PROGRAM;
+ if(STAUBLI_CODES.has(code))return STAUBLI_PROGRAM;
  return [];
 }
 
@@ -398,6 +400,31 @@ function showError(prefix,error){
  );
 }
 
+// Navigation entre tableau, liste des machines et fiche machine
+function openMachinesView(){
+ currentMachine=null;
+ selectedTaskIds.clear();
+ $("dashboardCard").classList.add("hidden");
+ $("machineDetail").classList.add("hidden");
+ $("machinesListCard").classList.remove("hidden");
+ renderMachinePark(cachedMachines);
+ window.scrollTo(0,0);
+}
+
+function openDashboardView(){
+ currentMachine=null;
+ selectedTaskIds.clear();
+ $("machinesListCard").classList.add("hidden");
+ $("machineDetail").classList.add("hidden");
+ $("dashboardCard").classList.remove("hidden");
+ renderDashboard(cachedMachines,activeTasks(),cachedHistory);
+ window.scrollTo(0,0);
+}
+
+$("openMachinesBtn").onclick=openMachinesView;
+$("closeMachinesBtn").onclick=openDashboardView;
+$("backBtn").onclick=openDashboardView;
+
 // Connexion
 $("loginBtn").onclick=async()=>{
  $("loginMsg").textContent="Connexion en cours...";
@@ -415,18 +442,6 @@ $("loginBtn").onclick=async()=>{
 };
 
 $("logoutBtn").onclick=()=>signOut(auth);
-
-// Retour au tableau de bord
-$("backBtn").onclick=()=>{
- currentMachine=null;
- selectedTaskIds.clear();
-
- $("machineDetail").classList.add("hidden");
- $("dashboardCard").classList.remove("hidden");
-
- renderDashboard(cachedMachines,activeTasks(),cachedHistory);
- window.scrollTo(0,0);
-};
 
 $("frequencyFilter").onchange=renderTasks;
 
@@ -513,6 +528,7 @@ async function loadMachines(){
  cachedMachines.sort((a,b)=>(a.name||a.id).localeCompare(b.name||b.id));
 
  renderDashboard(cachedMachines,activeTasks(),cachedHistory);
+ renderMachinePark(cachedMachines);
  renderSideSummaries();
  buildNotifications();
 }
@@ -550,9 +566,10 @@ async function initializeSchedule(showMessage=true){
    const program=programForMachine(machine);
    if(!program.length)continue;
 
-   const machineId=String(machine.id).toUpperCase();
+   const code=extractMachineCode(machine);
+   const isRce=RCE_CODES.has(code);
 
-   if(RCE_MACHINES.has(machineId)){
+   if(isRce){
     for(const oldTask of cachedTasks){
      const oldId=String(oldTask.id||"");
      const isLegacyTask=/^\d+$/.test(oldId.split("_task_")[1]||"");
@@ -577,7 +594,7 @@ async function initializeSchedule(showMessage=true){
     for(const taskName of group.tasks){
      taskNumber++;
 
-     const taskId=RCE_MACHINES.has(machineId)
+     const taskId=isRce
       ?machine.id+"_RCE_task_"+taskNumber
       :machine.id+"_task_"+taskNumber;
 
@@ -590,7 +607,7 @@ async function initializeSchedule(showMessage=true){
       machineId:machine.id,
       machineName:machine.name||machine.id,
       taskNumber,
-      program:RCE_MACHINES.has(machineId)?"RCE_USE":"STAUBLI",
+      program:isRce?"RCE_USE":"STAUBLI",
       frequency:group.frequency,
       task:taskName,
       nextDueDate:todayISO(),
@@ -649,7 +666,7 @@ async function initializeSchedule(showMessage=true){
 
 $("initBtn").onclick=()=>initializeSchedule(true);
 
-// Affichage du parc machines
+// Affichage du parc machines dans la vue dédiée
 function renderMachinePark(machines){
  const container=$("dashboardMachines");
  if(!container)return;
@@ -657,9 +674,7 @@ function renderMachinePark(machines){
  container.textContent="";
 
  const count=$("machineParkCount");
-
- if(count)
-  count.textContent=machines.length+" machine(s) disponible(s)";
+ if(count)count.textContent=machines.length+" machine(s) disponible(s)";
 
  if(!machines.length){
   container.textContent="Aucune machine trouvée.";
@@ -747,7 +762,7 @@ function showDashboardDetails(key,label,machines,tasks){
  });
 }
 
-// Résumés latéraux (répartition par fréquence + historique récent)
+// Résumés latéraux
 function renderSideSummaries(){
  const freqEl=$("frequencyBreakdown");
  const recentEl=$("recentActivity");
@@ -829,10 +844,8 @@ function renderDashboard(machines,tasks,history){
  $("dashboardStats").textContent="";
 
  stats.forEach(item=>{
-  const box=document.createElement(item.key==="machines"?"div":"button");
-
-  if(item.key!=="machines")box.type="button";
-
+  const box=document.createElement("button");
+  box.type="button";
   box.className="stat-box interactive";
 
   const number=document.createElement("div");
@@ -845,16 +858,14 @@ function renderDashboard(machines,tasks,history){
 
   box.append(number,label);
 
-  if(item.key!=="machines"){
-   box.onclick=()=>showDashboardDetails(
-    item.key,item.label,machines,tasks
-   );
+  if(item.key==="machines"){
+   box.onclick=openMachinesView;
+  }else{
+   box.onclick=()=>showDashboardDetails(item.key,item.label,machines,tasks);
   }
 
   $("dashboardStats").append(box);
  });
-
- renderMachinePark(machines);
 
  $("globalProgressBar").style.width=percent+"%";
 
@@ -869,6 +880,7 @@ function openMachine(machine){
  selectedTaskIds.clear();
 
  $("dashboardCard").classList.add("hidden");
+ $("machinesListCard").classList.add("hidden");
  $("machineDetail").classList.remove("hidden");
 
  $("detailName").textContent=machine.name||machine.id;
@@ -1434,3 +1446,4 @@ async function approveGroup(groupTasks,frequency){
 </script>
 </body>
 </html>
+2
