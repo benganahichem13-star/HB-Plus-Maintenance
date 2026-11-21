@@ -55,8 +55,7 @@ button:disabled{opacity:.4;cursor:not-allowed}.hidden{display:none!important}
 .history-item{background:#0c1b2b;border:1px solid #29435d;border-radius:9px;padding:12px;margin:9px 0}
 .history-item strong{display:block;color:#55b5ff}
 .dashboard-panel{background:#0c1b2b;border:1px solid #29435d;border-radius:10px;padding:13px;min-width:0;margin-top:12px}
-.stat-box.machine-stat{cursor:pointer}.stat-box.machine-stat.expanded{grid-column:1/-1;background:#142b42;border-color:#55b5ff}
-.machine-park-inline{margin-top:13px;padding-top:10px;border-top:1px solid #34516d;text-align:left;cursor:default}
+.machine-park-section{margin-top:16px;padding-top:12px;border-top:1px solid #2d5a8b}
 .machine-park-head{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
 .machine-park-head h3{margin:4px 0}.machine-park-count{font-size:12px;color:#a9bbcd;margin:7px 0}
 .park-machine{display:block;width:100%;text-align:left;color:white;background:#14263a;border:1px solid #29435d;border-radius:9px;padding:13px;margin:7px 0}
@@ -106,7 +105,6 @@ label{color:#c5d9ef}.progress{height:11px;background:#233f62;border-radius:20px}
 #machineDetail{padding:16px}#machineDetail>.card{background:rgba(7,24,47,.6);border-radius:15px}
 @media(min-width:650px){.stats-grid{grid-template-columns:repeat(3,minmax(0,1fr))}main{padding-top:24px}}
 @media(max-width:420px){header{padding:11px}main{padding:12px 10px}.card{padding:13px}.stat-box{padding:12px}.stat-number{font-size:25px}}
-
 </style>
 </head>
 <body>
@@ -139,10 +137,15 @@ label{color:#c5d9ef}.progress{height:11px;background:#233f62;border-radius:20px}
  </section>
  <section id="app" class="hidden">
   <div id="dashboardCard" class="card">
-   <h2>Tableau de bord général</h2><div id="dashboardStats" class="stats-grid">Chargement...</div>
+   <h2>Tableau de bord général</h2>
+   <div id="dashboardStats" class="stats-grid">Chargement...</div>
    <div id="dashboardDetails" class="dashboard-panel hidden"></div>
    <div class="small">Progression globale de la maintenance</div><div class="progress"><div id="globalProgressBar" class="progress-bar"></div></div>
    <div id="globalProgressText" class="small">Calcul en cours...</div>
+   <div class="machine-park-section">
+    <div class="machine-park-head"><h3>Parc machines</h3><div id="machineParkCount" class="machine-park-count"></div></div>
+    <div id="dashboardMachines">Chargement des machines...</div>
+   </div>
   </div>
   <div id="machineDetail" class="card hidden">
    <button id="backBtn" class="gray">← Retour au tableau de bord</button>
@@ -212,7 +215,9 @@ function markAllNotificationsRead(){notificationItems.forEach(x=>notificationRea
 function toggleNotificationPanel(){const panel=$("notificationPanel"),opening=panel.classList.contains("hidden");panel.classList.toggle("hidden",!opening);$("notificationButton").setAttribute("aria-expanded",String(opening));if(opening)buildNotifications()}
 $("notificationButton").onclick=toggleNotificationPanel;
 $("markNotificationsRead").onclick=markAllNotificationsRead;
-document.addEventListener("click",e=>{if(!e.target.closest(".bell-wrap")){$("notificationPanel").classList.add("hidden");$("notificationButton").setAttribute("aria-expanded","false")}});const STAUBLI_PROGRAM=[
+document.addEventListener("click",e=>{if(!e.target.closest(".bell-wrap")){$("notificationPanel").classList.add("hidden");$("notificationButton").setAttribute("aria-expanded","false")}});
+
+const STAUBLI_PROGRAM=[
  {frequency:"Hebdomadaire",tasks:[
   "Nettoyer et contrôler le dispositif du chariot de coupe.",
   "Vérifier la lubrification des lances.",
@@ -489,7 +494,9 @@ onAuthStateChanged(auth,async user=>{
  }catch(e){
   $("profile").textContent="Erreur : "+e.message;
  }
-});// Chargement des collections
+});
+
+// Chargement des collections
 async function loadMachines(){
  $("dashboardStats").textContent="Chargement des indicateurs...";
 
@@ -506,6 +513,7 @@ async function loadMachines(){
  cachedMachines.sort((a,b)=>(a.name||a.id).localeCompare(b.name||b.id));
 
  renderDashboard(cachedMachines,activeTasks(),cachedHistory);
+ renderSideSummaries();
  buildNotifications();
 }
 
@@ -617,6 +625,7 @@ async function initializeSchedule(showMessage=true){
     .concat(newlyCreated);
 
    renderDashboard(cachedMachines,activeTasks(),cachedHistory);
+   renderSideSummaries();
    buildNotifications();
 
    if(currentMachine)await renderTasks();
@@ -677,6 +686,119 @@ function renderMachinePark(machines){
 
   container.append(button);
  });
+}
+
+// Détails d'un indicateur du tableau de bord
+function showDashboardDetails(key,label,machines,tasks){
+ const panel=$("dashboardDetails");
+ if(!panel)return;
+
+ const filtered=key==="all"
+  ?tasks
+  :tasks.filter(t=>{
+    const s=taskDisplayStatus(t);
+    if(key==="todo")return s==="À faire";
+    if(key==="in_progress")return s==="En cours";
+    if(key==="overdue")return s==="En retard";
+    if(key==="pending_validation")return s==="En attente de validation";
+    if(key==="rejected")return s==="Refusée";
+    if(key==="completed")return s==="Réalisée";
+    return true;
+   });
+
+ panel.classList.remove("hidden");
+ panel.textContent="";
+
+ const head=document.createElement("div");
+ head.className="machine-park-head";
+
+ const title=document.createElement("h3");
+ title.textContent=label+" ("+filtered.length+")";
+
+ const closeBtn=document.createElement("button");
+ closeBtn.type="button";
+ closeBtn.className="gray";
+ closeBtn.textContent="Masquer";
+ closeBtn.onclick=()=>panel.classList.add("hidden");
+
+ head.append(title,closeBtn);
+ panel.append(head);
+
+ if(!filtered.length){
+  const empty=document.createElement("div");
+  empty.className="small";
+  empty.textContent="Aucune opération dans cette catégorie.";
+  panel.append(empty);
+  return;
+ }
+
+ filtered.slice(0,30).forEach(t=>{
+  const row=document.createElement("div");
+  row.className="recent-row";
+
+  const strong=document.createElement("strong");
+  strong.textContent=(t.machineName||t.machineId)+" — "+t.task;
+
+  const span=document.createElement("span");
+  span.textContent=(t.frequency||"")+" • Échéance : "+dateLabel(t.nextDueDate)+" • "+taskDisplayStatus(t);
+
+  row.append(strong,span);
+  panel.append(row);
+ });
+}
+
+// Résumés latéraux (répartition par fréquence + historique récent)
+function renderSideSummaries(){
+ const freqEl=$("frequencyBreakdown");
+ const recentEl=$("recentActivity");
+ const tasks=activeTasks();
+
+ if(freqEl){
+  freqEl.textContent="";
+  const freqs=["Hebdomadaire","Mensuelle","Trimestrielle","Semestrielle","Annuelle"];
+  const total=tasks.length||1;
+
+  freqs.forEach(f=>{
+   const count=tasks.filter(t=>t.frequency===f).length;
+   if(!count)return;
+   const pct=Math.round(count/total*100);
+
+   const wrap=document.createElement("div");
+   wrap.className="frequency-row";
+   wrap.innerHTML=
+    '<div class="frequency-head"><span>'+f+'</span><span>'+count+' ('+pct+'%)</span></div>'+
+    '<div class="frequency-track"><div class="frequency-fill" style="width:'+pct+'%"></div></div>';
+   freqEl.append(wrap);
+  });
+
+  if(!freqEl.childNodes.length)freqEl.textContent="Aucune opération active.";
+ }
+
+ if(recentEl){
+  recentEl.textContent="";
+  const latest=[...cachedHistory]
+   .sort((a,b)=>(b.completedDate||"").localeCompare(a.completedDate||""))
+   .slice(0,6);
+
+  if(!latest.length){
+   recentEl.textContent="Aucune intervention récente.";
+   return;
+  }
+
+  latest.forEach(h=>{
+   const row=document.createElement("div");
+   row.className="recent-row";
+
+   const strong=document.createElement("strong");
+   strong.textContent=(h.machineName||h.machineId)+" • "+(h.task||"Intervention");
+
+   const span=document.createElement("span");
+   span.textContent="Validée le "+dateLabel(h.completedDate)+(h.frequency?" ("+h.frequency+")":"");
+
+   row.append(strong,span);
+   recentEl.append(row);
+  });
+ }
 }
 
 // Tableau de bord
@@ -1288,6 +1410,7 @@ async function approveGroup(groupTasks,frequency){
   selectedTaskIds.clear();
 
   renderDashboard(cachedMachines,activeTasks(),cachedHistory);
+  renderSideSummaries();
   buildNotifications();
 
   alert(
@@ -1306,7 +1429,8 @@ async function approveGroup(groupTasks,frequency){
 
   if(currentMachine)
    await renderTasks();
- }</script>
+ }
+}
+</script>
 </body>
 </html>
-}
