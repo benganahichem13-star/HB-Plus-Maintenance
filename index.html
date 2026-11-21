@@ -105,13 +105,22 @@ button:disabled{opacity:.4;cursor:not-allowed}
 .recent-row:last-child{border-bottom:0}
 .recent-row strong{display:block;font-size:13px;color:#eaf4fc}
 .recent-row span{display:block;font-size:12px;color:#a9bbcd;margin-top:4px}
+
+/* Boutons de choix d'entretien par machine */
+.maintenance-selector{margin:14px 0}
+.maintenance-buttons{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.freq-btn{margin:0;padding:11px 14px;border-radius:12px;background:#10294b;color:#d6e8fb;border:1px solid #355b86;font-size:14px;font-weight:bold;box-shadow:none;transition:background .15s,border-color .15s,transform .12s}
+.freq-btn:hover{border-color:#55b5ff;color:#fff}
+.freq-btn.active{background:linear-gradient(135deg,#08c985,#079b6d);border-color:#35e5a1;color:#fff;box-shadow:0 4px 14px rgba(8,201,133,.3)}
+.selected-freq-banner{margin-top:10px;padding:10px 12px;border-radius:11px;background:#081a34;border:1px solid #29496f;font-size:13px;color:#c5d9ef}
+
 .app-footer{display:flex;justify-content:center;align-items:center;padding:18px 12px 22px;margin:12px auto 4px;text-align:center}
 .app-footer span{position:relative;display:inline-block;padding:0 18px 9px;color:#ff70bd;font-family:"Segoe Script","Brush Script MT",cursive;font-size:21px;font-style:italic;font-weight:600;letter-spacing:1.2px;text-shadow:0 0 16px #ff3b9b88}
 .app-footer span::after{content:"";position:absolute;left:50%;bottom:0;width:100%;height:4px;border-radius:50%;background:#e72d91;transform:translateX(-50%);box-shadow:0 0 13px #e72d91}
 #machineDetail{padding:16px}
 #machineDetail>.card{background:rgba(7,24,47,.6);border-radius:15px}
 @media(min-width:650px){.stats-grid{grid-template-columns:repeat(3,minmax(0,1fr))}main{padding-top:24px}}
-@media(max-width:420px){header{padding:11px}main{padding:12px 10px}.card{padding:13px}.stat-box{padding:12px}.stat-number{font-size:25px}}
+@media(max-width:420px){header{padding:11px}main{padding:12px 10px}.card{padding:13px}.stat-box{padding:12px}.stat-number{font-size:25px}.freq-btn{flex:1 1 calc(50% - 8px);text-align:center}}
 </style>
 </head>
 <body>
@@ -162,6 +171,19 @@ button:disabled{opacity:.4;cursor:not-allowed}
   <div id="machineDetail" class="card hidden">
    <button id="backBtn" class="gray">← Retour au tableau de bord</button>
    <h2 id="detailName">Machine</h2><div id="detailInfo" class="small"></div>
+
+   <div class="maintenance-selector">
+    <label>Choisir le type d'entretien</label>
+    <div id="maintenanceButtons" class="maintenance-buttons" role="group" aria-label="Type d'entretien">
+     <button type="button" class="freq-btn" data-freq="Hebdomadaire">Hebdomadaire</button>
+     <button type="button" class="freq-btn" data-freq="Mensuelle">Mensuelle</button>
+     <button type="button" class="freq-btn" data-freq="Trimestrielle">Trimestrielle</button>
+     <button type="button" class="freq-btn" data-freq="Semestrielle">Semestrielle</button>
+     <button type="button" class="freq-btn" data-freq="Annuelle">Annuelle</button>
+    </div>
+    <div id="selectedMaintenanceInfo" class="selected-freq-banner">Aucun entretien sélectionné (affichage de tout l'historique de la machine).</div>
+   </div>
+
    <div class="card"><h2>Historique des interventions</h2><div id="history" class="small">Chargement de l'historique...</div></div>
   </div>
  </section>
@@ -189,7 +211,7 @@ function closeDrawer(){$("appDrawer").classList.add("hidden");$("drawerBackdrop"
 $("menuButton").onclick=openDrawer;$("closeDrawerBtn").onclick=closeDrawer;$("drawerBackdrop").onclick=closeDrawer;
 document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeDrawer();$("notificationPanel").classList.add("hidden");$("notificationButton").setAttribute("aria-expanded","false")}});
 
-let currentRole=null,profileReady=false,currentMachine=null;
+let currentRole=null,profileReady=false,currentMachine=null,selectedFrequency=null;
 let cachedMachines=[],cachedHistory=[];
 let notificationItems=[],notificationReadIds=new Set();
 function notificationStorageKey(){return "hbplus_notifications_read_"+(auth.currentUser?.uid||"anonymous")}
@@ -222,8 +244,34 @@ $("notificationButton").onclick=toggleNotificationPanel;
 $("markNotificationsRead").onclick=markAllNotificationsRead;
 document.addEventListener("click",e=>{if(!e.target.closest(".bell-wrap")){$("notificationPanel").classList.add("hidden");$("notificationButton").setAttribute("aria-expanded","false")}});
 
+function updateFrequencyButtonsUI(){
+ const buttons=document.querySelectorAll("#maintenanceButtons .freq-btn");
+ buttons.forEach(btn=>{
+  const isActive=btn.dataset.freq===selectedFrequency;
+  btn.classList.toggle("active",isActive);
+  btn.setAttribute("aria-pressed",String(isActive));
+ });
+
+ const info=$("selectedMaintenanceInfo");
+ if(selectedFrequency){
+  info.textContent="Entretien sélectionné : "+selectedFrequency+" (cliquer à nouveau sur le bouton pour tout afficher).";
+ }else{
+  info.textContent="Aucun entretien sélectionné (affichage de tout l'historique de la machine).";
+ }
+}
+
+document.querySelectorAll("#maintenanceButtons .freq-btn").forEach(btn=>{
+ btn.onclick=()=>{
+  const freq=btn.dataset.freq;
+  selectedFrequency=selectedFrequency===freq?null:freq;
+  updateFrequencyButtonsUI();
+  renderHistory();
+ };
+});
+
 function openMachinesView(){
  currentMachine=null;
+ selectedFrequency=null;
  $("dashboardCard").classList.add("hidden");
  $("machineDetail").classList.add("hidden");
  $("machinesListCard").classList.remove("hidden");
@@ -233,6 +281,7 @@ function openMachinesView(){
 
 function openDashboardView(){
  currentMachine=null;
+ selectedFrequency=null;
  $("machinesListCard").classList.add("hidden");
  $("machineDetail").classList.add("hidden");
  $("dashboardCard").classList.remove("hidden");
@@ -263,6 +312,7 @@ onAuthStateChanged(auth,async user=>{
   profileReady=false;
   currentRole=null;
   currentMachine=null;
+  selectedFrequency=null;
   cachedMachines=[];
   cachedHistory=[];
   $("login").classList.remove("hidden");
@@ -469,6 +519,7 @@ function renderDashboard(machines,history){
 
 function openMachine(machine){
  currentMachine=machine;
+ selectedFrequency=null;
 
  $("dashboardCard").classList.add("hidden");
  $("machinesListCard").classList.add("hidden");
@@ -477,6 +528,7 @@ function openMachine(machine){
  $("detailName").textContent=machine.name||machine.id;
  $("detailInfo").textContent="Référence : "+machine.id;
 
+ updateFrequencyButtonsUI();
  renderHistory();
  window.scrollTo(0,0);
 }
@@ -487,20 +539,26 @@ async function renderHistory(){
  $("history").textContent="Chargement de l'historique...";
 
  const entries=cachedHistory
-  .filter(item=>item.machineId===currentMachine.id)
+  .filter(item=>{
+   if(item.machineId!==currentMachine.id)return false;
+   if(selectedFrequency&&item.frequency!==selectedFrequency)return false;
+   return true;
+  })
   .slice()
   .sort((a,b)=>(b.completedDate||"").localeCompare(a.completedDate||""));
 
  $("history").textContent="";
 
  if(!entries.length){
-  $("history").textContent="Aucune intervention enregistrée pour cette machine.";
+  $("history").textContent=selectedFrequency
+   ?"Aucune intervention enregistrée pour l'entretien "+selectedFrequency.toLowerCase()+" sur cette machine."
+   :"Aucune intervention enregistrée pour cette machine.";
   return;
  }
 
  const summary=document.createElement("div");
  summary.className="small";
- summary.textContent="Nombre total d'interventions : "+entries.length;
+ summary.textContent="Nombre d'interventions affichées : "+entries.length;
 
  $("history").append(summary);
 
@@ -511,11 +569,15 @@ async function renderHistory(){
   const task=document.createElement("strong");
   task.textContent=item.task||"Intervention";
 
+  const freq=document.createElement("div");
+  freq.className="small";
+  freq.textContent="Entretien : "+(item.frequency||"Non précisé");
+
   const completed=document.createElement("div");
   completed.className="small";
   completed.textContent="Date : "+dateLabel(item.completedDate);
 
-  card.append(task,completed);
+  card.append(task,freq,completed);
   $("history").append(card);
  });
 }
